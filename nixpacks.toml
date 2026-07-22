@@ -1,8 +1,11 @@
 [nixpacks]
-providers = ["node"]
+providers = ["node", "apt"]
 
-[phases.install]
-cmds = ["apt-get update && apt-get install -y libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev"]
+[apt]
+packages = ["libcairo2-dev", "libpango1.0-dev", "libjpeg-dev", "libgif-dev", "librsvg2-dev"]
+
+[phases.setup]
+cmds = ["apt-get update -qq"]
 
 [start]
 cmd = "node index.js"

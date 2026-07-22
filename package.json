@@ -7,6 +7,9 @@
   "scripts": {
     "start": "node index.js"
   },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "@discordjs/voice": "^0.19.0",
     "@snazzah/davey": "^0.1.7",
@@ -14,7 +17,6 @@
     "canvas-constructor": "^7.0.2",
     "discord-html-transcripts": "^3.2.0",
     "discord.js": "14.24.2",
-    "fs": "^0.0.1-security",
     "humanize-duration": "^3.33.1",
     "mongoose": "^8.19.3",
     "ms": "^2.1.3",

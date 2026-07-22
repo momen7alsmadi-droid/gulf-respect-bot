@@ -1,0 +1,23 @@
+{
+    "CivilRegistry〡768220097277198386": {
+        "Member": "768220097277198386",
+        "CriminalStatus": "لا يوجد",
+        "PrisonEntries": "0",
+        "CriminalRecord": "لا يوجد",
+        "EmploymentStatus": "عسكري"
+    },
+    "CivilRegistry〡1272505019882536992": {
+        "Member": "1272505019882536992",
+        "CriminalStatus": "هارب من الدوله مطلوب للعداله  مطلوب لدوله",
+        "PrisonEntries": "ليسا لدية سوابق",
+        "CriminalRecord": "هارب من العدل",
+        "EmploymentStatus": "عصابه"
+    },
+    "CivilRegistry〡967408907792293998": {
+        "Member": "967408907792293998",
+        "CriminalStatus": "قبض على عبد العزيز",
+        "PrisonEntries": "نائب موتشادو",
+        "CriminalRecord": "إعدام اجرام سرقات مداهمات",
+        "EmploymentStatus": "مجرم"
+    }
+}

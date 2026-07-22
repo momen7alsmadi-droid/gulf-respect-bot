@@ -153,7 +153,7 @@ export const TicketHe2a = {
     ToManagement: '',
     Parent: '',
     // كاتجورري
-    ChannelLog: '''
+    ChannelLog: ''
     // للوق
 }
 // Done

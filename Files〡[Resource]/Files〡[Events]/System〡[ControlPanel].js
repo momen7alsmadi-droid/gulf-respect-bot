@@ -46,8 +46,8 @@ export default async function (Client, Message) {
             for (const p of parts) v = v?.[p];
             return `**\`${k}\`** = \`${v || 'فارغ'}\``;
         }).join('\n');
-        const Embed = new EmbedBuilder().setTitle(sec.name).setColor('#FFD700').setDescription(items)
-            .setFooter({ text: 'للتعديل: =تحكم <المفتاح> <القيمة> • v' + VERSION });
+        const Embed = new EmbedBuilder().setTitle(sec.name).setColor('#FFD700').setDescription(items + '\n\n**✏️ للتعديل اكتب:** `=تحكم <المفتاح> <القيمة>`')
+            .setFooter({ text: 'مثال: =تحكم LogPoint.Channel 123456789 • v' + VERSION });
         const Back = new ButtonBuilder().setCustomId('CtrlBack').setLabel('🔙 رجوع').setStyle(2);
         await Message.update({ embeds: [Embed], components: [{ type: 1, components: [Back] }] }).catch(() => {});
         return;

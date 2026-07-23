@@ -77,12 +77,7 @@ export default async function (Client, Message) {
             .setDescription(`**المفتاح:** \`${key}\`\n\n**النص الحالي:**\n\`\`\`${(db[key].content || '').slice(0, 1500)}\`\`\``)
             .setFooter({ text: 'للتعديل: اكتب في القناة =رسائل تعديل ' + key + ' <النص الجديد>' });
         const Back = new ButtonBuilder().setCustomId('Msg-Back').setLabel('🔙 رجوع').setStyle(2);
-        const btns = [{ type: 1, components: [Back] }];
-        if (key === 'lineImage') {
-            const UploadBtn = new ButtonBuilder().setCustomId('Msg-UploadLine').setLabel('📷 رفع صورة الخط').setStyle(3);
-            btns.unshift({ type: 1, components: [UploadBtn] });
-        }
-        await Message.update({ embeds: [Embed], components: btns }).catch(() => {});
+        await Message.update({ embeds: [Embed], components: [{ type: 1, components: [Back] }] }).catch(() => {});
         return;
     }
 };

@@ -104,12 +104,12 @@ export default {
                 .setColor('#FFD700')
                 .setDescription(`**${Object.keys(ALL_OPTIONS).length} إعداد قابل للتعديل - تغيير فوري!**\n\n**للتعديل:** \`=تحكم <المفتاح> <القيمة>\`\n**للعرض:** \`=تحكم عرض\`\n**للبحث:** \`=تحكم بحث <كلمة>\``)
                 .addFields(
-                    { name: '⚙️ أساسيات', value: 'آيدي السيرفر والمالك' },
-                    { name: '🏷️ صلاحيات الأوامر', value: '13 أمر إداري' },
-                    { name: '🎫 نظام التذاكر', value: '21 إعداد للتذاكر' },
-                    { name: '👮 نظام الشرطة', value: '3 صلاحيات' },
-                    { name: '🏛️ مجلس الشورى', value: '7 إعدادات' },
-                    { name: '📢 القنوات والرولات', value: '7 قنوات ورولات' },
+                    { name: '⚙️ أساسيات', value: '2 إعداد', inline: true },
+                    { name: '🏷️ صلاحيات', value: '13 أمر', inline: true },
+                    { name: '🎫 التذاكر', value: '13 إعداد', inline: true },
+                    { name: '👮 الشرطة', value: '3 صلاحيات', inline: true },
+                    { name: '🏛️ الشورى', value: '7 إعدادات', inline: true },
+                    { name: '📢 القنوات', value: '7 إعدادات', inline: true },
                 )
                 .setFooter({ text: `v${VERSION} • جميع التغييرات فورية بدون إعادة تشغيل` });
 

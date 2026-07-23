@@ -40,12 +40,13 @@ export default {
                 .setColor('#FFD700')
                 .setDescription(`**${total} عنصر قابل للتعديل**\n\n**للتعديل:** \`=رسائل تعديل <المفتاح> <النص>\`\n**للعرض:** \`=رسائل عرض <المفتاح>\`\n\n**المتغيرات:** \`{member}\` \`{admin}\` \`{server}\` \`{reason}\` \`{duration}\` \`{rank}\` \`{channel}\` \`{stars}\` \`{code}\` \`{version}\``)
                 .addFields(
-                    { name: '📨 التفعيل', value: '11 رسالة', inline: true },
-                    { name: '🎫 التذاكر', value: '10 رسائل', inline: true },
-                    { name: '🛡️ الإدارة', value: '14 رسالة', inline: true },
-                    { name: '👮 الشرطة', value: '7 رسائل', inline: true },
-                    { name: '🏛️ الحكومة', value: '9 رسائل', inline: true },
-                    { name: '🎨 المظهر', value: '6 عناصر', inline: true },
+                    { name: '📨 التفعيل', value: '14 عنصر', inline: true },
+                    { name: '🎫 التذاكر', value: '20 عنصر', inline: true },
+                    { name: '🛡️ الإدارة', value: '22 عنصر', inline: true },
+                    { name: '👮 الشرطة', value: '12 عنصر', inline: true },
+                    { name: '🏛️ الحكومة', value: '16 عنصر', inline: true },
+                    { name: '💼 التوظيف', value: '5 عناصر', inline: true },
+                    { name: '🎨 المظهر', value: '7 عناصر', inline: true },
                 )
                 .setFooter({ text: `v${VERSION} • اختر قسم من القائمة` });
 

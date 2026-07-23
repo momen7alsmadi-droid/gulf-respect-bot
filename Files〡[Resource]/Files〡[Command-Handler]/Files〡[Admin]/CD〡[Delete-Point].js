@@ -32,7 +32,7 @@ export default {
         Voice.delete(`Admin〡${Member.id}`);
         Points.delete(`Evaluation〡${Member.id}`)
         Message.reply({ content: `**تم حذف نقاط بنجاح**` });
-        const Channel = Message.guild.channels.cache.get('');
+        const Channel = Message.guild.channels.cache.get('1387331972094890036');
         const Embed = new EmbedBuilder();
         Embed.setAuthor({ name: Message.author.username, iconURL: Message.author.displayAvatarURL({ forceStatic: true, size: 4096 }) });
         Embed.setFooter({ text: `${Message.guild.name}`, iconURL: Message.guild.iconURL({ forceStatic: true, size: 4096 }) });

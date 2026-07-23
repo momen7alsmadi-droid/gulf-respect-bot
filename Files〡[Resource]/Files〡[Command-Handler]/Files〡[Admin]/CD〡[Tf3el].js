@@ -14,7 +14,7 @@ export default {
     */
     run: async (Client, Message) => {
         if (!Message.member.roles.cache.has(CommandTf3el.Permission)) return;
-        if (Message.channel.id !== '') return;
+        // متاح في جميع القنوات
         const Args = Message.content.split(' ');
         const Member = Message.guild.members.cache.get(Args[1]) || Message.mentions.members.first();
         if (!Member) return Message.reply({ content: `<a:GulfRecPecT:1415963988541313117> **يرجى منشن العضو بشكل صحيح**` })

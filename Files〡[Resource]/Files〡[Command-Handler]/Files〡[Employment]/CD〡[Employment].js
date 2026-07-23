@@ -11,7 +11,7 @@ export default {
     * @param { import('discord.js').Message } Message
     */
     run: async (Client, Message) => {
-        if(Message.channel.id !== '') return
+        // متاح في جميع القنوات
         if (!Message.member.roles.cache.has(CommandPremission.Employment)) return Message.reply({ content: `**ليس لديك الصلاحية لتنفيذ هذا الامر**` });
         const Agrs = Message.content.split(' ');
         const Member = Message.mentions.members.first() || Message.guild.members.cache.get(Agrs[1])

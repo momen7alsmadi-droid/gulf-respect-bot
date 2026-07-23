@@ -8,7 +8,7 @@ export default {
     * @param { import('discord.js').Message } Message
     */
     run: async (Client, Message) => {
-        if (!Message.member.roles.cache.has('')) return Message.reply({ content: `**ليس لديك الصلاحية لتنفيذ هذا الامر**` });
+        // الصلاحية مفتوحة للجميع
         const Embed = new EmbedBuilder()
         Embed.setDescription(`**__زر الاستدعاء مُخصص لاستدعاء الأشخاص المطلوبين للتحقيق أو الشهادة في القضايا القانونية.
     

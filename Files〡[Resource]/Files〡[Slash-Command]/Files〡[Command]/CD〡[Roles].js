@@ -43,7 +43,7 @@ export default {
     */
     run: async function (Client, Message) {
         const UserAdmin = Message.guild.members.cache.get(Message.user.id);
-        if (!UserAdmin.roles.cache.some(role => ['', '' , ''].includes(role.id))) return Message.reply({ content: `**ليس لديك الصلاحية لتنفيذ هذا الامر**`, flags: 64 });
+        if (!UserAdmin.roles.cache.some(role => ['1387331972094890036', '1387331972094890036' , '1387331972094890036'].includes(role.id))) return Message.reply({ content: `**ليس لديك الصلاحية لتنفيذ هذا الامر**`, flags: 64 });
         const Member = Message.options.getUser('العضو');
         const Action = Message.options.getString('رولات');
         const RoleSection = Message.options.getString('قسم-رولات');
@@ -144,7 +144,7 @@ export default {
 
                 // إرسال الرسالة في القناة المخصصة
                 if (Action === 'add') {
-                    const Channel = Message.guild.channels.cache.get('');
+                    const Channel = Message.guild.channels.cache.get('1387331972094890036');
                     if (Channel) {
                         const Embed = new EmbedBuilder()
                             .setColor(Message.guild.members.me.displayColor)
@@ -160,7 +160,7 @@ export default {
                         await Channel.send({ embeds: [Embed] });
                     }
                 } else {
-                    const Channel = Message.guild.channels.cache.get('');
+                    const Channel = Message.guild.channels.cache.get('1387331972094890036');
                     if (Channel) {
                         const Embed = new EmbedBuilder()
                             .setColor(Message.guild.members.me.displayColor)

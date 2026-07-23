@@ -11,7 +11,7 @@ export default {
     * @param { import('discord.js').Message } Message
     */
     run: async (Client, Message) => {
-        if (Message.channel.id !== '') return
+        // متاح في جميع القنوات
         const Member = Message.mentions.members.first() || Message.author
         const GetPointLogin = Database.get(`Police-Point〡${Member.id}`) || 0
         const GetPointAdd = Database.get(`Police-AddPoint〡${Member.id}`) || 0

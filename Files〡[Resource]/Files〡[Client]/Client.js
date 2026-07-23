@@ -9,11 +9,18 @@ class Ť extends Client {
         this.SlashCommand = new Collection();
         this.Prefix = '=';
         this.Token = process.env.BOT_TOKEN || process.env.TOKEN;
-        connect(process.env.MONGODB_URI || 'mongodb+srv://da7m:<db_password>@cluster0.q6vbhwi.mongodb.net/?appName=Cluster0', {
-            dbName: 'GulfBank',
-            socketTimeoutMS: 45000,
-            connectTimeoutMS: 30000,
-        });
+        // MongoDB - اختياري، البوت يعمل بدونه
+        const mongoURI = process.env.MONGODB_URI || '';
+        if (mongoURI && !mongoURI.includes('<db_password>') && !mongoURI.includes('<password>')) {
+            connect(mongoURI, {
+                dbName: 'GulfBank',
+                serverSelectionTimeoutMS: 5000,
+                connectTimeoutMS: 5000,
+                bufferCommands: false,
+            }).then(() => console.log('✅ MongoDB connected')).catch(() => console.log('⚠️ MongoDB not available, bot will work without bank'));
+        } else {
+            console.log('⚠️ No MongoDB URI set, bank features disabled');
+        }
     }
 }
 export default Ť;

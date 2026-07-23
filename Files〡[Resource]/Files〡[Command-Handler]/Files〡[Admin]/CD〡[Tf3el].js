@@ -1,6 +1,6 @@
 "use strict";
 import { AttachmentBuilder, EmbedBuilder } from 'discord.js';
-import { CommandTf3el } from '../../Files〡[Config]/Files〡[Config].js';
+import { CommandTf3el, VERSION } from '../../Files〡[Config]/Files〡[Config].js';
 import DB〡AdminPoint from '../../Files〡[DataBase]/DB〡[Admin-Point].js';
 import DB〡Balance from '../../Files〡[DataBase]/DB〡[DataBase].js';
 import { JsonDatabase } from 'wio.db'
@@ -8,58 +8,59 @@ const Points = new JsonDatabase({ databasePath: 'Files〡[Resource]/Files〡[Dat
 export default {
     name: 'تفعيل',
     description: "تفعيل عضو",
-    /**
-    * @param { import('discord.js').Client } Client
-    * @param { import('discord.js').Message } Message
-    */
     run: async (Client, Message) => {
-        // ✅ تم إلغاء التحقق من الصلاحية
-        // متاح في جميع القنوات
-        const Args = Message.content.split(' ');
-        const Member = Message.guild.members.cache.get(Args[1]) || Message.mentions.members.first();
-        if (!Member) return Message.reply({ content: `✅ **يرجى منشن العضو بشكل صحيح**` })
-        const Nickname = Args.slice(2).join(` `)
-        if (!Nickname) return Message.reply({ content: `✅ **يرجى ادخال اسم العضو**` })
-        await Member.setNickname(Nickname).catch(async () => {
-            await Message.reply({ content: `**لايمكنك تفعيل العضو لانه تم تفعيله بالأساس **` })
-        })
-        CommandTf3el.AddRole.forEach(async (Role) => {
-            Member.roles.add(Role).catch(async () => { })
-        })
-        if (CommandTf3el.RemoveRole) {
-            Member.roles.remove(CommandTf3el.RemoveRole).catch(async () => { })
+        try {
+            const Args = Message.content.split(' ');
+            const Member = Message.guild.members.cache.get(Args[1]) || Message.mentions.members.first();
+            if (!Member) return Message.reply({ content: `✅ **يرجى منشن العضو بشكل صحيح**\n-# v${VERSION}` })
+            const Nickname = Args.slice(2).join(` `)
+            if (!Nickname) return Message.reply({ content: `✅ **يرجى ادخال اسم العضو**\n-# v${VERSION}` })
+            
+            // تغيير الاسم
+            await Member.setNickname(Nickname).catch(() => {})
+            
+            // إضافة الرولات
+            for (const Role of CommandTf3el.AddRole) {
+                if (Role) await Member.roles.add(Role).catch(() => {})
+            }
+            
+            // حذف رول الانتظار إذا وجد
+            if (CommandTf3el.RemoveRole) {
+                await Member.roles.remove(CommandTf3el.RemoveRole).catch(() => {})
+            }
+            
+            // إرسال رسالة الترحيب بالخاص
+            const Attachment = new AttachmentBuilder(`Files〡[Resource]/Files〡[Image]/Welcome.png`, { name: 'Welcome.png' });
+            const Embed = new EmbedBuilder()
+            Embed.setDescription(`**__ — عـزيـزي الـعـضـو ${Member}\n\n— تـم تـفـعـيـلـك فـي سـيـرفـر قـولـف ريـسـبـكـت الـعـظـيـم للـحـيـاة الـواقـعـيـة نـرجـوا مـنـك الإلـتـزام بـالـقـسـم وبـجـمـيـع الـقـوانـيـن .\n\n— نـتـمـنـى قـراءة القوانين لـفـهـم نـظـامـهـا\n\n( Welcome to - GULF RESPECT || 30k . )( مـع تـمـنـيـاتـنـا لـك بـالـتـوفـيـق )__**`)
+            Embed.setImage('attachment://Welcome.png')
+            await Member.send({ embeds: [Embed], files: [Attachment] }).catch(() => {})
+            
+            // إضافة نقاط التفعيل
+            Points.add(`Point-Tf3el-${Message.guild.id}-${Message.author.id}`, 2)
+            
+            // تحديث البنك - MongoDB
+            try {
+                await DB〡Balance.findOneAndUpdate({ _id: Member.id }, { $inc: { Bank: +5000 } }, { upsert: true, new: true })
+                const EmbedBank = new EmbedBuilder()
+                EmbedBank.setDescription(`**__— أهـلآ بـك فـي مـصـرف الـراجـحـي .\n\n— عـزيـزنـا الـعـضـو .\n\n— تـم تـفـعـيـل حـسـابـك الـمـصـرفـي بـنـجـاح .\n\n— تـم إضـافـة : 5000 ريـال إلـى حـسـابـك الـمـصـرفـي .__**`)
+                EmbedBank.setImage('https://i.postimg.cc/hjzk1Srt/jpg.jpg')
+                await Member.send({ embeds: [EmbedBank] }).catch(() => {})
+            } catch (e) {
+                console.log('MongoDB not connected, skipping bank update');
+            }
+            
+            // الرد في القناة
+            await Message.reply({
+                embeds: [{
+                    description: `**__ — عــزيــزي الـعـضـو : ${Member}\n\n— تـم تـفـعـيـلـك من قبل الإداري (${Message.author}) بـنـجـاح\n— تـم تـفـعـيـل الـحـسـاب الـمـصـرفـي لـلـمـواطـن\n— قولف ريسبكت يـتـمنـى لـك تـجـربـة سـعـيـدَة__**`
+                }]
+            })
+        } catch (err) {
+            console.error('❌ Tf3el error:', err.message);
+            await Message.reply({ 
+                content: `❌ **خطأ ERR-100**\n> فشل التفعيل: ${err.message?.slice(0, 150)}\n-# v${VERSION}` 
+            }).catch(() => {});
         }
-        const Attachment = new AttachmentBuilder(`Files〡[Resource]/Files〡[Image]/Welcome.png`, { name: 'Welcome.png' });
-        const Embed = new EmbedBuilder()
-        Embed.setDescription(`**__ — عـزيـزي الـعـضـو ${Member}
-
-— تـم تـفـعـيـلـك فـي سـيـرفـر قـولـف ريـسـبـكـت الـعـظـيـم للـحـيـاة الـواقـعـيـة نـرجـوا مـنـك الإلـتـزام بـالـقـسـم وبـجـمـيـع الـقـوانـيـن .
-
-— نـتـمـنـى قـراءة <#1420678895132344392> لـفـهـم نـظـامـهـا الـديـمـقـراطـي
-
-( Welcome to - GULF RESPECT || 30k . )( مـع تـمـنـيـاتـنـا لـك بـالـتـوفـيـق )__**`)
-        Embed.setImage('attachment://Welcome.png')
-        Member.send({ embeds: [Embed], files: [Attachment] })
-        Points.add(`Point-Tf3el-${Message.guild.id}-${Message.author.id}`, 2)
-        await DB〡Balance.findOneAndUpdate({ _id: Member.id }, { $inc: { Bank: +5000 } }, { upsert: true, new: true })
-        const EmbedSand = new EmbedBuilder()
-        EmbedSand.setDescription(`**__— أهـلآ بـك فـي مـصـرف الـراجـحـي .
-
- <:GulfRecPecT:1415963984141488239> — عـزيـزنـا الـعـضـو .
-
-<a:GulfRecPecT:1416329668579164290> — تـم تـفـعـيـل حـسـابـك الـمـصـرفـي بـنـجـاح .
-
-— تـم إضـافـة : 5000 ريـال إلـى حـسـابـك الـمـصـرفـي .__**`)
-        EmbedSand.setImage('https://i.postimg.cc/hjzk1Srt/jpg.jpg')
-        await Member.send({ embeds: [EmbedSand] }).catch(() => { })
-        await Member.send({
-            content: `2`}).catch(() => { })
-        await Message.reply({
-            embeds: [{
-                description: `**__ — عــزيــزي الـعـضـو : ${Member}
-
-— تـم تـفـعـيـلـك من قبل الإداري (${Message.author}) بـنـجـاح— تـم تـفـعـيـل الـحـسـاب الـمـصـرفـي لـلـمـواطـن— قولف ريسبكت يـتـمنـى لـك تـجـربـة سـعـيـدة__**`}]
-        })
-        await Message.channel.send({ files: ['https://i.postimg.cc/hjzk1Srt/jpg.jpg'] })
     }
-}
+};

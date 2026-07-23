@@ -192,9 +192,11 @@ export default async function (Client, Message) {
  case 'Al-Shuri-Vote': {
  const NumberProject = Message.fields.getTextInputValue('Al-Shuri-Vote-Number')
  const GetData = Database.startsWith(`Al-Shuri〡`).map((Data) => ({ ID: Data.ID }))
+ let found = false;
  for (const Data of GetData) {
  const GetData = Database.get(`${Data.ID}`)
  if (GetData && GetData.NumberProject === Number(NumberProject)) {
+ found = true;
  const Channel = Client.channels.cache.get(AlShuri.VoteChannel)
  const Embed = new EmbedBuilder()
  Embed.setAuthor({ name: Message.user.username, iconURL: Message.user.displayAvatarURL({ forceStatic: true, size: 4096 }) })
@@ -215,6 +217,8 @@ export default async function (Client, Message) {
  return await Message.reply({ content: `تم إرسال التصويت للبرلمان`, flags: 64 })
  }
  }
+ if (!found) return await Message.reply({ content: `❌ **لم يتم العثور على مشروع برقم ${NumberProject}**
+> تأكد من رقم القرار الصحيح`, flags: 64 });
  } break;
  case 'Al-Shuri-End': {
  const MessageID = Message.fields.getTextInputValue('Al-Shuri-Vote-Message');

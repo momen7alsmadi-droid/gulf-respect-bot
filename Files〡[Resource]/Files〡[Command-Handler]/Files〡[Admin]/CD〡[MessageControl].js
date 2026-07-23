@@ -50,7 +50,7 @@ export default {
                 .setFooter({ text: `v${VERSION} • اختر قسم من القائمة` });
 
             const Menu = new StringSelectMenuBuilder()
-                .setCustomId('Messages-Category')
+                .setCustomId('MsgCat')
                 .setPlaceholder('اختر القسم لعرض رسائله...')
                 .addOptions(Object.entries(CATEGORIES).map(([key, cat]) => ({
                     label: cat.name,

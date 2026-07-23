@@ -9,27 +9,26 @@ export default {
     run: async (Client, Message) => {
         const attachment = Message.attachments.first();
         
-        // رفع صورة جديدة = تحديث الخط
+        // رفع صورة جديدة
         if (attachment?.contentType?.startsWith('image/')) {
             const db = JSON.parse(readFileSync(DB_PATH, 'utf8'));
             db.lineImage = { title: 'صورة الخط', content: attachment.url };
             writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf8');
             await Message.delete().catch(() => {});
-            // إرسال الصورة مباشرة - Discord يعرض الرابط كصورة
-            await Message.channel.send({ content: attachment.url }).catch(() => {});
+            // إيمبد بدون عنوان = صورة نظيفة
+            await Message.channel.send({ embeds: [{ image: { url: attachment.url } }] }).catch(() => {});
             return;
         }
 
         // إرسال الخط الحالي
         await Message.delete().catch(() => {});
         const db = JSON.parse(readFileSync(DB_PATH, 'utf8'));
-        const imageUrl = db.lineImage?.content;
+        const url = db.lineImage?.content;
         
-        if (imageUrl?.startsWith('http')) {
-            // Discord يعرض رابط الصورة كصورة مباشرة
-            await Message.channel.send({ content: imageUrl }).catch(() => {});
+        if (url?.startsWith('http')) {
+            // إيمبد بدون كلام = صورة فقط
+            await Message.channel.send({ embeds: [{ image: { url } }] }).catch(() => {});
         } else {
-            // لا توجد صورة - إرسال خط نصي
             await Message.channel.send({ content: '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬' }).catch(() => {});
         }
     }

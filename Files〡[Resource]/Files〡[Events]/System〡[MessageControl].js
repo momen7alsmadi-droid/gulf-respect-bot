@@ -38,7 +38,6 @@ export default async function (Client, Message) {
 
     // اختيار قسم
     if (Message.isStringSelectMenu() && Message.customId === 'MsgCat') {
-        await Message.deferUpdate();
         const cat = CATS[Message.values[0]];
         if (!cat) return;
         const db = JSON.parse(readFileSync(DB_PATH, 'utf8'));

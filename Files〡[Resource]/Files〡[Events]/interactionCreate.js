@@ -39,7 +39,7 @@ export default async function (Client, Message) {
         'System〡[Retirement]','System〡[Evaluation]','System〡[Circulars]',
         'System〡[Prosecution-Authority]','System〡[ControlPanel]','System〡[MessageControl]'
     ];
-    for (const evt of events) Client.emit(evt, Client, Message);
+    for (const evt of events) Client.emit(evt, Message);
 
     // أوامر السلاش
     if (Message.isChatInputCommand()) {

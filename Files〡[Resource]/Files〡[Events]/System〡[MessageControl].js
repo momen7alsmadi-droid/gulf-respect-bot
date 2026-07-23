@@ -1,6 +1,6 @@
 "use strict";
 import { EmbedBuilder, StringSelectMenuBuilder, ButtonBuilder } from 'discord.js';
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { VERSION } from '../Files〡[Config]/Files〡[Config].js';
 
 const DB_PATH = 'Files〡[Resource]/Files〡[DataBase]/DB〡[AutoLine].json';
@@ -22,8 +22,24 @@ export default async function (Client, Message) {
     const uid = Message.user?.id || Message.author?.id;
     if (!isOwner(uid)) return;
 
+    // زر رفع صورة الخط
+    if (Message.isButton() && Message.customId === 'Msg-UploadLine') {
+        await Message.reply({ content: '📷 **ارفع صورة الخط الآن في هذه القناة** (خلال 30 ثانية)', flags: 64 });
+        const filter = m => m.author.id === uid && m.attachments.size > 0;
+        const collector = Message.channel.createMessageCollector({ filter, max: 1, time: 30000 });
+        collector.on('collect', async (m) => {
+            const url = m.attachments.first().url;
+            const db = JSON.parse(readFileSync(DB_PATH, 'utf8'));
+            db.lineImage = { title: 'صورة الخط', content: url };
+            writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf8');
+            await m.delete().catch(() => {});
+            await Message.followUp({ content: `✅ **تم تحديث صورة الخط!**\n-# استخدم =خط لإرسالها`, flags: 64 });
+        });
+        return;
+    }
+
     // زر رجوع
-    if (Message.isButton() && (Message.customId === 'Msg-Back' || Message.customId === 'Msg-Refresh')) {
+    if (Message.isButton() && Message.customId === 'Msg-Back') {
         await Message.deferUpdate();
         const db = JSON.parse(readFileSync(DB_PATH, 'utf8'));
         const Embed = new EmbedBuilder().setTitle('📝 رسائل البوت').setColor('#FFD700')
@@ -62,7 +78,12 @@ export default async function (Client, Message) {
             .setDescription(`**المفتاح:** \`${key}\`\n\n**النص الحالي:**\n\`\`\`${(db[key].content || '').slice(0, 1500)}\`\`\``)
             .setFooter({ text: 'للتعديل: اكتب في القناة =رسائل تعديل ' + key + ' <النص الجديد>' });
         const Back = new ButtonBuilder().setCustomId('Msg-Back').setLabel('🔙 رجوع').setStyle(2);
-        await Message.update({ embeds: [Embed], components: [{ type: 1, components: [Back] }] }).catch(() => {});
+        const btns = [{ type: 1, components: [Back] }];
+        if (key === 'lineImage') {
+            const UploadBtn = new ButtonBuilder().setCustomId('Msg-UploadLine').setLabel('📷 رفع صورة الخط').setStyle(3);
+            btns.unshift({ type: 1, components: [UploadBtn] });
+        }
+        await Message.update({ embeds: [Embed], components: btns }).catch(() => {});
         return;
     }
 };

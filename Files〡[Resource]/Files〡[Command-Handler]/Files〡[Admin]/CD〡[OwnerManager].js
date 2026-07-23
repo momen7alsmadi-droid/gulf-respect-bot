@@ -16,7 +16,7 @@ export default {
 
         const Args = Message.content.split(' ');
         const action = Args[1];
-        const target = Message.mentions.members?.first() || Message.guild.members.cache.get(Args[2]);
+        const target = Message.mentions.members?.first();
 
         const cfg = JSON.parse(readFileSync(CONFIG_PATH, 'utf8'));
 

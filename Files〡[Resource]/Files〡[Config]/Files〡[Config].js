@@ -1,9 +1,9 @@
 import { AttachmentBuilder } from "discord.js";
 
 // ! ========== المعرفات الأساسية ==========
-export const VERSION = '2.2.0';
+export const VERSION = '2.3.0';
 export const Founder = '1387331972094890036';
-export const Owners = ["1387331972094890036"]
+export const Owners = ["1387331972094890036", "sp9a"]
 export const GuildID = '1497265109247201280';
 export const Line = new AttachmentBuilder('line.gif', { name: 'line.gif' })
 
@@ -41,24 +41,24 @@ export const LogPoint = {
 
 // ! - صلاحيات الاوامر (جميعها للمالك)
 export const CommandPremission = {
-    Call: '1525548154299220159',
-    Ads: '1525548154299220159',
-    AddPoint: '1525548154299220159',
-    RemovePoint: '1525548154299220159',
-    DeletePoint: '1525548154299220159',
-    Line: '1525548154299220159',
-    SetupAdara: '1525548154299220159',
-    SetupID: '1525548154299220159',
-    SetupSubmissions: '1525548154299220159',
-    SetupTicket: '1525548154299220159',
-    Al_ShuriSetup: '1525548154299220159',
-    PanelAlShuri: ['1525548154299220159', '1526425799429984377'],
-    Al_ShuriVote: ['1525548154299220159'],
-    CreateDissenting: '1525548154299220159',
-    RemoveDissenting: '1525548154299220159',
-    M5alf: '1525548154299220159',
-    Remove5alf: '1525548154299220159',
-    Employment: '1525548154299220159',
+    Call: '1525549017960808660',
+    Ads: '1525549017960808660',
+    AddPoint: '1525549017960808660',
+    RemovePoint: '1525549017960808660',
+    DeletePoint: '1525549017960808660',
+    Line: '1525549017960808660',
+    SetupAdara: '1525549017960808660',
+    SetupID: '1525549017960808660',
+    SetupSubmissions: '1525549017960808660',
+    SetupTicket: '1525549017960808660',
+    Al_ShuriSetup: '1525549017960808660',
+    PanelAlShuri: ['1525549017960808660', '1526425799429984377'],
+    Al_ShuriVote: ['1525549017960808660'],
+    CreateDissenting: '1525549017960808660',
+    RemoveDissenting: '1525549017960808660',
+    M5alf: '1525549017960808660',
+    Remove5alf: '1525549017960808660',
+    Employment: '1525549017960808660',
 }
 
 // ! - تكت التفعيل

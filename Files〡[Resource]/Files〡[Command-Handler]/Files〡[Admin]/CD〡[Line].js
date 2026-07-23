@@ -1,16 +1,20 @@
 "use strict";
-import { AttachmentBuilder } from 'discord.js';
-import { CommandPremission } from '../../Files〡[Config]/Files〡[Config].js';
+import { readFileSync } from 'fs';
+
+const DB_PATH = 'Files〡[Resource]/Files〡[DataBase]/DB〡[AutoLine].json';
+
 export default {
- name: 'خط',
- description: "ارسال خط",
- /**
- * @param { import('discord.js').Client } Client
- * @param { import('discord.js').Message } Message
- */
- run: async (Client, Message) => {
- // ✅ تم إلغاء التحقق من الصلاحية
- await Message.delete().catch(() => { });
- await Message.channel.send({ content: '**▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬**' }).catch(() => { });
- }
-}
+    name: 'خط',
+    description: "ارسال خط فاصل",
+    run: async (Client, Message) => {
+        await Message.delete().catch(() => { });
+        const db = JSON.parse(readFileSync(DB_PATH, 'utf8'));
+        const imageUrl = db.lineImage?.content;
+        if (imageUrl && imageUrl.startsWith('http')) {
+            await Message.channel.send({ content: imageUrl }).catch(() => {});
+        } else {
+            const text = db.lineDivider?.content || '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬';
+            await Message.channel.send({ content: text }).catch(() => { });
+        }
+    }
+};

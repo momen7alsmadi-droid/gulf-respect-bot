@@ -1,30 +1,42 @@
 "use strict";
-import { CommandPremission } from '../../Files〡[Config]/Files〡[Config].js';
 import { EmbedBuilder } from 'discord.js';
-export default {
- name: 'نداء',
- description: "ارسال نداء",
- /**
- * @param { import('discord.js').Client } Client
- * @param { import('discord.js').Message } Message
- */
- run: async (Client, Message) => {
- // ✅ تم إلغاء التحقق من الصلاحية
- const Args = Message.content.split(' ');
- const Member = Message.mentions.members.first() || Message.guild.members.cache.get(Args[1])
- if (!Member) return Message.reply({ content: `**الرجاء منشن المستخدم**` });
- const Reason = Args.slice(2).join(' ');
- if (!Reason) return Message.reply({ content: `**الرجاء اضافة سبب النداء**` });
- const Embed = new EmbedBuilder()
- Embed.setDescription(`**— عزيزي الـعـضـو : ${Member}
+import { readFileSync } from 'fs';
 
-— تم إرسـال نـداء هـام إلـيـك فـي هـذا الـروم : ${Message.channel}
+const DB_PATH = 'Files〡[Resource]/Files〡[DataBase]/DB〡[AutoLine].json';
 
-الـتـفـاصـيـل : ${Reason}
-
-\`GULF RESPECT أعـظـم سـيـرفـر\`**`)
- await Member.send({ embeds: [Embed] }).catch(async () => { });
- await Member.send({ files: ['https://i.postimg.cc/hjzk1Srt/jpg.jpg'] })
- await Message.reply({ content: `**تم ارسال نداء للعضو**` });
- }
+function getMsg(key, fallback) {
+    try { const db = JSON.parse(readFileSync(DB_PATH, 'utf8')); return db[key]?.content || fallback; }
+    catch { return fallback; }
 }
+
+export default {
+    name: 'نداء',
+    description: "ارسال نداء",
+    run: async (Client, Message) => {
+        const Args = Message.content.split(' ');
+        const Member = Message.mentions.members.first() || Message.guild.members.cache.get(Args[1])
+        if (!Member) return Message.reply({ content: `**الرجاء منشن المستخدم**` });
+        const Reason = Args.slice(2).join(' ');
+        if (!Reason) return Message.reply({ content: `**الرجاء اضافة سبب النداء**` });
+        
+        const serverName = getMsg('serverName', 'قولف ريسبكت');
+        const callMsg = getMsg('callMessage', '**— عزيزي الـعـضـو : {member}\n\n— تم إرسـال نـداء هـام إلـيـك فـي : {channel}\n\nالـتـفـاصـيـل : {reason}\n\n\`{server}\`**');
+        const imageUrl = getMsg('lineImage', 'https://i.postimg.cc/hjzk1Srt/jpg.jpg');
+        
+        const content = callMsg
+            .replace(/\{member\}/g, `${Member}`)
+            .replace(/\{channel\}/g, `${Message.channel}`)
+            .replace(/\{reason\}/g, Reason)
+            .replace(/\{server\}/g, serverName);
+
+        const Embed = new EmbedBuilder()
+            .setDescription(content)
+            .setColor('#FFD700');
+
+        await Member.send({ embeds: [Embed] }).catch(() => { });
+        if (imageUrl.startsWith('http')) {
+            await Member.send({ content: imageUrl }).catch(() => { });
+        }
+        await Message.reply({ content: `**تم ارسال نداء للعضو**` });
+    }
+};

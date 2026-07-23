@@ -18,7 +18,7 @@ export default {
         const Agrs = Message.content.split(' ');
         const Member = Message.mentions.members.first() || Message.guild.members.cache.get(Agrs[1]);
         if (!Member) return Message.reply({ content: `**يرجى منشن العضو بشكل الصحيح**` });
-        const MemberDB = await DB〡AdminPoint.findOne({ _id: Member.id });
+        const MemberDB = DB〡AdminPoint.findOne({ _id: Member.id }).catch(() => {});
         if (MemberDB) {
             MemberDB.Point = 0;
             MemberDB.Added = 0;

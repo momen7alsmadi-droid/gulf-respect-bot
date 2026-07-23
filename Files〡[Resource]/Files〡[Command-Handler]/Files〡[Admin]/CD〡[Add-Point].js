@@ -19,7 +19,7 @@ export default {
         if (!Points || isNaN(Points)) return Message.reply({ content: `**يرجى ادخال النقاط بشكل الصحيح**` });
         const PointsNumber = parseInt(Points);
         if (PointsNumber < 1) return Message.reply({ content: `**يرجى ادخال النقاط اعلي من 1**` });
-        await DB〡AdminPoint.findByIdAndUpdate({ _id: Member.id }, { $inc: { Added: +PointsNumber } }, { upsert: true, new: true });
+        DB〡AdminPoint.findByIdAndUpdate({ _id: Member.id }, { $inc: { Added: +PointsNumber } }, { upsert: true, new: true }).catch(() => {});
         Message.reply({ content: `**تم اضافة نقاط بنجاح**` });
         const Channel = Message.guild.channels.cache.get(LogPoint.Channel);
         const Embed = new EmbedBuilder();

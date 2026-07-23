@@ -39,7 +39,7 @@ export default async function (Client, Message) {
                 });
             } break;
             case 'Adara-Point': {
-                let FindAdmin = await DB〡AdminPoint.findOne({ _id: Message.user.id })
+                let FindAdmin = DB〡AdminPoint.findOne({ _id: Message.user.id }).catch(() => {})
                 if (!FindAdmin) FindAdmin = new DB〡AdminPoint({ _id: Message.user.id, Point: 0, Added: 0, StartGame: 0, JoinGame: 0, AdminAssistant: 0, Added: 0 }).save();
                 const Tf3el = Points.get(`Point-Tf3el-${Message.guild.id}-${Message.user.id}`)
                 const Voice〡Point = Voice.get(`Admin〡${Message.user.id}`)
@@ -62,7 +62,7 @@ export default async function (Client, Message) {
                 await Message.reply({ embeds: [Embed], flags: 64 });
             } break;
             case 'Adara-Top': {
-                const allAdmins = await DB〡AdminPoint.find({});
+                const allAdmins = DB〡AdminPoint.find({}).catch(() => {});
                 const adminPoints = allAdmins.map(admin => {
                     const Tf3el = Number(Points.get(`Point-Tf3el-${Message.guild.id}-${admin._id}`)) || 0;
                     const Voice〡Point = Number(Voice.get(`Admin〡${admin._id}`)) || 0;
@@ -103,7 +103,7 @@ export default async function (Client, Message) {
                 const TextInput = Message.fields.getTextInputValue('Adara-Point-Admin');
                 const Member = Message.guild.members.cache.get(TextInput);
                 if (!Member) return Message.reply({ content: `**الرجاء ادخال ايدي صحيح**`, flags: 64 });
-                let FindAdmin = await DB〡AdminPoint.findOne({ _id: Member.id })
+                let FindAdmin = DB〡AdminPoint.findOne({ _id: Member.id }).catch(() => {})
                 if (!FindAdmin) new DB〡AdminPoint({ _id: Member.id, Point: 0, Added: 0, StartGame: 0, JoinGame: 0, AdminAssistant: 0, Added: 0 }).save();
                 const Tf3el = Points.get(`Point-Tf3el-${Message.guild.id}-${Member.id}`)
                 const Voice〡Point = Voice.get(`Admin〡${Member.id}`)

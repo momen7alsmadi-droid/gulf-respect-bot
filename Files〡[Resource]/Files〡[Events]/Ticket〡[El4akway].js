@@ -84,7 +84,7 @@ export default async function (Client, Message) {
                         if (GetData && GetData.Admin === Message.user.id) return await Message.reply({ content: `**لا يمكنك استلام التكت مرتين**`, flags: 64 });
                         const Member = await Message.guild.members.fetch(Message.user.id, { force: true, cache: true });
                         if (!Member.roles.cache.some((Role) => [Tickets2Sm.El4away.Support].includes(Role.id))) return await Message.reply({ content: `**ليس لديك صلاحيات**`, flags: 64 });
-                        await DB〡AdminPoint.findByIdAndUpdate({ _id: Message.user.id }, { $inc: { Point: +2 } }, { upsert: true, new: true });
+                        DB〡AdminPoint.findByIdAndUpdate({ _id: Message.user.id }, { $inc: { Point: +2 } }, { upsert: true, new: true }).catch(() => {});
                         const Ticket = db.startsWith(`Ticket-${Message.guild.id}-`).map((Data) => ({ id: Data.ID }));
                         await Message.reply({ embeds: [{ description: `**— مـرحـبـاً بـك عـزيـزي الـعـضـو فـي الـتـذكـرة بـوولـف سـيـتـي\n\n— تـم إسـتـلام تـذكـرتـك مـن قـبـل الإداري : ${Message.user}**` }] });
                         for (const DataBase of Ticket) {
@@ -101,7 +101,7 @@ export default async function (Client, Message) {
                         if (!GetData) return await Message.reply({ content: `**لا يمكنك ترك التكت**`, flags: 64 });
                         const Member = await Message.guild.members.fetch(Message.user.id, { force: true, cache: true });
                         if (!Member.roles.cache.some((Role) => [Tickets2Sm.El4away.Support].includes(Role.id))) return await Message.reply({ content: `**ليس لديك صلاحيات**`, flags: 64 });
-                        await DB〡AdminPoint.findByIdAndUpdate({ _id: Message.user.id }, { $inc: { Point: -2 } }, { upsert: true, new: true });
+                        DB〡AdminPoint.findByIdAndUpdate({ _id: Message.user.id }, { $inc: { Point: -2 } }, { upsert: true, new: true }).catch(() => {});
                         await Message.reply({ embeds: [{ description: `**— تـم ترك تـذكـرتـك مـن قـبـل الإداري : ${Message.user}**` }] });
                         const Ticket = db.startsWith(`Ticket-${Message.guild.id}-`).map((Data) => ({ id: Data.ID }));
                         for (const DataBase of Ticket) {

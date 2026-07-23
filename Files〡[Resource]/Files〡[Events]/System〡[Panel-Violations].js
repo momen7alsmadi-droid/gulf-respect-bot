@@ -57,10 +57,10 @@ __**` }).catch(() => { })
             Embed.setThumbnail(`https://i.postimg.cc/CMmXPrt2/ea002bb91c4e5c3d.webp`)
             Message.user.send({ embeds: [Embed] }).catch(() => { })
             Database.add(`Police-Violations〡${Message.user.id}`, 1);
-            let Data = await DB〡Balance.findOneAndUpdate({ _id: Member.id }, { $setOnInsert: { Bank: 0, Cash: 0 } }, { new: true, upsert: true });
+            let Data = DB〡Balance.findOneAndUpdate({ _id: Member.id }, { $setOnInsert: { Bank: 0, Cash: 0 } }, { new: true, upsert: true }).catch(() => {});
             Data.Bank -= ViolationData.Price
             await Data.save()
-            const Finance = await DB〡Finance.findOne({ _id: 'Ministry of Finance' })
+            const Finance = DB〡Finance.findOne({ _id: 'Ministry of Finance' }).catch(() => {})
             Finance.Money += ViolationData.Price
             await Finance.save()
         } break;

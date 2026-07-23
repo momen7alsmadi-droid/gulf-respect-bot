@@ -126,7 +126,7 @@ export default async function (Client, Message) {
  const TextInput〡4 = Message.fields.getTextInputValue('Custom-Ads〡4')
  const Channel = Message.guild.channels.cache.get(PermissionAds.Ads〡1.Channel)
  const Attachment = new AttachmentBuilder(`Files〡[Resource]/Files〡[Image]/Ads-1.jpg`, { name: 'Ads-1.jpg' });
- const Content = `**__ — \`\` ﷽ \`\`\n\n— إعـلانـات مـديـنـة قولف ريسبكت\n\n— الــخـبـر صــادر مــن : ${TextInput〡1}\n\n— الـخـبـر : ${TextInput〡2}\n\n— الـمـوقـع : ${TextInput〡3}\n\n— مُـوجـه الـخـبـر اِلــى : ${TextInput〡4}\n— مـسـؤول الـخـبـر : ${Message.user}__**`;
+ const Content = `**__ — \`\` ﷽ \`\`\n\n— إعـلانـات مـديـنـة ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜\n\n— الــخـبـر صــادر مــن : ${TextInput〡1}\n\n— الـخـبـر : ${TextInput〡2}\n\n— الـمـوقـع : ${TextInput〡3}\n\n— مُـوجـه الـخـبـر اِلــى : ${TextInput〡4}\n— مـسـؤول الـخـبـر : ${Message.user}__**`;
  Channel.send({ content: Content, files: [Attachment] });
  Message.reply({ content: `**تم ارسال اعلان بنجاح**`, flags: 64 })
  } break;
@@ -137,7 +137,7 @@ export default async function (Client, Message) {
  const TextInput〡4 = Message.fields.getTextInputValue('Custom-Ads〡4')
  const Channel = Message.guild.channels.cache.get(PermissionAds.Ads〡1.Channel)
  const Attachment = new AttachmentBuilder(`Files〡[Resource]/Files〡[Image]/Ads-2.jpg`, { name: 'Ads-2.jpg' });
- const Content = `**__ — \`\` ﷽ \`\`\n\n— إعـلانـات مـديـنـة قولف ريسبكت\n\n— الــخـبـر صــادر مــن : ${TextInput〡1}\n\n— الـخـبـر : ${TextInput〡2}\n\n— الـمـوقـع : ${TextInput〡3}\n\n— مُـوجـه الـخـبـر اِلــى : ${TextInput〡4}\n— مـسـؤول الـخـبـر : ${Message.user}__**`;
+ const Content = `**__ — \`\` ﷽ \`\`\n\n— إعـلانـات مـديـنـة ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜\n\n— الــخـبـر صــادر مــن : ${TextInput〡1}\n\n— الـخـبـر : ${TextInput〡2}\n\n— الـمـوقـع : ${TextInput〡3}\n\n— مُـوجـه الـخـبـر اِلــى : ${TextInput〡4}\n— مـسـؤول الـخـبـر : ${Message.user}__**`;
  Channel.send({ content: Content, files: [Attachment] });
  Message.reply({ content: `**تم ارسال اعلان بنجاح**`, flags: 64 })
  } break;
@@ -148,7 +148,7 @@ export default async function (Client, Message) {
  const TextInput〡4 = Message.fields.getTextInputValue('Custom-Ads〡4')
  const Channel = Message.guild.channels.cache.get(PermissionAds.Ads〡3.Channel)
  const Attachment = new AttachmentBuilder(`Files〡[Resource]/Files〡[Image]/Ads-3.jpg`, { name: 'Ads-3.jpg' });
- const Content = `**__ — \`\` ﷽ \`\`\n\n— إعـلانـات مـديـنـة قولف ريسبكت\n\n— الــخـبـر صــادر مــن : ${TextInput〡1}\n\n— الـخـبـر : ${TextInput〡2}\n\n— الـمـوقـع : ${TextInput〡3}\n\n— مُـوجـه الـخـبـر اِلــى : ${TextInput〡4}\n— مـسـؤول الـخـبـر : ${Message.user}__**`;
+ const Content = `**__ — \`\` ﷽ \`\`\n\n— إعـلانـات مـديـنـة ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜\n\n— الــخـبـر صــادر مــن : ${TextInput〡1}\n\n— الـخـبـر : ${TextInput〡2}\n\n— الـمـوقـع : ${TextInput〡3}\n\n— مُـوجـه الـخـبـر اِلــى : ${TextInput〡4}\n— مـسـؤول الـخـبـر : ${Message.user}__**`;
  Channel.send({ content: Content, files: [Attachment] });
  Message.reply({ content: `**تم ارسال اعلان بنجاح**`, flags: 64 })
  } break;
@@ -159,7 +159,7 @@ export default async function (Client, Message) {
  const TextInput〡4 = Message.fields.getTextInputValue('Custom-Ads〡4')
  const Channel = Message.guild.channels.cache.get(PermissionAds.Ads〡4.Channel)
  const Attachment = new AttachmentBuilder(`Files〡[Resource]/Files〡[Image]/Ads-4.jpg`, { name: 'Ads-4.jpg' });
- const Content = `**__ — \`\` ﷽ \`\`\n\n— إعـلانـات مـديـنـة قولف ريسبكت\n\n— الــخـبـر صــادر مــن : ${TextInput〡1}\n\n— الـخـبـر : ${TextInput〡2}\n\n— الـمـوقـع : ${TextInput〡3}\n\n— مُـوجـه الـخـبـر اِلــى : ${TextInput〡4}\n— مـسـؤول الـخـبـر : ${Message.user}__**`;
+ const Content = `**__ — \`\` ﷽ \`\`\n\n— إعـلانـات مـديـنـة ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜\n\n— الــخـبـر صــادر مــن : ${TextInput〡1}\n\n— الـخـبـر : ${TextInput〡2}\n\n— الـمـوقـع : ${TextInput〡3}\n\n— مُـوجـه الـخـبـر اِلــى : ${TextInput〡4}\n— مـسـؤول الـخـبـر : ${Message.user}__**`;
  Channel.send({ content: Content, files: [Attachment] });
  Message.reply({ content: `**تم ارسال اعلان بنجاح**`, flags: 64 })
  } break;
@@ -170,7 +170,7 @@ export default async function (Client, Message) {
  const TextInput〡4 = Message.fields.getTextInputValue('Custom-Ads〡4')
  const Channel = Message.guild.channels.cache.get(PermissionAds.Ads〡5.Channel)
  const Attachment = new AttachmentBuilder(`Files〡[Resource]/Files〡[Image]/Ads-5.jpg`, { name: 'Ads-5.jpg' });
- const Content = `**__ — \`\` ﷽ \`\`\n\n— إعـلانـات مـديـنـة قولف ريسبكت\n\n— الــخـبـر صــادر مــن : ${TextInput〡1}\n\n— الـخـبـر : ${TextInput〡2}\n\n— الـمـوقـع : ${TextInput〡3}\n\n— مُـوجـه الـخـبـر اِلــى : ${TextInput〡4}\n— مـسـؤول الـخـبـر : ${Message.user}__**`;
+ const Content = `**__ — \`\` ﷽ \`\`\n\n— إعـلانـات مـديـنـة ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜\n\n— الــخـبـر صــادر مــن : ${TextInput〡1}\n\n— الـخـبـر : ${TextInput〡2}\n\n— الـمـوقـع : ${TextInput〡3}\n\n— مُـوجـه الـخـبـر اِلــى : ${TextInput〡4}\n— مـسـؤول الـخـبـر : ${Message.user}__**`;
  Channel.send({ content: Content, files: [Attachment] });
  Message.reply({ content: `**تم ارسال اعلان بنجاح**`, flags: 64 })
  } break;
@@ -181,7 +181,7 @@ export default async function (Client, Message) {
  const TextInput〡4 = Message.fields.getTextInputValue('Custom-Ads〡4')
  const Channel = Message.guild.channels.cache.get(PermissionAds.Ads〡6.Channel)
  const Attachment = new AttachmentBuilder(`Files〡[Resource]/Files〡[Image]/Ads-6.jpg`, { name: 'Ads-6.jpg' });
- const Content = `**__ — \`\` ﷽ \`\`\n\n— إعـلانـات مـديـنـة قولف ريسبكت\n\n— الــخـبـر صــادر مــن : ${TextInput〡1}\n\n— الـخـبـر : ${TextInput〡2}\n\n— الـمـوقـع : ${TextInput〡3}\n\n— مُـوجـه الـخـبـر اِلــى : ${TextInput〡4}\n— مـسـؤول الـخـبـر : ${Message.user}__**`;
+ const Content = `**__ — \`\` ﷽ \`\`\n\n— إعـلانـات مـديـنـة ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜\n\n— الــخـبـر صــادر مــن : ${TextInput〡1}\n\n— الـخـبـر : ${TextInput〡2}\n\n— الـمـوقـع : ${TextInput〡3}\n\n— مُـوجـه الـخـبـر اِلــى : ${TextInput〡4}\n— مـسـؤول الـخـبـر : ${Message.user}__**`;
  Channel.send({ content: Content, files: [Attachment] });
  Message.reply({ content: `**تم ارسال اعلان بنجاح**`, flags: 64 })
  } break;
@@ -192,7 +192,7 @@ export default async function (Client, Message) {
  const TextInput〡4 = Message.fields.getTextInputValue('Custom-Ads〡4')
  const Channel = Message.guild.channels.cache.get(PermissionAds.Ads〡7.Channel)
  const Attachment = new AttachmentBuilder(`Files〡[Resource]/Files〡[Image]/Ads-7.jpg`, { name: 'Ads-7.jpg' });
- const Content = `**__ — \`\` ﷽ \`\`\n\n— إعـلانـات مـديـنـة قولف ريسبكت\n\n— الــخـبـر صــادر مــن : ${TextInput〡1}\n\n— الـخـبـر : ${TextInput〡2}\n\n— الـمـوقـع : ${TextInput〡3}\n\n— مُـوجـه الـخـبـر اِلــى : ${TextInput〡4}\n— مـسـؤول الـخـبـر : ${Message.user}__**`;
+ const Content = `**__ — \`\` ﷽ \`\`\n\n— إعـلانـات مـديـنـة ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜\n\n— الــخـبـر صــادر مــن : ${TextInput〡1}\n\n— الـخـبـر : ${TextInput〡2}\n\n— الـمـوقـع : ${TextInput〡3}\n\n— مُـوجـه الـخـبـر اِلــى : ${TextInput〡4}\n— مـسـؤول الـخـبـر : ${Message.user}__**`;
  Channel.send({ content: Content, files: [Attachment] });
  Message.reply({ content: `**تم ارسال اعلان بنجاح**`, flags: 64 })
  } break;
@@ -203,7 +203,7 @@ export default async function (Client, Message) {
  const TextInput〡4 = Message.fields.getTextInputValue('Custom-Ads〡4')
  const Channel = Message.guild.channels.cache.get(PermissionAds.Ads〡8.Channel)
  const Attachment = new AttachmentBuilder(`Files〡[Resource]/Files〡[Image]/Ads-8.jpg`, { name: 'Ads-8.jpg' });
- const Content = `**__ — \`\` ﷽ \`\`\n\n— إعـلانـات مـديـنـة قولف ريسبكت\n\n— الــخـبـر صــادر مــن : ${TextInput〡1}\n\n— الـخـبـر : ${TextInput〡2}\n\n— الـمـوقـع : ${TextInput〡3}\n\n— مُـوجـه الـخـبـر اِلــى : ${TextInput〡4}\n— مـسـؤول الـخـبـر : ${Message.user}__**`;
+ const Content = `**__ — \`\` ﷽ \`\`\n\n— إعـلانـات مـديـنـة ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜\n\n— الــخـبـر صــادر مــن : ${TextInput〡1}\n\n— الـخـبـر : ${TextInput〡2}\n\n— الـمـوقـع : ${TextInput〡3}\n\n— مُـوجـه الـخـبـر اِلــى : ${TextInput〡4}\n— مـسـؤول الـخـبـر : ${Message.user}__**`;
  Channel.send({ content: Content, files: [Attachment] });
  Message.reply({ content: `**تم ارسال اعلان بنجاح**`, flags: 64 })
  } break;

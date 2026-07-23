@@ -19,7 +19,7 @@ export default {
         const Reason = Args.slice(2).join(' ');
         if (!Reason) return Message.reply({ content: `**الرجاء اضافة سبب النداء**` });
         
-        const serverName = getMsg('serverName', 'قولف ريسبكت');
+        const serverName = getMsg('serverName', '♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜');
         const callMsg = getMsg('callMessage', '**— عزيزي الـعـضـو : {member}\n\n— تم إرسـال نـداء هـام إلـيـك فـي : {channel}\n\nالـتـفـاصـيـل : {reason}\n\n\`{server}\`**');
         const imageUrl = getMsg('lineImage', 'https://i.postimg.cc/hjzk1Srt/jpg.jpg');
         

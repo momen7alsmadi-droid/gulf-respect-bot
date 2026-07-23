@@ -27,7 +27,7 @@ export default async function (Client, Message) {
  const Embed = new EmbedBuilder()
  .setColor('Red')
  .setAuthor({ name: Message.guild.name, iconURL: Message.guild.iconURL() })
- .setDescription(`**⚖️ استدعاء رسمي من النيابة العامة**\n\n— المستدعي: ${Member}\n— تم استدعائك من قبل: ${Message.user}\n— للمثول أمام النيابة العامة\n\n\`\`\`النيابة العامة - قولف ريسبكت\`\`\``)
+ .setDescription(`**⚖️ استدعاء رسمي من النيابة العامة**\n\n— المستدعي: ${Member}\n— تم استدعائك من قبل: ${Message.user}\n— للمثول أمام النيابة العامة\n\n\`\`\`النيابة العامة - ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜\`\`\``)
  .setFooter({ text: Message.guild.name, iconURL: Message.guild.iconURL() });
  await Member.send({ embeds: [Embed] }).catch(() => {});
  await Message.reply({ content: `✅ **تم إرسال استدعاء النيابة إلى ${Member}**`, flags: 64 });
@@ -39,7 +39,7 @@ export default async function (Client, Message) {
  const Embed = new EmbedBuilder()
  .setColor('DarkRed')
  .setAuthor({ name: Message.guild.name, iconURL: Message.guild.iconURL() })
- .setDescription(`**🔍 استدعاء رسمي من هيئة مكافحة الفساد**\n\n— المستدعي: ${Member}\n— تم استدعائك من قبل: ${Message.user}\n— للمثول أمام هيئة مكافحة الفساد\n\n\`\`\`هيئة مكافحة الفساد - قولف ريسبكت\`\`\``)
+ .setDescription(`**🔍 استدعاء رسمي من هيئة مكافحة الفساد**\n\n— المستدعي: ${Member}\n— تم استدعائك من قبل: ${Message.user}\n— للمثول أمام هيئة مكافحة الفساد\n\n\`\`\`هيئة مكافحة الفساد - ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜\`\`\``)
  .setFooter({ text: Message.guild.name, iconURL: Message.guild.iconURL() });
  await Member.send({ embeds: [Embed] }).catch(() => {});
  await Message.reply({ content: `✅ **تم إرسال استدعاء الهيئة إلى ${Member}**`, flags: 64 });

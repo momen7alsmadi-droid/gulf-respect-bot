@@ -225,7 +225,7 @@ export default async function (Client, Message) {
  Embed.setColor(Message.guild.members.me.displayHexColor);
  Embed.setThumbnail(`https://i.postimg.cc/s2sJRsG4/Magic-Eraser-230225-145733.webp`)
  Embed.setImage(`https://i.postimg.cc/x1KP7c8d/M7kma.webp`)
- Embed.setDescription(`**__– GULF RESPECT VRP || 70𝗸 .
+ Embed.setDescription(`**__– CIA COMMUNITY VRP || 70𝗸 .
 – اسـتـبـيـان تـقـديـم العدل .
 
 1 – الاسـم الـثـلاثـي : ${FullName}
@@ -267,7 +267,7 @@ export default async function (Client, Message) {
  Embed.setColor(Message.guild.members.me.displayHexColor);
  Embed.setThumbnail(`https://i.postimg.cc/MpcCj09F/d6934210ecc0c952.webp`)
  Embed.setImage(`https://i.postimg.cc/XYTTKZh7/cfbdb0f3833180e1.webp`)
- Embed.setDescription(`**__– GULF RESPECT VRP || 70𝗸 .
+ Embed.setDescription(`**__– CIA COMMUNITY VRP || 70𝗸 .
 – اسـتـبـيـان تـقـديـم الـبـرلـمـان .
 
 1 – الاسـم الـثـلاثـي : ${FullName}
@@ -378,7 +378,7 @@ export default async function (Client, Message) {
  const Channel = Client.channels.cache.get(Submissions.Resignation.ChannelAccept)
  const Content = `**__– عـزيـزي المواطن ${Member} . 
 
-– تشعرك لجنة الاستقالات بقولف ريسبكت قـبـولـك استقالتك يـرجـى مـنـك الـتـوجـة إلـى <#1426160552136409169>
+– تشعرك لجنة الاستقالات ب♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜ قـبـولـك استقالتك يـرجـى مـنـك الـتـوجـة إلـى <#1426160552136409169>
 لسحب رتبك
 مسؤول القبول : ${Moderator}
 ( وشـكـرآ لـك )__**`

@@ -95,7 +95,7 @@ export default async function (Client, Message) {
  • ستتم مراجعة البلاغ من قبل فريق مختص في أسرع وقت ممكن، وسنتخذ الإجراءات المناسبة بناءً على الأدلة والمعلومات المقدمة.
  • لا يتحمل المُبلِّغ أي مسؤولية قانونية عن تقديم البلاغ طالما كان البلاغ مبنيًا على حقائق صادقة.
  
- هيئة مكافحة الفساد - قولف ريسبكت**`})
+ هيئة مكافحة الفساد - ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜**`})
  await ChannelTicket.send({ files: ['https://i.postimg.cc/nzdJm2Pc/IMG-1946.jpg'] }).then(async () => {
  await Message.reply({ content: `**تم انشاء التذكرة بنجاح : ${ChannelTicket}**`, flags: 64 }).catch(() => { });
  }).catch(() => { })

@@ -15,7 +15,7 @@ export default async function (Client, Message) {
  switch (Message.customId) {
  case 'Tickets-T2demAdmin': {
  if (Message.guild.members.cache.get(Message.user.id).roles.cache.has('')) return await Message.reply({
- content: `**__ لايمكنك التقديم في إدارة قولف ريسبكت بسبب أنه سبق فصلك 
+ content: `**__ لايمكنك التقديم في إدارة ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜ بسبب أنه سبق فصلك 
 
 يجب معرفة انه التهاون في ادارة قولف يعد انتهاك صارخ للنظام والقوانين
 
@@ -53,13 +53,13 @@ export default async function (Client, Message) {
  { label: 'إضـافـة شـخـص', value: 'AddPerson-4' },
  { label: 'طـرد شـخـص', value: 'RemovePerson-4' },
  ]);
- const Content = `__**— بـيـان الـتـقـديـم الـى الـطاقـم الاداري لـ قولف ريسبكت .
+ const Content = `__**— بـيـان الـتـقـديـم الـى الـطاقـم الاداري لـ ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜ .
 
 1 - الإسـم : 
 
 2 - الـعُـمـر الـحـقـيـقـي :
 
-3 - هـل سـبـق وكُـنـت إداري فـي قولف ريسبكت :
+3 - هـل سـبـق وكُـنـت إداري فـي ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜ :
 
 4 - خـبـراتـك الإداريـة :
 
@@ -150,7 +150,7 @@ export default async function (Client, Message) {
  SendEmbed.setFooter({ text: `${Message.guild.name}`, iconURL: Message.guild.iconURL({ forceStatic: true, size: 4096 }) });
  SendEmbed.setColor(Message.guild.members.me.displayHexColor);
  SendEmbed.setImage(`https://i.postimg.cc/vBg4sL6M/imag2e.png`)
- SendEmbed.setDescription(`** \`اهـلاً بـك عـزيـزي الـعـضـو ،\n\nيرجى تقيم الإداري من 1الى5\n\n\n\nإذا كان لديك أي استفسار أو تحتاج إلى مساعدة، فلا تتردد في التواصل مع قولف ريسبكت العظيم وشـكـراً لـك\n\`**\n**__\` GULF RESPECT \`__**`);
+ SendEmbed.setDescription(`** \`اهـلاً بـك عـزيـزي الـعـضـو ،\n\nيرجى تقيم الإداري من 1الى5\n\n\n\nإذا كان لديك أي استفسار أو تحتاج إلى مساعدة، فلا تتردد في التواصل مع ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜ العظيم وشـكـراً لـك\n\`**\n**__\` CIA COMMUNITY \`__**`);
  const Member = Message.guild.members.cache.get(GetTicket.Member);
  if (Member) {
  await Member.send({ embeds: [SendEmbed], components: [{ type: 1, components: Buttons }] }).then((MessageID) => {

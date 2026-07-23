@@ -19,7 +19,7 @@ export default {
 تنبيه:
  • يُرجى التحقق من كافة التفاصيل قبل إرسال الاستدعاء.
  • استخدام الاستدعاء في غير محله قد يُعرضك للمساءلة الإدارية.
-\`\`\`هيئة مكافحة الفساد - قولف ريسبكت\`\`\`**`)
+\`\`\`هيئة مكافحة الفساد - ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜\`\`\`**`)
  Embed.setColor(Message.guild.members.me.displayHexColor)
  Embed.setFooter({ text: Message.guild.name, iconURL: Message.guild.iconURL({ dynamic: true }) })
  const Button = new ButtonBuilder({ customId: 'Call-Authority', label: 'استدعاء الهيئة', style: 2 })

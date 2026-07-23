@@ -15,12 +15,12 @@ export default {
  Embed.setFooter({ text: Message.guild.name, iconURL: Message.guild.iconURL({ forceStatic: true, size: 4096 }) });
  Embed.setColor(Message.guild.members.me.displayHexColor);
  Embed.setImage(`https://i.postimg.cc/85XCjPCV/zip_3.jpg`)
- Embed.setDescription(`__**– GULF RESPECT VRP || 30𝗸 .
- – لـوحـة تقديمات دولة قولف ريسبكت .
+ Embed.setDescription(`__**– CIA COMMUNITY VRP || 30𝗸 .
+ – لـوحـة تقديمات دولة ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜ .
 
  — يُـرجـى اخـتـيـار الـوظـيـفـة المراد التقديم لها .
 
- – مكتب التوظيف في دولة قولف ريسبكت .
+ – مكتب التوظيف في دولة ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜ .
 **__`)
  const StringMenu = new StringSelectMenuBuilder({ customId: 'Submissions-Menu', placeholder: 'اختر الوظيفة' })
  StringMenu.addOptions([

@@ -14,7 +14,7 @@ export default {
  Embed.setAuthor({ name: Message.guild.name, iconURL: Message.guild.iconURL({ forceStatic: true, size: 4096 }) });
  Embed.setFooter({ text: Message.guild.name, iconURL: Message.guild.iconURL({ forceStatic: true, size: 4096 }) });
  Embed.setColor(Message.guild.members.me.displayHexColor);
- Embed.setDescription(`**– GULF RESPECT VRP||305k**
+ Embed.setDescription(`**– CIA COMMUNITY VRP||305k**
 **__
 - مرحبا بك عزيزي العضو في النظام العسكري.
 

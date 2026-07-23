@@ -16,7 +16,7 @@ export default async function (Client, Message) {
  new TextInputBuilder({ customId: 'Report〡Panel-Location', label: 'الموقع', placeholder: 'اكتب الموقع هنا', style: 2, required: true })
  ]
  const ActionRows = TextInputs.map(TextInput => new ActionRowBuilder().addComponents(TextInput))
- const Modal = new ModalBuilder({ customId: 'Report〡Panel', title: 'نظام البلاغات في قولف ريسبكت', components: ActionRows })
+ const Modal = new ModalBuilder({ customId: 'Report〡Panel', title: 'نظام البلاغات في ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜', components: ActionRows })
  await Message.showModal(Modal)
  } break;
  case 'Report〡Panel-Accept': {
@@ -30,11 +30,11 @@ export default async function (Client, Message) {
  const Embed = new EmbedBuilder()
  Embed.setDescription(`**__— عزيزي المواطن ${User}
 
-— تم استلام بلاغك من قبل وزارة الداخلية [${Message.user}] في قولف ريسبكت. نود أن نؤكد انه سيتم التعامل معه بأقصى درجات الجدية والسرعة
+— تم استلام بلاغك من قبل وزارة الداخلية [${Message.user}] في ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜. نود أن نؤكد انه سيتم التعامل معه بأقصى درجات الجدية والسرعة
 
 — إذا كانت هناك أي مستجدات أو تطورات بشأن البلاغ، سيتم التواصل معك مباشرة. شكراً لتعاونك وحرصك على أمن وسلامة المجتمع.
 
-وزارة الداخلية - قولف ريسبكت__**`)
+وزارة الداخلية - ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜__**`)
  User.send({ embeds: [Embed] }).catch(async () => { });
  Message.reply({
  content: `**__- عزيزي العسكري ${Message.user} لقد تم استلام البلاغ بنجاح

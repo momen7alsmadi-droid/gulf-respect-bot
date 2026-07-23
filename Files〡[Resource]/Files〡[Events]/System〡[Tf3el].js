@@ -11,7 +11,7 @@ export default async function (Client, Message) {
  if (Message.isButton()) {
  switch (Message.customId) {
  case `TF3el-${Message.user.id}`: {
- const questions = ["ما اسمك؟", "كم عمرك؟", "ما هو ايديك؟", 'وين شفت سيرفر قولف ريسبكت العظيم'];
+ const questions = ["ما اسمك؟", "كم عمرك؟", "ما هو ايديك؟", 'وين شفت سيرفر ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜ العظيم'];
  let currentQuestionIndex = 0;
  if (Database.get(`T3erf-${Message.user.id}`)) Database.delete(`T3erf-${Message.user.id}`);
  const askNextQuestion = async () => {
@@ -62,7 +62,7 @@ export default async function (Client, Message) {
  if (incorrectCount >= 3) {
  await Message.deferUpdate({ })
  await Message.editReply({
- content: `**__ يؤسفنا عزيزي المستخدمابلاغك برفضك في تفعيل قولف ريسبكت\` العظيم \`نتمنى منك مراجعة القوانين ثم بعدها الاجابه :
+ content: `**__ يؤسفنا عزيزي المستخدمابلاغك برفضك في تفعيل ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜\` العظيم \`نتمنى منك مراجعة القوانين ثم بعدها الاجابه :
 
 - <#1437464747917185095>__**`, components: [], embeds: []
  });
@@ -80,7 +80,7 @@ export default async function (Client, Message) {
  const GetQuestion = Database.get(`T3erf-${Message.user.id}`) || [];
  await Message.deferUpdate({ })
  const userAnswers = GetQuestion.map(q => q.question);
- const responseContent = `**اسمك | ${userAnswers[0]}**\n**عمرك | ${userAnswers[1]}**\n**ايديك | ${userAnswers[2]}**\n**وين شفت سيرفر قولف ريسبكت العظيم | ${userAnswers[3]}**`;
+ const responseContent = `**اسمك | ${userAnswers[0]}**\n**عمرك | ${userAnswers[1]}**\n**ايديك | ${userAnswers[2]}**\n**وين شفت سيرفر ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜ العظيم | ${userAnswers[3]}**`;
  await Message.editReply({ content: responseContent, components: [], embeds: [] });
  await Message.channel.send({
  content: `**__
@@ -93,13 +93,13 @@ export default async function (Client, Message) {
 — عدد الإجابات الخاطئة : ${incorrectCount}
 __**` })
  const Embed = new EmbedBuilder()
- Embed.setDescription(`**__ نهنئك عزيزي العضو في قبولك في تفعيل سيرفر قولف ريسبكت\`العظيم\`
+ Embed.setDescription(`**__ نهنئك عزيزي العضو في قبولك في تفعيل سيرفر ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜\`العظيم\`
 
 «وَإِنَّهُ لَقَسَمٌ لَّوْ تَعْلَمُونَ عَظِيمٌ» 
 
 الـقـسـم لـ سيرفر وولـف سـيـتي الـعـظـيـم :
 
-اقسم بالله العظيم وعلى كتابه الكريم انني لن افكر في تخريب سيرفر قولف ريسبكت او مساعده التخريب او النشر او إلحاق الضرر بالسيرفر او تشويه السمعه والله على ما اقول شهيد__**
+اقسم بالله العظيم وعلى كتابه الكريم انني لن افكر في تخريب سيرفر ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜ او مساعده التخريب او النشر او إلحاق الضرر بالسيرفر او تشويه السمعه والله على ما اقول شهيد__**
 
 **__— بـعـد قـول الـقـسـم عـزيـزي ${Message.user} الـعـضـو يـرجـى الـضـغـط عـلـى الـروابـط الـتـالـيـة:
 

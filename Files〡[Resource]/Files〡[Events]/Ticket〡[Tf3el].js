@@ -55,7 +55,7 @@ export default async function (Client, Message) {
  Embed.setFooter({ text: `${Message.guild.name}`, iconURL: Message.guild.iconURL({ forceStatic: true, size: 4096 }) });
  Embed.setColor(Message.guild.members.me.displayHexColor);
  Embed.setImage(`https://i.postimg.cc/9fpNdLKX/Tf3el.jpg`)
- Embed.setDescription(`**__– لـلـتـفـعـيـل فـي قولف ريسبكت الـرجـاء الـنـقـر عـلـى ( بـدء الأخـتـبـار)
+ Embed.setDescription(`**__– لـلـتـفـعـيـل فـي ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜ الـرجـاء الـنـقـر عـلـى ( بـدء الأخـتـبـار)
  > — ويـرجـى الالـتـزام بالانـظـمـة الـمـوضـحـة ادنـاه:
  — يـمـنـع تـكـون خـامـل فـي الـتـذكـرة لمـدة 25m
  
@@ -163,7 +163,7 @@ export default async function (Client, Message) {
  SendEmbed.setFooter({ text: `${Message.guild.name}`, iconURL: Message.guild.iconURL({ forceStatic: true, size: 4096 }) });
  SendEmbed.setColor(Message.guild.members.me.displayHexColor);
  SendEmbed.setImage(`https://i.postimg.cc/vBg4sL6M/imag2e.png`)
- SendEmbed.setDescription(`** \`اهـلاً بـك عـزيـزي الـعـضـو ،\n\nيرجى تقيم الإداري من 1الى5\n\n\n\nإذا كان لديك أي استفسار أو تحتاج إلى مساعدة، فلا تتردد في التواصل مع قولف ريسبكت العظيم وشـكـراً لـك\n\`**\n**__\` GULF RESPECT \`__**`);
+ SendEmbed.setDescription(`** \`اهـلاً بـك عـزيـزي الـعـضـو ،\n\nيرجى تقيم الإداري من 1الى5\n\n\n\nإذا كان لديك أي استفسار أو تحتاج إلى مساعدة، فلا تتردد في التواصل مع ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜ العظيم وشـكـراً لـك\n\`**\n**__\` CIA COMMUNITY \`__**`);
  const Member = Message.guild.members.cache.get(GetTicket.Member);
  if (Member) {
  await Member.send({ embeds: [SendEmbed], components: [{ type: 1, components: Buttons }] }).then((MessageID) => {

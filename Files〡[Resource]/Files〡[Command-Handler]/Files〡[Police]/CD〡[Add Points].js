@@ -3,8 +3,8 @@ import { JsonDatabase } from 'wio.db'
 const Database = new JsonDatabase({ databasePath: 'Files〡[Resource]/Files〡[DataBase]/Files〡[Police].json' })
 import { Police } from '../../Files〡[Config]/Files〡[Config].js'
 export default {
-    name: 'إضافة-نقاط',
-    description: "إضافة نقاط للعضو",
+    name: 'إضافة-نقاط-عسكري',
+    description: "إضافة نقاط للعضو في سجل الشرطة",
     Founder: false,
     /**
     * @param { import('discord.js').Client } Client

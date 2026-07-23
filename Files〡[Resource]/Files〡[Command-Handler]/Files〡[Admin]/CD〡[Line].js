@@ -10,8 +10,7 @@ export default {
     */
     run: async (Client, Message) => {
         // ✅ تم إلغاء التحقق من الصلاحية
-        const Attachment = new AttachmentBuilder('line.gif', { name: 'line.gif' });
         await Message.delete().catch(() => { });
-        await Message.channel.send({ files: [Attachment] }).catch(() => { });
+        await Message.channel.send({ content: '**▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬**' }).catch(() => { });
     }
 }

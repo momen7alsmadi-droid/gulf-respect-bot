@@ -8,7 +8,7 @@ class Ť extends Client {
         this.Command = new Collection();
         this.SlashCommand = new Collection();
         this.Prefix = '=';
-        this.Token = process.env.TOKEN;
+        this.Token = process.env.BOT_TOKEN || process.env.TOKEN;
         connect(process.env.MONGODB_URI || 'mongodb+srv://da7m:<db_password>@cluster0.q6vbhwi.mongodb.net/?appName=Cluster0', {
             dbName: 'GulfBank',
             socketTimeoutMS: 45000,

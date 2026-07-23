@@ -22,12 +22,12 @@ export default {
         Message.reply({ content: `**تم ازالة نقاط بنجاح**` });
         const Channel = Message.guild.channels.cache.get(LogPoint.Channel);
         const Embed = new EmbedBuilder();
-        Embed.setAuthor({ name: Message.user.username, iconURL: Message.user.displayAvatarURL({ forceStatic: true, size: 4096 }) });
+        Embed.setAuthor({ name: Message.author.username, iconURL: Message.author.displayAvatarURL({ forceStatic: true, size: 4096 }) });
         Embed.setFooter({ text: `${Message.guild.name}`, iconURL: Message.guild.iconURL({ forceStatic: true, size: 4096 }) });
         Embed.setColor(Message.guild.members.me.displayHexColor);
         Embed.setDescription(`**__ تم ازالة نقاط بعدد : ${PointsNumber}
 
-من قبل الاداري : ${Message.user}
+من قبل الاداري : ${Message.author}
 
 للشخص: ${Member}__**`);
         Channel.send({ embeds: [Embed] }).catch(() => { });

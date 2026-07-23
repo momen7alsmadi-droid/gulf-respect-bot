@@ -1,5 +1,5 @@
 "use strict";
-import { EmbedBuilder, StringSelectMenuBuilder, ButtonBuilder } from 'discord.js';
+import { EmbedBuilder, StringSelectMenuBuilder, ButtonBuilder, ActionRowBuilder } from 'discord.js';
 import { VERSION } from '../../Files〡[Config]/Files〡[Config].js';
 import { readFileSync, writeFileSync } from 'fs';
 
@@ -7,28 +7,40 @@ const DB_PATH = 'Files〡[Resource]/Files〡[DataBase]/DB〡[AutoLine].json';
 
 const CATEGORIES = {
     activation: {
-        name: '📨 نظام التفعيل',
-        messages: ['welcome', 'activation', 'bank']
+        name: '📨 نظام التفعيل', messages: [
+            'welcome','activation','bank','quizTitle','quizPass','quizFail','quizLinks',
+            'quizQuestion1','quizQuestion2','quizQuestion3','quizQuestion4'
+        ]
     },
     tickets: {
-        name: '🎫 نظام التذاكر',
-        messages: ['ticketTf3el', 'ticketOwner', 'ticketHelp', 'ticketShakwa', 'ticketT2dem', 'ticketM7kma', 'ticketHe2a', 'ticketClose']
+        name: '🎫 نظام التذاكر', messages: [
+            'ticketTf3el','ticketOwner','ticketHelp','ticketShakwa','ticketT2dem',
+            'ticketM7kma','ticketHe2a','ticketClose','ticketTf3elInside','ticketHe2aForm'
+        ]
     },
     admin: {
-        name: '🛡️ الإدارة',
-        messages: ['adaraPanel', 'callAdmin', 'evaluationDM', 'employmentConfirm', 'lineDivider']
+        name: '🛡️ الإدارة', messages: [
+            'adaraPanel','adaraNicknamePrefix','adaraPointsTitle','adaraPointsFields',
+            'adaraTopTitle','callAdmin','evaluationDM','evaluationEmbedTitle',
+            'evaluationEmbedDesc','evaluationRateTitle','employmentConfirm',
+            'employmentImageRequest','employmentSelectRank','lineDivider'
+        ]
     },
     police: {
-        name: '👮 نظام الشرطة',
-        messages: ['policeLogin', 'policeLogout', 'policePanel', 'violationsPanel', 'reportPanel', 'civilPanel', 'prisonDM']
+        name: '👮 الشرطة', messages: [
+            'policeLogin','policeLogout','policePanel','violationsPanel','reportPanel','civilPanel','prisonDM'
+        ]
     },
     government: {
-        name: '🏛️ الحكومة',
-        messages: ['shuriPanel', 'votePanel', 'adsPanel', 'circularsPanel', 'submissionsPanel', 'idPanel', 'prosecutionDM', 'authorityDM']
+        name: '🏛️ الحكومة', messages: [
+            'shuriPanel','votePanel','adsPanel','circularsPanel','submissionsPanel',
+            'idPanel','idCardName','prosecutionDM','authorityDM'
+        ]
     },
-    general: {
-        name: '⚙️ عام',
-        messages: ['serverName']
+    appearance: {
+        name: '🎨 المظهر العام', messages: [
+            'serverName','serverLogo','welcomeImage','embedColor','footerText','errorFormat'
+        ]
     }
 };
 
@@ -37,7 +49,7 @@ function saveDB(db) { writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf8'
 
 export default {
     name: 'رسائل',
-    description: "التحكم بجميع رسائل البوت",
+    description: "التحكم بجميع رسائل ومظاهر البوت - 57 عنصر",
     aliases: ['messages', 'msgs'],
     run: async (Client, Message) => {
         const isAdmin = Message.member.roles.cache.has('1525549017960808660');
@@ -51,36 +63,54 @@ export default {
         // عرض كل الرسائل
         if (!action) {
             const db = loadDB();
+            const total = Object.keys(db).length;
             const Embed = new EmbedBuilder()
-                .setTitle('📝 التحكم بجميع رسائل البوت')
+                .setTitle('📝 التحكم بجميع رسائل ومظاهر البوت')
                 .setColor('#FFD700')
-                .setDescription(`**${Object.keys(db).length} رسالة قابلة للتعديل**\n\n**للتعديل:** \`=رسائل تعديل <المفتاح> <النص>\`\n**للعرض:** \`=رسائل عرض <المفتاح>\`\n\n**المتغيرات:** \`{member}\` العضو \`{admin}\` الإداري \`{server}\` السيرفر \`{reason}\` السبب \`{duration}\` المدة \`{rank}\` الرتبة \`{channel}\` القناة`)
-                .setFooter({ text: `v${VERSION} • اختر قسم من القائمة المنسدلة` });
+                .setDescription(`**${total} عنصر قابل للتعديل**\n\n**للتعديل:** \`=رسائل تعديل <المفتاح> <النص>\`\n**للعرض:** \`=رسائل عرض <المفتاح>\`\n\n**المتغيرات:** \`{member}\` \`{admin}\` \`{server}\` \`{reason}\` \`{duration}\` \`{rank}\` \`{channel}\` \`{stars}\` \`{code}\` \`{version}\``)
+                .addFields(
+                    { name: '📨 التفعيل', value: '11 رسالة', inline: true },
+                    { name: '🎫 التذاكر', value: '10 رسائل', inline: true },
+                    { name: '🛡️ الإدارة', value: '14 رسالة', inline: true },
+                    { name: '👮 الشرطة', value: '7 رسائل', inline: true },
+                    { name: '🏛️ الحكومة', value: '9 رسائل', inline: true },
+                    { name: '🎨 المظهر', value: '6 عناصر', inline: true },
+                )
+                .setFooter({ text: `v${VERSION} • اختر قسم من القائمة` });
 
-            // قائمة منسدلة واحدة للأقسام
             const Menu = new StringSelectMenuBuilder()
                 .setCustomId('Messages-Category')
                 .setPlaceholder('اختر القسم لعرض رسائله...')
                 .addOptions(Object.entries(CATEGORIES).map(([key, cat]) => ({
                     label: cat.name,
-                    description: `${cat.messages.length} رسائل`,
+                    description: `${cat.messages.length} عنصر`,
                     value: key,
                 })));
 
-            return Message.reply({ embeds: [Embed], components: [{ type: 1, components: [Menu] }] });
+            const RefreshButton = new ButtonBuilder({ customId: 'Msg-Refresh', label: '🔄 تحديث', style: 2 });
+
+            return Message.reply({ 
+                embeds: [Embed], 
+                components: [
+                    { type: 1, components: [Menu] },
+                    { type: 1, components: [RefreshButton] }
+                ] 
+            });
         }
 
         // عرض رسالة محددة
         if (action === 'عرض' && msgKey) {
             const db = loadDB();
-            if (!db[msgKey]) return Message.reply({ content: '❌ مفتاح غير معروف. استخدم `=رسائل` للقائمة' });
+            if (!db[msgKey]) return Message.reply({ content: '❌ مفتاح غير معروف' });
+            const BackButton = new ButtonBuilder({ customId: 'Msg-Refresh', label: '🔄 رجوع للقائمة', style: 2 });
             return Message.reply({
                 embeds: [{
                     title: `📝 ${db[msgKey].title}`,
-                    description: `**المفتاح:** \`${msgKey}\`\n\n**النص الحالي:**\n\`\`\`${db[msgKey].content}\`\`\``,
+                    description: `**المفتاح:** \`${msgKey}\`\n\n**النص:**\n\`\`\`${db[msgKey].content?.slice(0, 1500)}\`\`\``,
                     color: 0xFFD700,
-                    footer: { text: `=رسائل تعديل ${msgKey} <النص الجديد>` }
-                }]
+                    footer: { text: `=رسائل تعديل ${msgKey} <النص>` }
+                }],
+                components: [{ type: 1, components: [BackButton] }]
             });
         }
 
@@ -90,9 +120,9 @@ export default {
             if (!db[msgKey]) return Message.reply({ content: '❌ مفتاح غير معروف' });
             db[msgKey].content = newText;
             saveDB(db);
-            return Message.reply({ content: `✅ **تم تحديث \`${msgKey}\`**\n-# أعد تشغيل البوت لتطبيق التغيير • v${VERSION}` });
+            return Message.reply({ content: `✅ **تم تحديث \`${msgKey}\`**\n-# تغيير فوري • v${VERSION}` });
         }
 
-        return Message.reply({ content: '❌ **الاستخدام:**\n`=رسائل` - عرض كل الرسائل\n`=رسائل عرض <مفتاح>` - عرض رسالة\n`=رسائل تعديل <مفتاح> <نص>` - تعديل رسالة' });
+        return Message.reply({ content: '❌ **الاستخدام:**\n`=رسائل` - عرض الكل\n`=رسائل عرض <مفتاح>` - عرض\n`=رسائل تعديل <مفتاح> <نص>` - تعديل' });
     }
 };

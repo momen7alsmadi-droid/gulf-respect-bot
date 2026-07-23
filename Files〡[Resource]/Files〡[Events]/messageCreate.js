@@ -42,6 +42,12 @@ export default async (Client, Message) => {
 	const Args = WithoutPrefix ? WithoutPrefix.split(/ +/) : null
 	const Command = Args ? Args.shift().toLowerCase() : null
 	if (Message.author.bot || !Message.guild) return;
+	
+	// رد سريع للمالك للتأكد من اتصال البوت
+	if (Command === 'ping' && isOwner(Message.author.id)) {
+		return Message.reply({ content: `✅ **البوت شغال!**\n> أنت المالك: ${Message.author.username}\n> الإصدار: v${VERSION}` });
+	}
+
 	const Commands = await Client.Command.get(Command) || await Client.Command.find((Cmd) => Cmd.aliases && Cmd.aliases.includes(Command));
 	if (!Commands) return;
 	

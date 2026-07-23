@@ -37,7 +37,7 @@ export default async function (Client, Message) {
         'System〡[Panel-Police]', 'System〡[Panel-Violations]', 'System〡[Panel-Report]',
         'System〡[Panel-CivilRegistry]', 'System〡[Al-Shuri]', 'System〡[Employment]',
         'System〡[Retirement]', 'System〡[Evaluation]', 'System〡[Circulars]',
-        'System〡[Prosecution-Authority]'
+        'System〡[Prosecution-Authority]', 'System〡[ControlPanel]'
     ];
     for (const evt of events) {
         Client.emit(evt, (Client, Message));

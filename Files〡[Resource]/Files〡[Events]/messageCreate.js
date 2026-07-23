@@ -1,10 +1,13 @@
 "use strict";
-import { Founder, Owners, VERSION, ERR } from '../Files〡[Config]/Files〡[Config].js';
+import { Founder, Owners, VERSION, ERR, GuildID } from '../Files〡[Config]/Files〡[Config].js';
 /**
 * @param { import('discord.js').Client } Client
 * @param { import('discord.js').Message } Message
 */
 export default async (Client, Message) => {
+	// ✅ السيرفر المسموح فقط
+	if (Message.guild?.id !== GuildID) return;
+
 	// ✅ تمكين المالك من تجاوز جميع صلاحيات الرولات
 	if (Message.member?.roles?.cache && (Owners.includes(Message.author.id) || Message.author.id === Founder)) {
 		Message.member.roles.cache.has = () => true;

@@ -1,6 +1,7 @@
 import { AttachmentBuilder } from "discord.js";
 
 // ! ========== المعرفات الأساسية ==========
+export const VERSION = '2.0.0';
 export const Founder = '1387331972094890036';
 export const Owners = ["1387331972094890036"]
 export const GuildID = '1497265109247201280';
@@ -587,4 +588,81 @@ export const Roles = {
         '1525548154299220159',
         '1525548154299220159'
     ]
+};
+
+// ! ========== أكواد الأخطاء ==========
+export const ERR = {
+    // عام
+    GENERAL: 'ERR-001',
+    NO_PERMISSION: 'ERR-002',
+    NO_CHANNEL: 'ERR-003',
+    MEMBER_NOT_FOUND: 'ERR-004',
+    INVALID_ARGS: 'ERR-005',
+    DB_ERROR: 'ERR-006',
+    FETCH_ERROR: 'ERR-007',
+    SEND_ERROR: 'ERR-008',
+    FILE_NOT_FOUND: 'ERR-009',
+    TIMEOUT: 'ERR-010',
+    // الأوامر
+    CMD_TF3EL: 'ERR-100',
+    CMD_TICKET: 'ERR-101',
+    CMD_ADS: 'ERR-102',
+    CMD_ADARA: 'ERR-103',
+    CMD_ID: 'ERR-104',
+    CMD_SUBMISSIONS: 'ERR-105',
+    CMD_LINE: 'ERR-106',
+    CMD_POINTS: 'ERR-107',
+    CMD_DELETE_POINTS: 'ERR-108',
+    CMD_DELETE_ID: 'ERR-109',
+    CMD_CALL: 'ERR-110',
+    CMD_POLICE: 'ERR-111',
+    CMD_VIOLATIONS: 'ERR-112',
+    CMD_REPORT: 'ERR-113',
+    CMD_CIVIL: 'ERR-114',
+    CMD_ALSHURI: 'ERR-115',
+    CMD_DISSENTING: 'ERR-116',
+    CMD_EMPLOYMENT: 'ERR-117',
+    CMD_RETIREMENT: 'ERR-118',
+    CMD_CIRCULARS: 'ERR-119',
+    CMD_PROS: 'ERR-120',
+    CMD_AUTHORITY: 'ERR-121',
+    CMD_HELP: 'ERR-122',
+    CMD_ROLES: 'ERR-123',
+    // أحداث
+    EVT_TICKET_TF3EL: 'ERR-200',
+    EVT_TICKET_OWNER: 'ERR-201',
+    EVT_TICKET_HELP: 'ERR-202',
+    EVT_TICKET_SHAKWA: 'ERR-203',
+    EVT_TICKET_T2DEM: 'ERR-204',
+    EVT_TICKET_M7KMA: 'ERR-205',
+    EVT_TICKET_HE2A: 'ERR-206',
+    EVT_ADARA: 'ERR-207',
+    EVT_ADS: 'ERR-208',
+    EVT_PANEL_ID: 'ERR-209',
+    EVT_SUBMISSIONS: 'ERR-210',
+    EVT_POLICE: 'ERR-211',
+    EVT_VIOLATIONS: 'ERR-212',
+    EVT_REPORT: 'ERR-213',
+    EVT_CIVIL: 'ERR-214',
+    EVT_ALSHURI: 'ERR-215',
+    EVT_EMPLOYMENT: 'ERR-216',
+    EVT_RETIREMENT: 'ERR-217',
+    EVT_EVALUATION: 'ERR-218',
+    EVT_CIRCULARS: 'ERR-219',
+    EVT_TF3EL_SYS: 'ERR-220',
+};
+
+// دالة مساعدة لعرض الخطأ
+/**
+ * @param {import('discord.js').Message|import('discord.js').Interaction} msg
+ * @param {string} code كود الخطأ
+ * @param {string} desc وصف الخطأ
+ */
+export const sendError = async (msg, code, desc) => {
+    const text = `❌ **خطأ ${code}**\n> ${desc}\n-# الإصدار: ${VERSION}`;
+    try {
+        if (msg.reply) await msg.reply({ content: text }).catch(() => {});
+        else if (msg.editReply) await msg.editReply({ content: text }).catch(() => {});
+        else if (msg.channel) await msg.channel.send({ content: text }).catch(() => {});
+    } catch(e) {}
 };

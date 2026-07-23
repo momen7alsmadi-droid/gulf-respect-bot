@@ -1,6 +1,6 @@
 "use strict";
 import { EmbedBuilder } from 'discord.js';
-import { Founder, Owners } from '../../Files〡[Config]/Files〡[Config].js';
+import { Founder, Owners, VERSION } from '../../Files〡[Config]/Files〡[Config].js';
 
 const AdminCommands = [
     // ═══════════ قسم التفعيل والتذاكر ═══════════
@@ -141,9 +141,9 @@ export default {
             embed.setDescription(description || 'لا توجد أوامر');
             
             if (isAdmin && i + fieldsPerEmbed >= commands.length) {
-                embed.setFooter({ text: `🛡️ القائمة الكاملة للإدارة • عدد الأوامر: ${AdminCommands.filter(c => c.value !== ' ').length} • Prefix: ${Prefix}` });
+                embed.setFooter({ text: `🛡️ القائمة الكاملة للإدارة • ${AdminCommands.filter(c => c.value !== ' ').length} أمر • Prefix: ${Prefix} • v${VERSION}` });
             } else if (!isAdmin) {
-                embed.setFooter({ text: `📋 للمزيد من الأوامر تواصل مع الإدارة` });
+                embed.setFooter({ text: `📋 للمزيد من الأوامر تواصل مع الإدارة • v${VERSION}` });
             }
             
             embeds.push(embed);

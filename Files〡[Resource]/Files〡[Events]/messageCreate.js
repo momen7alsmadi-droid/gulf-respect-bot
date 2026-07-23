@@ -1,5 +1,5 @@
 "use strict";
-import { Founder, Owners } from '../Files〡[Config]/Files〡[Config].js';
+import { Founder, Owners, VERSION, ERR } from '../Files〡[Config]/Files〡[Config].js';
 /**
 * @param { import('discord.js').Client } Client
 * @param { import('discord.js').Message } Message
@@ -22,5 +22,12 @@ export default async (Client, Message) => {
 	if (Commands.Founder) {
 		if (!Founder.includes(Message.author.id)) return
 	}
-	await Commands.run(Client, Message, Prefix);
+	try {
+		await Commands.run(Client, Message, Prefix);
+	} catch (err) {
+		console.error(`❌ [${ERR.GENERAL}] Error in command "${Command}":`, err.message);
+		await Message.reply({ 
+			content: `❌ **خطأ ${ERR.GENERAL}**\n> فشل تنفيذ الأمر \`${Prefix}${Command}\`\n> السبب: ${err.message?.slice(0, 200)}\n-# الإصدار: ${VERSION}` 
+		}).catch(() => {});
+	}
 };

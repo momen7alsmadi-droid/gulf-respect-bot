@@ -1,294 +1,231 @@
 "use strict";
-import { EmbedBuilder, StringSelectMenuBuilder, ButtonBuilder, ActionRowBuilder } from 'discord.js';
+import { EmbedBuilder, StringSelectMenuBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, ActionRowBuilder } from 'discord.js';
+import { readFileSync, writeFileSync } from 'fs';
 import { VERSION } from '../../Files〡[Config]/Files〡[Config].js';
-import { writeFileSync, readFileSync } from 'fs';
 
-// شرح كل قسم
-const SECTIONS_EXPLAINED = {
- main: {
- title: '🛡️ لوحة تحكم البوت - القائمة الرئيسية',
- description: `**اختر القسم الذي تريد تعديله من القائمة المنسدلة أدناه.**
+const CONFIG_PATH = 'Files〡[Resource]/Files〡[DataBase]/Files〡[Config].json';
 
-**⚠️ ملاحظة:** بعد كل تعديل يجب **إعادة تشغيل البوت** على Railway لتطبيق التغييرات.`,
- fields: [
- { name: '🏷️ صلاحيات الأوامر', value: 'تحديد من يستخدم الأوامر الإدارية مثل النداء والإعلانات والنقاط' },
- { name: '🎫 نظام التذاكر', value: 'رولات استلام وإدارة التذاكر (تفعيل، مساعدة، شكاوى، الخ)' },
- { name: '👮 نظام الشرطة', value: 'رولات دخول/خروج العساكر والمخالفات والبلاغات' },
- { name: '🏛️ مجلس الشورى', value: 'أعضاء المجلس والتصويت ورولات الأحزاب' },
- { name: '📢 القنوات واللوقات', value: 'تحديد قنوات السجلات والإعلانات والنظام' },
- { name: '💼 التوظيف والتقديمات', value: 'رتب ورولات الوظائف الحكومية والعصابات' },
- { name: '📋 عرض الإعدادات', value: 'مشاهدة كل المعرفات الحالية المخزنة' },
- ]
- },
- perms: {
- title: '🏷️ صلاحيات الأوامر',
- description: 'هذه الرولات تحدد **من يستطيع استخدام الأوامر الإدارية**. إذا كنت تريد شخصاً يستخدم أمر معين، أعطه هذه الرتبة.',
- usage: '=تحكم صلاحية <اسم_الامر> <ايدي_الرتبة>',
- items: [
- ['نداء', '=نداء - إرسال نداء خاص لعضو'],
- ['اعلانات', '=قائمه-الاعلانات - إنشاء لوحة الإعلانات'],
- ['نقاط', '=اضافة-نقاط / =ازالة-نقاط / =تصفير-نقاط'],
- ['خط', '=خط - إرسال خط فاصل'],
- ['ادارة', '=سيطب-ادارة - لوحة نقاط الإدارة'],
- ['هوية', '=سيطب-الهوية - لوحة الهوية الوطنية'],
- ['تقديمات', '=تقديمات - لوحة التقديمات'],
- ['تكت', '=تكت - إنشاء لوحات التذاكر'],
- ['شوري', '=تسطيب-الشوري / =تصويت - مجلس الشورى'],
- ['عقوبات', '=انشاء-عقوبة / =حذف-عقوبة'],
- ['مخالف', '=مخالف - إعطاء سجن لعضو'],
- ['فك', '=فك - فك سجن عضو'],
- ['توظيف', '=توظيف / =تقاعد - توظيف وتقاعد الأعضاء'],
- ]
- },
- tickets: {
- title: '🎫 نظام التذاكر',
- description: 'التذاكر هي رومات خاصة تُفتح تلقائياً عندما يضغط عضو على زر. كل نوع تذكرة له رولات مسؤولة عنه.',
- usage: '=تحكم تذكرة <اسم_الرول> <ايدي_الرتبة>',
- items: [
- ['دعم-تفعيل', 'يستلم تذاكر التفعيل ويساعد الأعضاء الجدد'],
- ['مشرف-تفعيل', 'يشرف على تذاكر التفعيل (رتبة أعلى)'],
- ['اونر-تكت', 'يرى جميع التذاكر (للأونر فقط)'],
- ['دعم-مساعدة', 'يستلم تذاكر المساعدة والاستفسارات'],
- ['مشرف-مساعدة', 'يشرف على تذاكر المساعدة'],
- ['دعم-شكاوى', 'يستلم تذاكر الشكاوى العامة'],
- ['صلاحية-شكاوى', 'قيادة - ترى تذاكر الشكاوى'],
- ['دعم-تقديم', 'يستلم تذاكر تقديم الإدارة'],
- ]
- },
- police: {
- title: '👮 نظام الشرطة والعساكر',
- description: 'يتحكم في صلاحيات العساكر: من يستطيع دخول/خروج، إعطاء مخالفات، استلام بلاغات.',
- usage: '=تحكم شرطة <اسم_الرول> <ايدي_الرتبة>',
- items: [
- ['دخول-شرطة', 'رول يسمح للعسكري بتسجيل دخول'],
- ['خروج-شرطة', 'رول يسمح للعسكري بتسجيل خروج'],
- ['مباشر-شرطة', 'يستطيع رؤية قائمة المباشرين'],
- ['مسح-مباشر', 'يستطيع إعادة تعيين قائمة المباشرين'],
- ['نقاط-شرطة', 'يستطيع إضافة نقاط للعساكر'],
- ['حذف-نقاط-شرطة', 'يستطيع حذف نقاط العساكر'],
- ['تصفير-شرطة', 'يستطيع تصفير نقاط العساكر'],
- ['مخالفات-شرطة', 'يستطيع إنشاء لوحة المخالفات'],
- ['بلاغات-شرطة', 'يستطيع إنشاء لوحة البلاغات'],
- ['لوحة-شرطة', 'يستطيع إنشاء لوحة تسجيل العساكر'],
- ['سجل-مدني', 'يستطيع استخدام السجل المدني'],
- ]
- },
- shuri: {
- title: '🏛️ مجلس الشورى (البرلمان)',
- description: 'نظام المجلس يتيح للأعضاء رفع قرارات والتصويت عليها. يوجد حزبان: ديمقراطي وجمهوري.',
- usage: '=تحكم شورى <اسم_الرول> <ايدي_الرتبة>',
- items: [
- ['ديمقراطي', 'رول الحزب الديمقراطي'],
- ['جمهوري', 'رول الحزب الجمهوري'],
- ['رول-شورى', 'الرول العام لأعضاء المجلس'],
- ['رئيس-شورى', 'رئيس المجلس - يملك صلاحية القبول/رفض القرارات'],
- ['نائب-شورى', 'نائب الرئيس - نفس صلاحيات الرئيس'],
- ]
- },
- channels: {
- title: '📢 القنوات واللوقات',
- description: 'القنوات التي يرسل فيها البوت السجلات والتقارير تلقائياً.',
- usage: '=تحكم قناة <اسم_القناة> <ايدي_القناة>',
- items: [
- ['لوق-نقاط', 'يسجل إضافات وحذف نقاط الإدارة'],
- ['لوق-تذاكر', 'يسجل التذاكر المغلقة مع transcript'],
- ['قناة-هوية', 'قناة استخراج الهوية الوطنية'],
- ['قناة-عقوبات', 'يسجل المخالفات والعقوبات'],
- ['قناة-بلاغات', 'تصل إليها البلاغات من الأعضاء'],
- ['قناة-توظيف', 'يسجل عمليات التوظيف والتقاعد'],
- ]
- },
+function getConfig() { return JSON.parse(readFileSync(CONFIG_PATH, 'utf8')); }
+function saveConfig(cfg) { writeFileSync(CONFIG_PATH, JSON.stringify(cfg, null, 2), 'utf8'); }
+
+// كل خيارات الكونفغ مع شرحها
+const ALL_OPTIONS = {
+    // === أساسيات ===
+    'GuildID': { section: 'basic', name: 'آيدي السيرفر', desc: 'معرف السيرفر الرئيسي' },
+    'Founder': { section: 'basic', name: 'آيدي المالك', desc: 'معرف مؤسس البوت' },
+    
+    // === صلاحيات الأوامر ===
+    'CommandPremission.Call': { section: 'perms', name: 'صلاحية النداء', desc: '=نداء' },
+    'CommandPremission.Ads': { section: 'perms', name: 'صلاحية الإعلانات', desc: '=قائمه-الاعلانات' },
+    'CommandPremission.AddPoint': { section: 'perms', name: 'صلاحية النقاط', desc: '=اضافة/ازالة/تصفير-نقاط' },
+    'CommandPremission.Line': { section: 'perms', name: 'صلاحية الخط', desc: '=خط' },
+    'CommandPremission.SetupAdara': { section: 'perms', name: 'صلاحية الإدارة', desc: '=سيطب-ادارة' },
+    'CommandPremission.SetupID': { section: 'perms', name: 'صلاحية الهوية', desc: '=سيطب-الهوية' },
+    'CommandPremission.SetupSubmissions': { section: 'perms', name: 'صلاحية التقديمات', desc: '=تقديمات' },
+    'CommandPremission.SetupTicket': { section: 'perms', name: 'صلاحية التذاكر', desc: '=تكت' },
+    'CommandPremission.Al_ShuriSetup': { section: 'perms', name: 'صلاحية الشورى', desc: '=تسطيب-الشوري' },
+    'CommandPremission.CreateDissenting': { section: 'perms', name: 'صلاحية العقوبات', desc: '=انشاء/حذف-عقوبة' },
+    'CommandPremission.M5alf': { section: 'perms', name: 'صلاحية مخالف', desc: '=مخالف' },
+    'CommandPremission.Remove5alf': { section: 'perms', name: 'صلاحية فك', desc: '=فك' },
+    'CommandPremission.Employment': { section: 'perms', name: 'صلاحية التوظيف', desc: '=توظيف/تقاعد' },
+    
+    // === تذاكر ===
+    'TicketTf3el.Support': { section: 'tickets', name: 'دعم التفعيل', desc: 'يستلم تذاكر التفعيل' },
+    'TicketTf3el.Management': { section: 'tickets', name: 'مشرف التفعيل', desc: 'يشرف على تذاكر التفعيل' },
+    'TicketTf3el.Owner': { section: 'tickets', name: 'أونر التذاكر', desc: 'يرى جميع التذاكر' },
+    'TicketTf3el.Parent': { section: 'tickets', name: 'كاتجوري التفعيل', desc: 'مكان إنشاء تذاكر التفعيل' },
+    'TicketTf3el.ChannelLog': { section: 'tickets', name: 'لوق التذاكر', desc: 'قناة سجلات التذاكر' },
+    'Tickets2Sm.Owner.Owner': { section: 'tickets', name: 'رتبة الأونر', desc: 'تذكرة طلب أونر' },
+    'Tickets2Sm.Owner.Parent': { section: 'tickets', name: 'كاتجوري الأونر', desc: 'مكان تذاكر الأونر' },
+    'Tickets2Sm.Help.Support': { section: 'tickets', name: 'دعم المساعدة', desc: 'يستلم تذاكر المساعدة' },
+    'Tickets2Sm.Help.Management': { section: 'tickets', name: 'مشرف المساعدة', desc: 'يشرف على تذاكر المساعدة' },
+    'Tickets2Sm.Help.Parent': { section: 'tickets', name: 'كاتجوري المساعدة', desc: 'مكان تذاكر المساعدة' },
+    'Tickets2Sm.El4away.Support': { section: 'tickets', name: 'دعم الشكاوى', desc: 'يستلم تذاكر الشكاوى' },
+    'Tickets2Sm.El4away.Permission': { section: 'tickets', name: 'قيادة الشكاوى', desc: 'ترى تذاكر الشكاوى' },
+    'Tickets2Sm.El4away.Parent': { section: 'tickets', name: 'كاتجوري الشكاوى', desc: 'مكان تذاكر الشكاوى' },
+    'TicketT2dem.Support': { section: 'tickets', name: 'دعم تقديم الإدارة', desc: 'يستلم تذاكر التقديم' },
+    'TicketT2dem.Parent': { section: 'tickets', name: 'كاتجوري تقديم الإدارة', desc: 'مكان تذاكر التقديم' },
+    'TicketM7kma.TlbMo7my.Parent': { section: 'tickets', name: 'كاتجوري طلب محامي', desc: 'مكان تذاكر المحكمة' },
+    'TicketM7kma.Rf32dea.Parent': { section: 'tickets', name: 'كاتجوري رفع قضية', desc: 'مكان تذاكر القضايا' },
+    'TicketHe2a.Support': { section: 'tickets', name: 'دعم الهيئة', desc: 'يستلم تذاكر الهيئة' },
+    'TicketHe2a.Management': { section: 'tickets', name: 'مشرف الهيئة', desc: 'يشرف على تذاكر الهيئة' },
+    'TicketHe2a.Parent': { section: 'tickets', name: 'كاتجوري الهيئة', desc: 'مكان تذاكر الهيئة' },
+    
+    // === شرطة ===
+    'Police.Panel': { section: 'police', name: 'لوحة العساكر', desc: 'صلاحية =بانل-العساكر' },
+    'Police.PanelM5alfat': { section: 'police', name: 'لوحة المخالفات', desc: 'صلاحية =بانل-المخالفات' },
+    'Police.PanelReport': { section: 'police', name: 'لوحة البلاغات', desc: 'صلاحية =بانل-ريبورت' },
+    
+    // === شورى ===
+    'AlShuri.Democratic': { section: 'shuri', name: 'الحزب الديمقراطي', desc: 'رول الحزب' },
+    'AlShuri.Republican': { section: 'shuri', name: 'الحزب الجمهوري', desc: 'رول الحزب' },
+    'AlShuri.Role': { section: 'shuri', name: 'رول عضو الشورى', desc: 'الرول العام' },
+    'AlShuri.Leader': { section: 'shuri', name: 'رئيس المجلس', desc: 'يملك صلاحية القبول/رفض' },
+    'AlShuri.Deputy': { section: 'shuri', name: 'نائب الرئيس', desc: 'نفس صلاحيات الرئيس' },
+    'AlShuri.Channel': { section: 'shuri', name: 'قناة الشورى', desc: 'قناة عرض المجلس' },
+    'AlShuri.VoteChannel': { section: 'shuri', name: 'قناة التصويت', desc: 'قناة التصويت' },
+    
+    // === قنوات ===
+    'LogPoint.Channel': { section: 'channels', name: 'لوق النقاط', desc: 'سجل نقاط الإدارة' },
+    'Identity.Channel': { section: 'channels', name: 'قناة الهوية', desc: 'قناة استخراج الهوية' },
+    'Dissenting.Channel': { section: 'channels', name: 'قناة العقوبات', desc: 'سجل المخالفات والعقوبات' },
+    'Reporting.Channel': { section: 'channels', name: 'قناة البلاغات', desc: 'قناة البلاغات' },
+    'Employment.Channel': { section: 'channels', name: 'قناة التوظيف', desc: 'سجل التوظيف' },
+    'Dissenting.Role': { section: 'channels', name: 'رتبة المسجون', desc: 'توضع على المعاقب' },
+    'Reporting.Role': { section: 'channels', name: 'رتبة البلاغات', desc: 'تستلم البلاغات' },
+};
+
+const SECTION_NAMES = {
+    basic: { name: '⚙️ أساسيات', emoji: '⚙️' },
+    perms: { name: '🏷️ صلاحيات الأوامر', emoji: '🏷️' },
+    tickets: { name: '🎫 نظام التذاكر', emoji: '🎫' },
+    police: { name: '👮 نظام الشرطة', emoji: '👮' },
+    shuri: { name: '🏛️ مجلس الشورى', emoji: '🏛️' },
+    channels: { name: '📢 القنوات والرولات', emoji: '📢' },
 };
 
 export default {
- name: 'لوحة-تحكم',
- description: "لوحة تحكم البوت من داخل الديسكورد (للإدارة العليا فقط)",
- aliases: ['تحكم', 'control', 'panel', 'settings'],
- run: async (Client, Message) => {
- const isAdmin = Message.member.roles.cache.has('1525549017960808660');
- if (!isAdmin) return Message.reply({ content: `❌ **ERR-002**\n> هذه اللوحة للإدارة العليا فقط\n> تحتاج رتبة: <@&1525549017960808660>\n-# v${VERSION}` });
+    name: 'لوحة-تحكم',
+    description: "لوحة تحكم كاملة - تغيير فوري بدون إعادة تشغيل",
+    aliases: ['تحكم', 'control', 'panel', 'settings'],
+    run: async (Client, Message) => {
+        const isAdmin = Message.member.roles.cache.has('1525549017960808660');
+        if (!isAdmin) return Message.reply({ content: '❌ للادارة العليا فقط' });
 
- const Args = Message.content.split(' ');
- const category = Args[1]; // مثل: صلاحية, تذكرة, شرطة, شورى, قناة
- const settingName = Args[2]; // مثل: نداء, اعلانات, الخ
- const newValue = Args[3]; // المعرف الجديد
+        const Args = Message.content.split(' ');
+        const section = Args[1];
+        const optionKey = Args[2];
+        const newValue = Args[3];
 
- // إذا كتب فقط =تحكم - عرض القائمة الرئيسية
- if (!category) {
- return showMainMenu(Message);
- }
+        // القائمة الرئيسية
+        if (!section) {
+            const Embed = new EmbedBuilder()
+                .setTitle('🛡️ لوحة التحكم الكاملة')
+                .setColor('#FFD700')
+                .setDescription(`**${Object.keys(ALL_OPTIONS).length} إعداد قابل للتعديل - تغيير فوري!**\n\n**للتعديل:** \`=تحكم <المفتاح> <القيمة>\`\n**للعرض:** \`=تحكم عرض\`\n**للبحث:** \`=تحكم بحث <كلمة>\``)
+                .addFields(
+                    { name: '⚙️ أساسيات', value: 'آيدي السيرفر والمالك' },
+                    { name: '🏷️ صلاحيات الأوامر', value: '13 أمر إداري' },
+                    { name: '🎫 نظام التذاكر', value: '21 إعداد للتذاكر' },
+                    { name: '👮 نظام الشرطة', value: '3 صلاحيات' },
+                    { name: '🏛️ مجلس الشورى', value: '7 إعدادات' },
+                    { name: '📢 القنوات والرولات', value: '7 قنوات ورولات' },
+                )
+                .setFooter({ text: `v${VERSION} • جميع التغييرات فورية بدون إعادة تشغيل` });
 
- // إذا كتب =تحكم صلاحية - عرض عناصر القسم
- const categoryMap = {
- 'صلاحية': 'perms',
- 'صلاحيات': 'perms',
- 'perms': 'perms',
- 'تذكرة': 'tickets',
- 'تذاكر': 'tickets',
- 'tickets': 'tickets',
- 'شرطة': 'police',
- 'police': 'police',
- 'شورى': 'shuri',
- 'shuri': 'shuri',
- 'قناة': 'channels',
- 'قنوات': 'channels',
- 'channels': 'channels',
- 'عرض': 'show',
- };
+            const Menu = new StringSelectMenuBuilder()
+                .setCustomId('Control-AllSections')
+                .setPlaceholder('اختر القسم لعرض إعداداته...')
+                .addOptions(Object.entries(SECTION_NAMES).map(([key, sec]) => ({
+                    label: sec.name,
+                    description: `${Object.values(ALL_OPTIONS).filter(o => o.section === key).length} إعدادات`,
+                    value: key,
+                    emoji: { name: sec.emoji }
+                })));
 
- const section = categoryMap[category];
- if (!section) {
- return Message.reply({ content: `❌ قسم غير معروف: \`${category}\`\nاستخدم \`=تحكم\` للمشاهدة الأقسام` });
- }
+            return Message.reply({ embeds: [Embed], components: [{ type: 1, components: [Menu] }] });
+        }
 
- if (section === 'show') {
- return showAllSettings(Message);
- }
+        // عرض كل الإعدادات
+        if (section === 'عرض') {
+            const cfg = getConfig();
+            const Embed = new EmbedBuilder()
+                .setTitle('📋 جميع الإعدادات الحالية')
+                .setColor('#00FF00');
 
- const sectionData = SECTIONS_EXPLAINED[section];
- if (!settingName) {
- // عرض عناصر القسم
- const Embed = new EmbedBuilder()
- .setTitle(sectionData.title)
- .setColor('#FFD700')
- .setDescription(`${sectionData.description}\n\n**للتعديل:** \`=تحكم ${category} <الاسم> <المعرف>\`\n**مثال:** \`=تحكم ${category} ${sectionData.items[0][0]} 123456789012345678\``)
- .addFields(sectionData.items.map(([name, desc]) => ({ name: `\`${name}\``, value: desc, inline: false })))
- .setFooter({ text: `v${VERSION} • =تحكم للرجوع للقائمة الرئيسية` });
+            for (const [secKey, secName] of Object.entries(SECTION_NAMES)) {
+                const opts = Object.entries(ALL_OPTIONS).filter(([k, o]) => o.section === secKey);
+                if (opts.length > 0) {
+                    const val = opts.map(([k, o]) => {
+                        const parts = k.split('.');
+                        let v = cfg;
+                        for (const p of parts) v = v?.[p];
+                        return `${o.name}: \`${v || 'فارغ'}\``;
+                    }).join('\n');
+                    Embed.addFields({ name: secName.name, value: val.slice(0, 1024) || 'لا يوجد' });
+                }
+            }
+            Embed.setFooter({ text: `v${VERSION} • للتعديل: =تحكم <المفتاح> <القيمة>` });
+            return Message.reply({ embeds: [Embed] });
+        }
 
- const BackButton = new ButtonBuilder({ customId: 'ControlPanel-Back', label: '🔙 رجوع للقائمة الرئيسية', style: 2 });
- return Message.reply({ embeds: [Embed], components: [{ type: 1, components: [BackButton] }] });
- }
+        // بحث
+        if (section === 'بحث' && optionKey) {
+            const results = Object.entries(ALL_OPTIONS).filter(([k, o]) => 
+                k.toLowerCase().includes(optionKey.toLowerCase()) || 
+                o.name.includes(optionKey) || 
+                o.desc.includes(optionKey)
+            );
+            if (results.length === 0) return Message.reply({ content: `❌ لا توجد نتائج لـ "${optionKey}"` });
+            const cfg = getConfig();
+            const Embed = new EmbedBuilder()
+                .setTitle(`🔍 نتائج البحث: "${optionKey}"`)
+                .setColor('#FFD700')
+                .setDescription(results.map(([k, o]) => {
+                    const parts = k.split('.');
+                    let v = cfg;
+                    for (const p of parts) v = v?.[p];
+                    return `**\`${k}\`** - ${o.name}\n> ${o.desc}\n> القيمة: \`${v || 'فارغ'}\`\n`;
+                }).join('\n'))
+                .setFooter({ text: `=تحكم ${results[0][0]} <قيمة> للتعديل` });
+            return Message.reply({ embeds: [Embed] });
+        }
 
- // تعديل قيمة محددة
- if (!newValue || !/^\d{17,20}$/.test(newValue)) {
- return Message.reply({ content: `❌ **يرجى إدخال معرف صحيح**\n> \`=تحكم ${category} ${settingName} <المعرف>\`\n> مثال: \`=تحكم ${category} ${settingName} 123456789012345678\`` });
- }
+        // عرض قسم محدد
+        if (SECTION_NAMES[section] && !optionKey) {
+            const cfg = getConfig();
+            const opts = Object.entries(ALL_OPTIONS).filter(([k, o]) => o.section === section);
+            const Embed = new EmbedBuilder()
+                .setTitle(`${SECTION_NAMES[section].emoji} ${SECTION_NAMES[section].name}`)
+                .setColor('#FFD700')
+                .setDescription(opts.map(([k, o]) => {
+                    const parts = k.split('.');
+                    let v = cfg;
+                    for (const p of parts) v = v?.[p];
+                    return `**\`${k}\`** - ${o.name}: \`${v || 'فارغ'}\`\n-# ${o.desc}`;
+                }).join('\n'))
+                .setFooter({ text: `=تحكم <المفتاح> <القيمة> للتعديل الفوري • v${VERSION}` });
 
- // قائمة التحويل من الاسم العربي إلى المفتاح في الكونفغ
- const configKeyMap = {
- 'نداء': { key: 'Call', parent: 'CommandPremission' },
- 'اعلانات': { key: 'Ads', parent: 'CommandPremission' },
- 'نقاط': { key: 'AddPoint', parent: 'CommandPremission' },
- 'خط': { key: 'Line', parent: 'CommandPremission' },
- 'ادارة': { key: 'SetupAdara', parent: 'CommandPremission' },
- 'هوية': { key: 'SetupID', parent: 'CommandPremission' },
- 'تقديمات': { key: 'SetupSubmissions', parent: 'CommandPremission' },
- 'تكت': { key: 'SetupTicket', parent: 'CommandPremission' },
- 'شوري': { key: 'Al_ShuriSetup', parent: 'CommandPremission' },
- 'عقوبات': { key: 'CreateDissenting', parent: 'CommandPremission' },
- 'مخالف': { key: 'M5alf', parent: 'CommandPremission' },
- 'فك': { key: 'Remove5alf', parent: 'CommandPremission' },
- 'توظيف': { key: 'Employment', parent: 'CommandPremission' },
- 'دعم-تفعيل': { key: 'Support', parent: 'TicketTf3el' },
- 'مشرف-تفعيل': { key: 'Management', parent: 'TicketTf3el' },
- 'اونر-تكت': { key: 'Owner', parent: 'TicketTf3el' },
- 'دعم-مساعدة': { key: 'Support', parent: 'Tickets2Sm', sub: 'Help' },
- 'مشرف-مساعدة': { key: 'Management', parent: 'Tickets2Sm', sub: 'Help' },
- 'دعم-شكاوى': { key: 'Support', parent: 'Tickets2Sm', sub: 'El4away' },
- 'صلاحية-شكاوى': { key: 'Permission', parent: 'Tickets2Sm', sub: 'El4away' },
- 'دعم-تقديم': { key: 'Support', parent: 'TicketT2dem' },
- 'دخول-شرطة': { key: 'Login', parent: 'Police' },
- 'خروج-شرطة': { key: 'Logout', parent: 'Police' },
- 'مباشر-شرطة': { key: 'OnDutyList', parent: 'Police' },
- 'مسح-مباشر': { key: 'ResetOnDutyList', parent: 'Police' },
- 'نقاط-شرطة': { key: 'AddPoint', parent: 'Police' },
- 'حذف-نقاط-شرطة': { key: 'RemovePoint', parent: 'Police' },
- 'تصفير-شرطة': { key: 'WhistlingPoint', parent: 'Police' },
- 'مخالفات-شرطة': { key: 'PanelM5alfat', parent: 'Police' },
- 'بلاغات-شرطة': { key: 'PanelReport', parent: 'Police' },
- 'لوحة-شرطة': { key: 'Panel', parent: 'Police' },
- 'سجل-مدني': { key: 'Registry', parent: 'CivilRegistry' },
- 'ديمقراطي': { key: 'Democratic', parent: 'AlShuri' },
- 'جمهوري': { key: 'Republican', parent: 'AlShuri' },
- 'رول-شورى': { key: 'Role', parent: 'AlShuri' },
- 'رئيس-شورى': { key: 'Leader', parent: 'AlShuri' },
- 'نائب-شورى': { key: 'Deputy', parent: 'AlShuri' },
- 'لوق-نقاط': { key: 'Channel', parent: 'LogPoint' },
- 'لوق-تذاكر': { key: 'ChannelLog', parent: 'TicketTf3el' },
- 'قناة-هوية': { key: 'Channel', parent: 'Identity' },
- 'قناة-عقوبات': { key: 'Channel', parent: 'Dissenting' },
- 'قناة-بلاغات': { key: 'Channel', parent: 'Reporting' },
- 'قناة-توظيف': { key: 'Channel', parent: 'Employment' },
- };
+            const BackButton = new ButtonBuilder({ customId: 'ControlPanel-Back', label: '🔙 رجوع', style: 2 });
+            return Message.reply({ embeds: [Embed], components: [{ type: 1, components: [BackButton] }] });
+        }
 
- const mapping = configKeyMap[settingName];
- if (!mapping) {
- return Message.reply({ content: `❌ اسم غير معروف: \`${settingName}\`\n> استخدم \`=تحكم ${category}\` للمشاهدة الأسماء المتاحة` });
- }
+        // تعديل مباشر: =تحكم GuildID 123
+        if (ALL_OPTIONS[section] && newValue) {
+            if (!/^\d{17,20}$/.test(newValue)) return Message.reply({ content: '❌ المعرف يجب أن يكون 17-20 رقم' });
+            
+            const cfg = getConfig();
+            const parts = section.split('.');
+            let obj = cfg;
+            for (let i = 0; i < parts.length - 1; i++) {
+                if (!obj[parts[i]]) obj[parts[i]] = {};
+                obj = obj[parts[i]];
+            }
+            obj[parts[parts.length - 1]] = newValue;
+            saveConfig(cfg);
+            
+            // تحديث مباشر للبوت
+            await reloadConfig(Client, cfg);
+            
+            return Message.reply({ content: `✅ **تم تحديث \`${section}\` → \`${newValue}\`**\n-# تغيير فوري • v${VERSION}` });
+        }
 
- try {
- let c = readFileSync(configPath, 'utf8');
- 
- // بناء النمط للبحث عنه
- let searchKey = mapping.key;
- let regex;
- if (mapping.sub) {
- regex = new RegExp(`(${mapping.parent}\\.${mapping.sub}\\.${searchKey}:\\s*')\\\\d*(')`, 'g');
- } else {
- regex = new RegExp(`(${mapping.parent}\\.${searchKey}:\\s*')\\\d*(')`, 'g');
- }
- 
- if (!regex.test(c)) {
- // Try simpler pattern
- c = readFileSync(configPath, 'utf8');
- const simpleRegex = new RegExp(`(${searchKey}:\\s*)'[^']*'`, 'g');
- c = c.replace(simpleRegex, `$1'${newValue}'`);
- } else {
- c = readFileSync(configPath, 'utf8');
- c = c.replace(regex, `$1${newValue}'`);
- }
- 
- writeFileSync(configPath, c, 'utf8');
+        if (ALL_OPTIONS[section] && !newValue) {
+            const cfg = getConfig();
+            const parts = section.split('.');
+            let v = cfg;
+            for (const p of parts) v = v?.[p];
+            return Message.reply({ content: `**${ALL_OPTIONS[section].name}**\n> الحالي: \`${v || 'فارغ'}\`\n> للتعديل: \`=تحكم ${section} <المعرف>\`` });
+        }
 
- const BackButton = new ButtonBuilder({ customId: 'ControlPanel-Back', label: '🔙 رجوع للقائمة الرئيسية', style: 2 });
- await Message.reply({ 
- content: `✅ **تم تحديث \`${settingName}\`** بنجاح!\n> المعرف الجديد: \`${newValue}\`\n> ⚠️ **يجب إعادة تشغيل البوت على Railway** لتطبيق التغيير\n-# v${VERSION}`,
- components: [{ type: 1, components: [BackButton] }]
- });
- } catch (e) {
- await Message.reply({ content: `❌ **ERR-006**\n> فشل الحفظ: ${e.message?.slice(0, 200)}\n-# v${VERSION}` });
- }
- }
+        return Message.reply({ content: `❌ غير معروف. استخدم \`=تحكم\` للقائمة أو \`=تحكم بحث <كلمة>\`` });
+    }
 };
 
-async function showMainMenu(Message) {
- const data = SECTIONS_EXPLAINED.main;
- const Embed = new EmbedBuilder()
- .setTitle(data.title)
- .setColor('#FFD700')
- .setDescription(data.description)
- .addFields(data.fields)
- .setFooter({ text: `v${VERSION} • جميع الصلاحيات الآن تحت رتبة 1525549017960808660` });
-
- const Menu = new StringSelectMenuBuilder()
- .setCustomId('ControlPanel-MainMenu')
- .setPlaceholder('اختر القسم الذي تريد تعديله...')
- .addOptions([
- { label: '🏷️ صلاحيات الأوامر', description: 'من يستخدم الأوامر الإدارية', value: 'perms' },
- { label: '🎫 نظام التذاكر', description: 'رولات استلام وإدارة التذاكر', value: 'tickets' },
- { label: '👮 نظام الشرطة', description: 'رولات العساكر والمخالفات', value: 'police' },
- { label: '🏛️ مجلس الشورى', description: 'أعضاء المجلس والتصويت', value: 'shuri' },
- { label: '📢 القنوات واللوقات', description: 'قنوات السجلات والإعلانات', value: 'channels' },
- { label: '📋 عرض جميع الإعدادات', description: 'مشاهدة كل المعرفات الحالية', value: 'show' },
- ]);
-
- await Message.reply({ embeds: [Embed], components: [{ type: 1, components: [Menu] }] });
-}
-
-async function showAllSettings(Message) {
- const { CommandPremission, TicketTf3el, Tickets2Sm, TicketT2dem, LogPoint, Dissenting, Reporting, Employment, Identity, AlShuri, Police, CivilRegistry } = await import('../../Files〡[Config]/Files〡[Config].js');
- 
- const Embed = new EmbedBuilder()
- .setTitle('📋 جميع إعدادات البوت الحالية')
- .setColor('#00FF00')
- .addFields(
- { name: '🏷️ صلاحيات الأوامر', value: `نداء: ${CommandPremission.Call}\nاعلانات: ${CommandPremission.Ads}\nنقاط: ${CommandPremission.AddPoint}\nخط: ${CommandPremission.Line}\nادارة: ${CommandPremission.SetupAdara}\nتكت: ${CommandPremission.SetupTicket}\nتوظيف: ${CommandPremission.Employment}\nعقوبات: ${CommandPremission.CreateDissenting}\nمخالف: ${CommandPremission.M5alf}\nفك: ${CommandPremission.Remove5alf}` },
- { name: '🎫 التذاكر', value: `دعم تفعيل: ${TicketTf3el.Support}\nمشرف تفعيل: ${TicketTf3el.Management}\nاونر: ${TicketTf3el.Owner}\nدعم مساعدة: ${Tickets2Sm.Help.Support}\nدعم شكاوى: ${Tickets2Sm.El4away.Support}` },
- { name: '📢 القنوات', value: `لوق نقاط: ${LogPoint.Channel}\nعقوبات: ${Dissenting.Channel}\nبلاغات: ${Reporting.Channel}\nتوظيف: ${Employment.Channel}\nهوية: ${Identity.Channel}` },
- { name: '🏛️ الشورى', value: `ديمقراطي: ${AlShuri.Democratic}\nجمهوري: ${AlShuri.Republican}\nرئيس: ${AlShuri.Leader}\nنائب: ${AlShuri.Deputy}` },
- )
- .setFooter({ text: `v${VERSION}` });
-
- const BackButton = new ButtonBuilder({ customId: 'ControlPanel-Back', label: '🔙 رجوع للقائمة الرئيسية', style: 2 });
- await Message.reply({ embeds: [Embed], components: [{ type: 1, components: [BackButton] }] });
+async function reloadConfig(Client, cfg) {
+    // تحديث البرفكس
+    if (cfg.Prefix) Client.Prefix = cfg.Prefix;
+    // تحديث التوكن (نادر)
+    if (cfg.Token) Client.Token = cfg.Token;
+    console.log('✅ Config hot-reloaded');
 }

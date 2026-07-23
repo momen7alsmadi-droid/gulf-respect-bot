@@ -1,7 +1,7 @@
 import { AttachmentBuilder } from "discord.js";
 
 // ! ========== المعرفات الأساسية ==========
-export const VERSION = '2.0.1';
+export const VERSION = '2.0.2';
 export const Founder = '1387331972094890036';
 export const Owners = ["1387331972094890036"]
 export const GuildID = '1497265109247201280';
@@ -29,8 +29,8 @@ export const Questions = [
 // ! - صلاحيات امر التفعيل
 export const CommandTf3el = {
     Permission: '1525548154299220159',
-    AddRole: ['1525548154299220159', '1526425799429984377'],
-    RemoveRole: '1525548154299220159'
+    AddRole: ['1525548154299220159', '1526425799429984377', '1525549017960808660'],
+    RemoveRole: ''
 }
 
 // لوق اضافة نقاط

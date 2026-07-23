@@ -26,7 +26,9 @@ export default {
         CommandTf3el.AddRole.forEach(async (Role) => {
             Member.roles.add(Role).catch(async () => { })
         })
-        Member.roles.remove(CommandTf3el.RemoveRole).catch(async () => { })
+        if (CommandTf3el.RemoveRole) {
+            Member.roles.remove(CommandTf3el.RemoveRole).catch(async () => { })
+        }
         const Attachment = new AttachmentBuilder(`Files〡[Resource]/Files〡[Image]/Welcome.png`, { name: 'Welcome.png' });
         const Embed = new EmbedBuilder()
         Embed.setDescription(`**__ — عـزيـزي الـعـضـو ${Member}

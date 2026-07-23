@@ -5,7 +5,7 @@ import { JsonDatabase } from 'wio.db';
 
 const Points = new JsonDatabase({ databasePath: 'Files〡[Resource]/Files〡[DataBase]/DB〡[Points].json' });
 const Voice = new JsonDatabase({ databasePath: 'Files〡[Resource]/Files〡[DataBase]/Files〡[Voice].json' });
-const F = 'Noto Sans Arabic, Noto Naskh Arabic, Noto Sans, DejaVu Sans, sans-serif';
+const F = 'Noto Sans Arabic';
 
 export default {
     name: "توب",
@@ -15,7 +15,8 @@ export default {
         choices: [{ name: 'الإدارة', value: 'admin' }, { name: 'العساكر', value: 'police' }]
     }],
     run: async (Client, Message) => {
-        await Message.deferReply();
+        registerFont('NotoSansArabic.ttf', { family: 'Noto Sans Arabic' });
+await Message.deferReply();
         const type = Message.options.getString('النوع');
         try {
             let entries = [];

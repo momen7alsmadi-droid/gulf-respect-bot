@@ -16,7 +16,8 @@ export default {
         { name: "الايدي", description: "رقم الهوية", type: ApplicationCommandOptionType.String, required: false },
     ],
     run: async (Client, Message) => {
-        await Message.deferReply();
+        registerFont('NotoSansArabic.ttf', { family: 'Noto Sans Arabic' });
+await Message.deferReply();
         try {
             const user = Message.options.getUser('العضو');
             const rank = Message.options.getString('الرتبة');

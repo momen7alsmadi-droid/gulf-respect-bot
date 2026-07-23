@@ -21,7 +21,8 @@ export default async function (Client, Message) {
  });
  } break;
  case 'Adara-Afitar': {
- const ImageAdar = await loadImage('El43ar.png');
+ registerFont('NotoSansArabic.ttf', { family: 'Noto Sans Arabic' });
+const ImageAdar = await loadImage('El43ar.png');
  const Member = Message.guild.members.cache.get(Message.user.id);
  const ImageAvatar = await loadImage(Member.user.displayAvatarURL({})?.replace(`.webp`, `.png`)?.replace(`.gif`, `.png`) || 'https://cdn.discordapp.com/embed/avatars/2.png');
  async function Generate() {

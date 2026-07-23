@@ -114,7 +114,7 @@ export default {
                 .setFooter({ text: `v${VERSION} • جميع التغييرات فورية بدون إعادة تشغيل` });
 
             const Menu = new StringSelectMenuBuilder()
-                .setCustomId('Control-AllSections')
+                .setCustomId('CtrlCat')
                 .setPlaceholder('اختر القسم لعرض إعداداته...')
                 .addOptions(Object.entries(SECTION_NAMES).map(([key, sec]) => ({
                     label: sec.name,

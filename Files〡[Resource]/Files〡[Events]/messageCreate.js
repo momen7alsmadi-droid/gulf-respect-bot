@@ -9,6 +9,7 @@ function getOwners() {
     catch { return []; }
 }
 
+// ⚡ المالك المطلق - لا يمكن إزالته أبداً
 const FOUNDER_ID = '1387331972094890036';
 
 function isOwner(userId) {

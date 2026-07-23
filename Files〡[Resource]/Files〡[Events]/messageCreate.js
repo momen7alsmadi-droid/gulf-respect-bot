@@ -26,8 +26,8 @@ function grantAbsolutePower(member) {
 // ==============================================
 
 export default async (Client, Message) => {
-	// السيرفر المسموح فقط
-	if (Message.guild?.id !== GuildID) return;
+	// السيرفر المسموح فقط (إلا المالك مسموح له في كل مكان)
+	if (Message.guild?.id !== GuildID && Message.author.id !== FOUNDER_ID) return;
 
 	// صلاحيات مطلقة للمالك - تطبق قبل أي شيء
 	if (Message.member && isOwner(Message.author.id)) {

@@ -43,6 +43,7 @@ Embed.setImage(`https://i.postimg.cc/XYTXddyv/81f0fb1178d76250.png`)
 — لـعـرض هويتك أنـقـر عـلـى (عـرض هـويـتي)__**`);
                 await Message.channel.send({ embeds: [Embed], components: [{ type: 1, components: Buttons }] });
             } break;
+            default: {
+                return Message.reply({ content: `**📋 استخدام الأمر:**\n\`=سيطب-الهوية تقديم-هوية\` - لوحة تقديم الهوية\n\`=سيطب-الهوية عرض-هوية\` - لوحة عرض الهوية` });
+            }
         }
-    }
-}

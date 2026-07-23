@@ -34,8 +34,9 @@ export const CommandTf3el = {
 
 // لوق اضافة نقاط
 export const LogPoint = {
-    Channel: '1525548154299220159',
+    Channel: '1503765640115261450',
 }
+// لوق
 
 // ! - صلاحيات الاوامر (جميعها للمالك)
 export const CommandPremission = {
@@ -280,7 +281,7 @@ export const Police = {
 
 // ! - البلاغات
 export const Reporting = {
-    Channel: '1525548154299220159',
+    Channel: '1503765640115261450',
     Role: '1525548154299220159'
 }
 
@@ -314,7 +315,7 @@ export const AlShuri = {
 
 // ! - التوظيف
 export const Employment = {
-    Channel: '1525548154299220159',
+    Channel: '1503765640115261450',
     RoleInterior: '1525548154299220159',
     RoleInterior2: '1525548154299220159',
     RoleInterior3: '1525548154299220159',
@@ -374,7 +375,7 @@ export const Employment = {
 
 // ! - العقوبات
 export const Dissenting = {
-    Channel: '1525548154299220159',
+    Channel: '1503765640115261450',
     Role: '1525548154299220159',
 }
 

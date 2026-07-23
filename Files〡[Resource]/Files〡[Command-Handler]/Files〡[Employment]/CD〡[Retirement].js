@@ -30,7 +30,7 @@ export default {
             ]
         })
         const MessageReply = await Message.reply({ content: `**يرجى ارسال صوره الموافقة**` });
-        const Filter = (Message) => Message.author.id === Message.author.id && Message.attachments.size > 0;
+        const Filter = (CollectedMessage) => CollectedMessage.author.id === Message.author.id && CollectedMessage.attachments.size > 0;
         const Collector = Message.channel.createMessageCollector({ filter: Filter, time: 120000 });
         Collector.on('collect', async (CollectedMessage) => {
             const Attachment = CollectedMessage.attachments.first();

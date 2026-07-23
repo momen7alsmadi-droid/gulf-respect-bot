@@ -140,6 +140,9 @@ __\`\`\`ansi
                 const He2a = new ButtonBuilder({ customId: 'He2a-Ticket', label: 'تبليغ هيئة', style: 2 });
                 await Message.channel.send({ embeds: [Embed], components: [{ type: 1, components: [He2a] }], files: [Attachment] });
             } break;
+            default: {
+                return Message.reply({ content: `**📋 استخدام الأمر:**\n\`=تكت تفعيل\` - لوحة تذاكر التفعيل\n\`=تكت اونر\` - لوحة تذاكر طلب أونر\n\`=تكت المساعدة\` - لوحة تذاكر المساعدة\n\`=تكت الشكاوى\` - لوحة تذاكر الشكاوى\n\`=تكت تقديم\` - لوحة تذاكر تقديم إدارة\n\`=تكت محكمة\` - لوحة تذاكر المحكمة\n\`=تكت هيئة\` - لوحة تذاكر هيئة مكافحة الفساد` });
+            }
         }
     }
 }

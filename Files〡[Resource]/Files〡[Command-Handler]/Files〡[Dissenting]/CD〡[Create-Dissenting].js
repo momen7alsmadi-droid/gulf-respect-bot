@@ -14,7 +14,7 @@ export default {
     * @param { import('discord.js').Message } Message
     */
     run: async (Client, Message) => {
-        if (!Message.member.roles.cache.has(CommandPremission.CreateDissenting)) return Message.reply({ content: `**ليس لديك الصلاحية لتنفيذ هذا الامر**` });
+        // ✅ تم إلغاء التحقق من الصلاحية
         const Agrs = Message.content.split(` `);
         const Timeing = Agrs[1];
         if (!Timeing) return Message.reply({ content: `**يرجى إدخال المدة بشكل الصحيح**` });

@@ -10,7 +10,7 @@ export default {
     * @param { import('discord.js').Message } Message
     */
     run: async (Client, Message) => {
-        if (!Message.member.roles.cache.some(Role => Police.WhistlingPoint.includes(Role.id))) return Message.reply({ content: `**ليس لديك الصلاحية لتصفير النقاط**` });
+        // ✅ تم إلغاء التحقق من الصلاحية
         const Agrs = Message.content.split(` `);
         const Member = Message.mentions.members.first() || Message.guild.members.cache.get(Agrs[1]);
         if (!Member) return Message.reply({ content: `**يرجى تحديد العضو المراد تصفير النقاط منه**` });

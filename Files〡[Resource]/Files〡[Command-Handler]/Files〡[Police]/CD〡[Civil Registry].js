@@ -12,7 +12,7 @@ export default {
     * @param { import('discord.js').Message } Message
     */
     run: async (Client, Message) => {
-        if (!Message.member.roles.cache.some(Role => CivilRegistry.Registry.includes(Role.id))) return Message.reply({ content: `**ليس لديك الصلاحية**` });
+        // ✅ تم إلغاء التحقق من الصلاحية
         const Embed = new EmbedBuilder()
         Embed.setAuthor({ name: Message.guild.name, iconURL: Message.guild.iconURL({ forceStatic: true, size: 4096 }) });
         Embed.setFooter({ text: Message.guild.name, iconURL: Message.guild.iconURL({ forceStatic: true, size: 4096 }) });

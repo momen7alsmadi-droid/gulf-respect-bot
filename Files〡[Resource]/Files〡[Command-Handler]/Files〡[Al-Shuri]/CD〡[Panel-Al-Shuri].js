@@ -12,7 +12,7 @@ export default {
     * @param { import('discord.js').Message } Message
     */
     run: async (Client, Message) => {
-        if (!Message.member.roles.cache.some((Role) => CommandPremission.PanelAlShuri.includes(Role.id))) return Message.reply({ content: `**ليس لديك الصلاحية لتنفيذ هذا الامر**` });
+        // ✅ تم إلغاء التحقق من الصلاحية
         const Embed = new EmbedBuilder()
         Embed.setColor(Message.guild.members.me.displayHexColor);
         Embed.setAuthor({ name: Message.guild.name, iconURL: Message.guild.iconURL({ extension: 'png' }) });

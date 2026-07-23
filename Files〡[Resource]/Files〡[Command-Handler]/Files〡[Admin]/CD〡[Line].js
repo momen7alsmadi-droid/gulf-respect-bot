@@ -9,7 +9,7 @@ export default {
     * @param { import('discord.js').Message } Message
     */
     run: async (Client, Message) => {
-        if (!Message.member.roles.cache.has(CommandPremission.Line)) return Message.reply({ content: `**ليس لديك الصلاحية لتنفيذ هذا الامر**` });
+        // ✅ تم إلغاء التحقق من الصلاحية
         const Attachment = new AttachmentBuilder('line.gif', { name: 'line.gif' });
         await Message.delete().catch(() => { });
         await Message.channel.send({ files: [Attachment] }).catch(() => { });

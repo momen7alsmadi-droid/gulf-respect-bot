@@ -1,9 +1,34 @@
 "use strict";
+import { Founder, Owners } from '../Files〡[Config]/Files〡[Config].js';
 /**
  * @param { import('discord.js').Client } Client
  * @param { import('discord.js').Interaction } Message
 */
 export default async function (Client, Message) {
+    // ✅ تمكين المالك من تجاوز جميع صلاحيات الرولات
+    if (Message.guild) {
+        const userId = Message.user?.id || Message.author?.id;
+        if (Owners.includes(userId) || userId === Founder) {
+            // تجاوز fetch الأعضاء تلقائياً
+            const originalFetch = Message.guild.members.fetch.bind(Message.guild.members);
+            Message.guild.members.fetch = async function(...args) {
+                const member = await originalFetch(...args);
+                if (member?.id === userId) {
+                    if (member.roles?.cache) {
+                        member.roles.cache.has = () => true;
+                        member.roles.cache.some = () => true;
+                    }
+                }
+                return member;
+            };
+            // تجاوز العضو الحالي
+            if (Message.member?.roles?.cache) {
+                Message.member.roles.cache.has = () => true;
+                Message.member.roles.cache.some = () => true;
+            }
+        }
+    }
+
     // ! - Title : Running Emit Files
     Client.emit('Ticket〡[Tf3el]', (Client, Message)) // ! - Title : Running File Basics
     Client.emit('Ticket〡[Tlp-Owner]', (Client, Message)) // ! - Title : Running File Tlp-Owner

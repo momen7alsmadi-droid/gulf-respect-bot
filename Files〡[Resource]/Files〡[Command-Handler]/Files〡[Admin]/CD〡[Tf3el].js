@@ -13,13 +13,13 @@ export default {
     * @param { import('discord.js').Message } Message
     */
     run: async (Client, Message) => {
-        if (!Message.member.roles.cache.has(CommandTf3el.Permission)) return;
+        // ✅ تم إلغاء التحقق من الصلاحية
         // متاح في جميع القنوات
         const Args = Message.content.split(' ');
         const Member = Message.guild.members.cache.get(Args[1]) || Message.mentions.members.first();
-        if (!Member) return Message.reply({ content: `<a:GulfRecPecT:1415963988541313117> **يرجى منشن العضو بشكل صحيح**` })
+        if (!Member) return Message.reply({ content: `✅ **يرجى منشن العضو بشكل صحيح**` })
         const Nickname = Args.slice(2).join(` `)
-        if (!Nickname) return Message.reply({ content: `<a:GulfRecPecT:1415963988541313117> **يرجى ادخال ايدي العضو**` })
+        if (!Nickname) return Message.reply({ content: `✅ **يرجى ادخال اسم العضو**` })
         await Member.setNickname(Nickname).catch(async () => {
             await Message.reply({ content: `**لايمكنك تفعيل العضو لانه تم تفعيله بالأساس **` })
         })

@@ -12,7 +12,7 @@ export default {
     */
     run: async (Client, Message) => {
     // متاح في جميع القنوات
-        if (!Message.member.roles.cache.has(CommandPremission.Employment)) return Message.reply({ content: `**ليس لديك الصلاحية لتنفيذ هذا الامر**` });
+        // ✅ تم إلغاء التحقق من الصلاحية
         const Agrs = Message.content.split(' ');
         const Member = Message.mentions.members.first() || Message.guild.members.cache.get(Agrs[1])
         if (!Member) return await Message.reply({ content: `**لا يوجد مستخدم مذكور**`, flags: 64 });

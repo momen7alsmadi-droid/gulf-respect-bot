@@ -13,7 +13,7 @@ export default {
     * @param { import('discord.js').Message } Message
     */
     run: async (Client, Message) => {
-        if (!Message.member.roles.cache.has(CommandPremission.RemoveDissenting)) return Message.reply({ content: `**ليس لديك الصلاحية لتنفيذ هذا الامر**` });
+        // ✅ تم إلغاء التحقق من الصلاحية
         const GetData = DataBase.get(`Dissenting〡${Message.guild.id}`);
         if (!GetData || GetData.length === 0) return Message.reply({ content: `**لا توجد بيانات لعرضها**` });
         const options = GetData.slice(0, 25).map((data, index) => {

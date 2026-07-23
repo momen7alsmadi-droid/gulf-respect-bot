@@ -9,7 +9,7 @@ export default {
     * @param { import('discord.js').Message } Message
     */
     run: async (Client, Message) => {
-        if (!Message.member.roles.cache.has(CommandPremission.Call)) return Message.reply({ content: `**ليس لديك الصلاحية لتنفيذ هذا الامر**` });
+        // ✅ تم إلغاء التحقق من الصلاحية
         const Args = Message.content.split(' ');
         const Member = Message.mentions.members.first() || Message.guild.members.cache.get(Args[1])
         if (!Member) return Message.reply({ content: `**الرجاء منشن المستخدم**` });

@@ -234,7 +234,7 @@ export default async function (Client, Message) {
  const Day = String(new Date().getDate()).padStart(2, '0');
  const Channel = Message.guild.channels.cache.get('')
  const MessageEdit = await Channel.messages.fetch(GetData.MessageID)
- registerFont('NotoSansArabic.ttf', { family: 'Noto Sans Arabic' });
+ try { (await import('canvas')).registerFont('NotoSansArabic.ttf', { family: 'Noto Sans Arabic, sans-serif' }); } catch {}
 const Image = await loadImage('El-Shori.png');
  const Red = await loadImage('Red.png');
  const Yellow = await loadImage('Yellow.png');

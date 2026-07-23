@@ -11,7 +11,7 @@ export default {
         { name: "السبب", description: "سبب التقدير", type: ApplicationCommandOptionType.String, required: true },
     ],
     run: async (Client, Message) => {
-        registerFont('NotoSansArabic.ttf', { family: 'Noto Sans Arabic' });
+        try { (await import('canvas')).registerFont('NotoSansArabic.ttf', { family: 'Noto Sans Arabic, sans-serif' }); } catch {}
 await Message.deferReply();
         try {
             const user = Message.options.getUser('العضو');
@@ -19,7 +19,7 @@ await Message.deferReply();
             const member = Message.guild.members.cache.get(user.id);
             const name = member?.displayName || user.username;
             const W = 1000, H = 700;
-            const F = 'Noto Sans Arabic';
+            const F = 'Noto Sans Arabic, sans-serif';
 
             const canvas = new Canvas(W, H)
                 .setColor('#0a0a1a').printRectangle(0, 0, W, H)

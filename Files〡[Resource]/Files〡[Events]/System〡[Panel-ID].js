@@ -64,7 +64,7 @@ export default async function (Client, Message) {
  const Data = Database.get(`ID〡${Message.user.id}`) || { Status: false }
  if (!Data) return await Message.reply({ content: 'لا يوجد هوية لديك', flags: 64 })
  if (Data && Data.Status === false) return Message.reply({ content: 'لم يتم الموافقة علي الهوية', flags: 64 })
- registerFont('NotoSansArabic.ttf', { family: 'Noto Sans Arabic' });
+ try { (await import('canvas')).registerFont('NotoSansArabic.ttf', { family: 'Noto Sans Arabic, sans-serif' }); } catch {}
 const DisplayAvatar = await loadImage(Data.Image);
  const ImageID = await loadImage(`ID.png`);
  async function Generate() {

@@ -35,12 +35,7 @@ export default {
 
         await Member.send({ embeds: [Embed] }).catch(() => { });
         if (imageUrl?.startsWith('http')) {
-            try {
-                const res = await fetch(imageUrl);
-                const buffer = Buffer.from(await res.arrayBuffer());
-                const att = new AttachmentBuilder(buffer, { name: 'line.png' });
-                await Member.send({ files: [att] }).catch(() => {});
-            } catch {}
+            await Member.send({ content: imageUrl }).catch(() => {});
         }
         await Message.reply({ content: `**تم ارسال نداء للعضو**` });
     }

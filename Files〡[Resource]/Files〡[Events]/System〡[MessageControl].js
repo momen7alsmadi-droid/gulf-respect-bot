@@ -24,7 +24,8 @@ export default async function (Client, Message) {
 
     // زر رفع صورة الخط
     if (Message.isButton() && Message.customId === 'Msg-UploadLine') {
-        await Message.reply({ content: '📷 **ارفع صورة الخط الآن في هذه القناة** (خلال 30 ثانية)', flags: 64 });
+        await Message.deferUpdate();
+        await Message.followUp({ content: '📷 **ارفع صورة الخط الآن في هذه القناة** (خلال 30 ثانية)', flags: 64 });
         const filter = m => m.author.id === uid && m.attachments.size > 0;
         const collector = Message.channel.createMessageCollector({ filter, max: 1, time: 30000 });
         collector.on('collect', async (m) => {
@@ -33,7 +34,7 @@ export default async function (Client, Message) {
             db.lineImage = { title: 'صورة الخط', content: url };
             writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf8');
             await m.delete().catch(() => {});
-            await Message.followUp({ content: `✅ **تم تحديث صورة الخط!**\n-# استخدم =خط لإرسالها`, flags: 64 });
+            await Message.channel.send({ content: `✅ **تم تحديث صورة الخط!**\n-# استخدم =خط لإرسالها` }).catch(() => {});
         });
         return;
     }

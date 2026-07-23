@@ -5,18 +5,20 @@ const DB_PATH = 'Files〡[Resource]/Files〡[DataBase]/DB〡[AutoLine].json';
 
 export default {
     name: 'خط',
-    description: "ارسال خط فاصل (ارفع صورة مع الأمر لتغييرها)",
+    description: "ارسال خط فاصل (ارفع صورة لتغييره)",
     run: async (Client, Message) => {
-        // إذا كان مع الأمر صورة مرفوعة → حفظها كصورة الخط الجديدة
         const attachment = Message.attachments.first();
-        if (attachment && attachment.contentType?.startsWith('image/')) {
+        
+        // رفع صورة جديدة للخط
+        if (attachment?.contentType?.startsWith('image/')) {
             const db = JSON.parse(readFileSync(DB_PATH, 'utf8'));
             db.lineImage = { title: 'صورة الخط', content: attachment.url };
             writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf8');
             await Message.delete().catch(() => {});
+            // إرسال الصورة كـ embed لتظهر بشكل صحيح
             await Message.channel.send({ 
-                content: `✅ **تم تحديث صورة الخط!**\n-# الصورة الجديدة محفوظة وستستخدم من الآن`,
-                files: [attachment.url] 
+                content: '✅ **تم تحديث صورة الخط!**',
+                embeds: [{ image: { url: attachment.url }, color: 0xFFD700 }]
             }).catch(() => {});
             return;
         }
@@ -26,15 +28,14 @@ export default {
         const db = JSON.parse(readFileSync(DB_PATH, 'utf8'));
         const imageUrl = db.lineImage?.content;
         
-        if (imageUrl && imageUrl.startsWith('http')) {
-            await Message.channel.send({ files: [imageUrl] }).catch(async () => {
-                // إذا فشل رابط الصورة، أرسل النص
-                const text = db.lineDivider?.content || '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬';
-                await Message.channel.send({ content: text }).catch(() => {});
+        if (imageUrl?.startsWith('http')) {
+            await Message.channel.send({ 
+                embeds: [{ image: { url: imageUrl }, color: 0xFFD700 }] 
+            }).catch(() => {
+                Message.channel.send({ content: '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬' }).catch(() => {});
             });
         } else {
-            const text = db.lineDivider?.content || '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬';
-            await Message.channel.send({ content: text }).catch(() => {});
+            await Message.channel.send({ content: '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬' }).catch(() => {});
         }
     }
 };

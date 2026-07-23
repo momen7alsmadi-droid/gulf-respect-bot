@@ -35,7 +35,7 @@ export default {
 
         await Member.send({ embeds: [Embed] }).catch(() => { });
         if (imageUrl.startsWith('http')) {
-            await Member.send({ content: imageUrl }).catch(() => { });
+            await Member.send({ embeds: [{ image: { url: imageUrl }, color: 0xFFD700 }] }).catch(() => {});
         }
         await Message.reply({ content: `**تم ارسال نداء للعضو**` });
     }

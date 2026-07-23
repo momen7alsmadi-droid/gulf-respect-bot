@@ -1,5 +1,5 @@
 "use strict";
-import { EmbedBuilder } from 'discord.js';
+import { EmbedBuilder, AttachmentBuilder } from 'discord.js';
 import { readFileSync } from 'fs';
 
 const DB_PATH = 'Files〡[Resource]/Files〡[DataBase]/DB〡[AutoLine].json';
@@ -35,7 +35,12 @@ export default {
 
         await Member.send({ embeds: [Embed] }).catch(() => { });
         if (imageUrl?.startsWith('http')) {
-            await Member.send(imageUrl).catch(() => {});
+            try {
+                const res = await fetch(imageUrl);
+                const buffer = Buffer.from(await res.arrayBuffer());
+                const att = new AttachmentBuilder(buffer, { name: 'line.png' });
+                await Member.send({ files: [att] }).catch(() => {});
+            } catch {}
         }
         await Message.reply({ content: `**تم ارسال نداء للعضو**` });
     }

@@ -2,15 +2,15 @@
 import { AttachmentBuilder } from 'discord.js';
 import { CommandPremission } from '../../Files〡[Config]/Files〡[Config].js';
 export default {
-    name: 'خط',
-    description: "ارسال خط",
-    /**
-    * @param { import('discord.js').Client } Client
-    * @param { import('discord.js').Message } Message
-    */
-    run: async (Client, Message) => {
-        // ✅ تم إلغاء التحقق من الصلاحية
-        await Message.delete().catch(() => { });
-        await Message.channel.send({ content: '**▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬**' }).catch(() => { });
-    }
+ name: 'خط',
+ description: "ارسال خط",
+ /**
+ * @param { import('discord.js').Client } Client
+ * @param { import('discord.js').Message } Message
+ */
+ run: async (Client, Message) => {
+ // ✅ تم إلغاء التحقق من الصلاحية
+ await Message.delete().catch(() => { });
+ await Message.channel.send({ content: '**▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬**' }).catch(() => { });
+ }
 }

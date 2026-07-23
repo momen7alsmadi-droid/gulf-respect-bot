@@ -99,7 +99,7 @@ export default {
                         .printText(info[i].value, ix, iy + 30);
                 }
                 // تذييل
-                .setColor(GOLD).setTextAlign('center')
+                canvas.setColor(GOLD).setTextAlign('center')
                 .setTextFont(FONT(11, 'bold'))
                 .printText('CIA COMMUNITY • Official Membership Card', W/2, H-20);
 

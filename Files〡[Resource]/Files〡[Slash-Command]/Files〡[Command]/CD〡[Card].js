@@ -16,7 +16,11 @@ export default {
         { name: "الايدي", description: "رقم الهوية", type: ApplicationCommandOptionType.String, required: false },
     ],
     run: async (Client, Message) => {
-        try { (await import('canvas')).registerFont('NotoSansArabic.ttf', { family: 'Noto Sans Arabic, sans-serif' }); } catch {}
+        try {
+  const canvasMod = await import('canvas');
+  canvasMod.registerFont('NotoSansArabic.ttf', { family: 'Noto Sans Arabic' });
+  canvasMod.registerFont('NotoEmoji.ttf', { family: 'Noto Emoji' });
+} catch {}
 await Message.deferReply();
         try {
             const user = Message.options.getUser('العضو');

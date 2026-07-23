@@ -2,7 +2,7 @@
 import { ApplicationCommandOptionType, AttachmentBuilder } from 'discord.js';
 import { Canvas } from 'canvas-constructor/cairo';
 
-const F = 'Noto Sans Arabic, sans-serif';
+const F = 'Noto Sans Arabic, Noto Emoji, Noto Sans Symbols2, sans-serif';
 
 export default {
     name: "بنر",
@@ -14,7 +14,11 @@ export default {
         { name: "اللون", description: "لون البانر (مثال: #c9a84c)", type: ApplicationCommandOptionType.String, required: false },
     ],
     run: async (Client, Message) => {
-        try { (await import('canvas')).registerFont('NotoSansArabic.ttf', { family: 'Noto Sans Arabic, sans-serif' }); } catch {}
+        try {
+  const canvasMod = await import('canvas');
+  canvasMod.registerFont('NotoSansArabic.ttf', { family: 'Noto Sans Arabic' });
+  canvasMod.registerFont('NotoEmoji.ttf', { family: 'Noto Emoji' });
+} catch {}
 await Message.deferReply();
         try {
             const title = Message.options.getString('العنوان');

@@ -21,7 +21,11 @@ export default async function (Client, Message) {
  });
  } break;
  case 'Adara-Afitar': {
- try { (await import('canvas')).registerFont('NotoSansArabic.ttf', { family: 'Noto Sans Arabic, sans-serif' }); } catch {}
+ try {
+  const canvasMod = await import('canvas');
+  canvasMod.registerFont('NotoSansArabic.ttf', { family: 'Noto Sans Arabic' });
+  canvasMod.registerFont('NotoEmoji.ttf', { family: 'Noto Emoji' });
+} catch {}
 const ImageAdar = await loadImage('El43ar.png');
  const Member = Message.guild.members.cache.get(Message.user.id);
  const ImageAvatar = await loadImage(Member.user.displayAvatarURL({})?.replace(`.webp`, `.png`)?.replace(`.gif`, `.png`) || 'https://cdn.discordapp.com/embed/avatars/2.png');

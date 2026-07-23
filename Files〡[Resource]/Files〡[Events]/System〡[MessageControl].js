@@ -6,12 +6,13 @@ import { VERSION } from '../Files〡[Config]/Files〡[Config].js';
 const DB_PATH = 'Files〡[Resource]/Files〡[DataBase]/DB〡[AutoLine].json';
 
 const CATEGORIES = {
-    activation: { name: '📨 التفعيل', messages: ['welcome','activation','bank','quizTitle','quizPass','quizFail','quizLinks','quizQuestion1','quizQuestion2','quizQuestion3','quizQuestion4'] },
-    tickets: { name: '🎫 التذاكر', messages: ['ticketTf3el','ticketOwner','ticketHelp','ticketShakwa','ticketT2dem','ticketM7kma','ticketHe2a','ticketClose','ticketTf3elInside','ticketHe2aForm'] },
-    admin: { name: '🛡️ الإدارة', messages: ['adaraPanel','adaraNicknamePrefix','adaraPointsTitle','adaraPointsFields','adaraTopTitle','callAdmin','evaluationDM','evaluationEmbedTitle','evaluationEmbedDesc','evaluationRateTitle','employmentConfirm','employmentImageRequest','employmentSelectRank','lineDivider'] },
-    police: { name: '👮 الشرطة', messages: ['policeLogin','policeLogout','policePanel','violationsPanel','reportPanel','civilPanel','prisonDM'] },
-    government: { name: '🏛️ الحكومة', messages: ['shuriPanel','votePanel','adsPanel','circularsPanel','submissionsPanel','idPanel','idCardName','prosecutionDM','authorityDM'] },
-    appearance: { name: '🎨 المظهر', messages: ['serverName','serverLogo','welcomeImage','embedColor','footerText','errorFormat'] }
+    activation: { name: '📨 التفعيل', messages: ['welcome','activation','bank','quizTitle','quizPass','quizFail','quizLinks','quizQuestion1','quizQuestion2','quizQuestion3','quizQuestion4','activationTestImage','btnActivate','btnTf3elTicket'] },
+    tickets: { name: '🎫 التذاكر', messages: ['ticketTf3el','ticketOwner','ticketHelp','ticketShakwa','ticketT2dem','ticketM7kma','ticketHe2a','ticketClose','ticketTf3elInside','ticketHe2aForm','btnOwnerTicket','btnHelpTicket','btnShakwaTicket','btnT2demTicket','btnLawyerTicket','btnCaseTicket','btnHe2aTicket','he2aLogo','he2aTicketImage','he2aTicketFormImage'] },
+    admin: { name: '🛡️ الإدارة', messages: ['adaraPanel','adaraNicknamePrefix','adaraPointsTitle','adaraPointsFields','adaraTopTitle','callAdmin','evaluationDM','evaluationEmbedTitle','evaluationEmbedDesc','evaluationRateTitle','employmentConfirm','employmentImageRequest','employmentSelectRank','lineDivider','adaraAvatarFrame','adminBadgeText','callAdminImage','evaluationRateImage','noPermissionMsg','memberNotFoundMsg','doneMsg'] },
+    police: { name: '👮 الشرطة', messages: ['policeLogin','policeLogout','policePanel','violationsPanel','reportPanel','civilPanel','prisonDM','prisonNicknameFormat','btnViolation','btnReport','selectPolice','selectViolation'] },
+    government: { name: '🏛️ الحكومة', messages: ['shuriPanel','votePanel','adsPanel','circularsPanel','submissionsPanel','idPanel','idCardName','prosecutionDM','authorityDM','shuriLogo','submissionsLogo','idCardLogo','btnProsecution','btnAuthority','selectAds','selectSubmissions'] },
+    employment: { name: '💼 التوظيف', messages: ['employmentConfirm','employmentImageRequest','employmentSelectRank','selectEmployment','selectRetirement'] },
+    appearance: { name: '🎨 المظهر', messages: ['serverName','serverLogo','welcomeImage','embedColor','footerText','errorFormat','bankLogo'] }
 };
 
 async function showMainMenu(Message) {

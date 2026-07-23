@@ -226,5 +226,145 @@
   "errorFormat": {
     "title": "تنسيق رسالة الخطأ",
     "content": "❌ **خطأ {code}**\n> {message}\n-# v{version}"
+  },
+  "adaraAvatarFrame": {
+    "title": "رابط إطار أفاتار الإدارة",
+    "content": "El43ar.png"
+  },
+  "shuriLogo": {
+    "title": "شعار مجلس الشورى",
+    "content": "https://i.postimg.cc/85XCjPCV/zip_3.jpg"
+  },
+  "submissionsLogo": {
+    "title": "شعار التقديمات",
+    "content": "https://i.postimg.cc/85XCjPCV/zip_3.jpg"
+  },
+  "idCardLogo": {
+    "title": "شعار بطاقة الهوية",
+    "content": "https://i.postimg.cc/XYTXddyv/81f0fb1178d76250.png"
+  },
+  "bankLogo": {
+    "title": "شعار المصرف",
+    "content": "https://i.postimg.cc/hjzk1Srt/jpg.jpg"
+  },
+  "he2aLogo": {
+    "title": "شعار هيئة مكافحة الفساد",
+    "content": "https://i.postimg.cc/zv92XWYR/png.webp"
+  },
+  "he2aTicketImage": {
+    "title": "صورة تذكرة الهيئة",
+    "content": "https://i.postimg.cc/cCK5Sh2S/He2a.webp"
+  },
+  "he2aTicketFormImage": {
+    "title": "صورة استبيان الهيئة",
+    "content": "https://i.postimg.cc/nzdJm2Pc/IMG-1946.jpg"
+  },
+  "activationTestImage": {
+    "title": "صورة اختبار التفعيل",
+    "content": "https://i.postimg.cc/D0cnk85n/8ae3b4c3ee514803.png"
+  },
+  "callAdminImage": {
+    "title": "صورة النداء",
+    "content": "https://i.postimg.cc/hjzk1Srt/jpg.jpg"
+  },
+  "evaluationRateImage": {
+    "title": "صورة طلب التقييم",
+    "content": "https://i.postimg.cc/vBg4sL6M/imag2e.png"
+  },
+  "prisonNicknameFormat": {
+    "title": "تنسيق اسم المسجون",
+    "content": "{reason}"
+  },
+  "adminBadgeText": {
+    "title": "شارة الإدارة في الاسم",
+    "content": "ᴳᴿ"
+  },
+  "btnActivate": {
+    "title": "زر بدء اختبار التفعيل",
+    "content": "بـدء أخـتـبـار الـتـفـعـيـل"
+  },
+  "btnTf3elTicket": {
+    "title": "زر فتح تذكرة تفعيل",
+    "content": "فـعـل — نـفـسـك"
+  },
+  "btnOwnerTicket": {
+    "title": "زر طلب أونر",
+    "content": "طلب أونر"
+  },
+  "btnHelpTicket": {
+    "title": "زر طلب مساعدة",
+    "content": "طـلـب — الـمـسـاعـدة"
+  },
+  "btnShakwaTicket": {
+    "title": "زر رفع شكوى",
+    "content": "رفع شكوى"
+  },
+  "btnT2demTicket": {
+    "title": "زر تقديم إدارة",
+    "content": "تقديم ادارة"
+  },
+  "btnLawyerTicket": {
+    "title": "زر طلب محامي",
+    "content": "طلب-محامي"
+  },
+  "btnCaseTicket": {
+    "title": "زر رفع قضية",
+    "content": "رفع قضيه"
+  },
+  "btnHe2aTicket": {
+    "title": "زر تبليغ هيئة",
+    "content": "تبليغ هيئة"
+  },
+  "btnProsecution": {
+    "title": "زر استدعاء النيابة",
+    "content": "النيابة"
+  },
+  "btnAuthority": {
+    "title": "زر استدعاء الهيئة",
+    "content": "استدعاء الهيئة"
+  },
+  "btnViolation": {
+    "title": "زر اعطاء مخالفة",
+    "content": "اعطاء مخالفة"
+  },
+  "btnReport": {
+    "title": "زر إبلاغ",
+    "content": "إبلاغ"
+  },
+  "selectAds": {
+    "title": "نص اختر نوع الاعلان",
+    "content": "اختر نوع الاعلان"
+  },
+  "selectSubmissions": {
+    "title": "نص اختر الوظيفة",
+    "content": "اختر الوظيفة"
+  },
+  "selectPolice": {
+    "title": "نص اختر الخيار (العساكر)",
+    "content": "اختر الخيار المناسب"
+  },
+  "selectViolation": {
+    "title": "نص اختر المخالفة",
+    "content": "اختر المخالفة"
+  },
+  "selectEmployment": {
+    "title": "نص اختر الرتبة (توظيف)",
+    "content": "اختر الرتبة"
+  },
+  "selectRetirement": {
+    "title": "نص اختر الرتبة (تقاعد)",
+    "content": "اختر الرتبة"
+  },
+  "noPermissionMsg": {
+    "title": "رسالة لا تملك صلاحية",
+    "content": "**ليس لديك الصلاحية لتنفيذ هذا الامر**"
+  },
+  "memberNotFoundMsg": {
+    "title": "رسالة العضو غير موجود",
+    "content": "**يرجى منشن العضو بشكل الصحيح**"
+  },
+  "doneMsg": {
+    "title": "رسالة تم بنجاح",
+    "content": "**تم بنجاح**"
   }
 }

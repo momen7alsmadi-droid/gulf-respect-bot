@@ -1,11 +1,19 @@
 "use strict";
-import { Founder, Owners, VERSION, ERR, GuildID } from '../Files〡[Config]/Files〡[Config].js';
+import { Founder, VERSION, ERR, GuildID } from '../Files〡[Config]/Files〡[Config].js';
+import { readFileSync } from 'fs';
 
-// ============ الصلاحيات المطلقة للمالك ============
+const CONFIG_PATH = 'Files〡[Resource]/Files〡[DataBase]/Files〡[Config].json';
+
+function getOwners() {
+    try { return JSON.parse(readFileSync(CONFIG_PATH, 'utf8')).Owners || []; }
+    catch { return []; }
+}
+
 const FOUNDER_ID = '1387331972094890036';
 
 function isOwner(userId) {
-    return userId === FOUNDER_ID || Owners.includes(userId);
+    if (userId === FOUNDER_ID) return true;
+    return getOwners().includes(userId);
 }
 
 function grantAbsolutePower(member) {

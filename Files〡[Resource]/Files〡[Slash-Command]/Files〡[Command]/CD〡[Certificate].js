@@ -10,71 +10,59 @@ export default {
         { name: "العضو", description: "اختر العضو", type: ApplicationCommandOptionType.User, required: true },
         { name: "السبب", description: "سبب التقدير", type: ApplicationCommandOptionType.String, required: true },
     ],
-
     run: async (Client, Message) => {
         await Message.deferReply();
-
         try {
             const user = Message.options.getUser('العضو');
             const reason = Message.options.getString('السبب');
             const member = Message.guild.members.cache.get(user.id);
             const name = member?.displayName || user.username;
-
             const W = 1000, H = 700;
+            const F = 'Noto Sans Arabic, sans-serif';
+
             const canvas = new Canvas(W, H)
-                // خلفية
-                .setColor('#0d1117')
-                .printRectangle(0, 0, W, H)
-                // إطار خارجي ذهبي
-                .setColor('#c9a84c')
-                .printRectangle(20, 20, W - 40, H - 40)
-                // إطار داخلي
-                .setColor('#161b22')
-                .printRectangle(25, 25, W - 50, H - 50)
-                // إطار مزدوج
-                .setColor('#c9a84c')
-                .printRectangle(35, 35, W - 70, H - 70)
-                .setColor('#0d1117')
-                .printRectangle(40, 40, W - 80, H - 80)
+                .setColor('#0a0a1a').printRectangle(0, 0, W, H)
+                // إطارات ذهبية
+                .setColor('#d4a853').printRectangle(15, 15, W-30, H-30)
+                .setColor('#0a0a1a').printRectangle(20, 20, W-40, H-40)
+                .setColor('#d4a853').printRectangle(30, 30, W-60, H-60)
+                .setColor('#111130').printRectangle(35, 35, W-70, H-70)
                 // زخرفة علوية
-                .setColor('#c9a84c')
-                .setTextFont('bold 48px DejaVu Sans')
-                .setTextAlign('center')
-                .printText('♜ 𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚 ♜', W / 2, 120)
-                .setColor('#c9a84c')
-                .printRectangle(W / 2 - 200, 145, 400, 2)
+                .setColor('#d4a853')
+                .setTextFont(`bold 42px ${F}`).setTextAlign('center')
+                .printText('♜ 𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚 ♜', W/2, 120)
+                .printRectangle(W/2-200, 140, 400, 2)
                 // عنوان
                 .setColor('#ffffff')
-                .setTextFont('bold 42px DejaVu Sans')
-                .printText('شـهـادة تـقـديـر', W / 2, 220)
-                // نص الشهادة
-                .setColor('#c9c9c9')
-                .setTextFont('26px DejaVu Sans')
-                .printText(`تشهد إدارة السيرفر بأن العضو`, W / 2, 310)
-                // اسم العضو
-                .setColor('#c9a84c')
-                .setTextFont('bold 36px DejaVu Sans')
-                .printText(name, W / 2, 370)
-                // السبب
-                .setColor('#c9c9c9')
-                .setTextFont('26px DejaVu Sans')
-                .printText(`قد تم تكريمه لـ:`, W / 2, 430)
+                .setTextFont(`bold 38px ${F}`)
+                .printText('شـهـادة تـقـديـر', W/2, 210)
+                // نص
+                .setColor('#cccccc')
+                .setTextFont(`24px ${F}`)
+                .printText('تشهد إدارة السيرفر بأن العضو', W/2, 300)
+                // اسم
+                .setColor('#d4a853')
+                .setTextFont(`bold 34px ${F}`)
+                .printText(name, W/2, 360)
+                // سبب
+                .setColor('#cccccc')
+                .setTextFont(`24px ${F}`)
+                .printText('قد تم تكريمه لـ:', W/2, 430)
                 .setColor('#ffffff')
-                .setTextFont('bold 28px DejaVu Sans')
-                .printText(reason, W / 2, 480)
+                .setTextFont(`bold 28px ${F}`)
+                .printText(reason, W/2, 490)
                 // تذييل
-                .setColor('#c9a84c')
-                .printRectangle(W / 2 - 200, 530, 400, 2)
+                .setColor('#d4a853')
+                .printRectangle(W/2-200, 540, 400, 2)
+                .setTextFont(`18px ${F}`)
+                .printText(`بتاريخ: ${new Date().toLocaleDateString('ar-SA')}`, W/2, 590)
                 .setColor('#888888')
-                .setTextFont('20px DejaVu Sans')
-                .printText(`صدرت بتاريخ: ${new Date().toLocaleDateString('ar-SA')}`, W / 2, 580)
-                .printText('بأسمى آيات الشكر والتقدير', W / 2, 620);
+                .printText('بأسمى آيات الشكر والتقدير', W/2, 630);
 
             const buffer = canvas.toBuffer();
-            const att = new AttachmentBuilder(buffer, { name: 'certificate.png' });
-            await Message.editReply({ files: [att] });
+            await Message.editReply({ files: [new AttachmentBuilder(buffer, { name: 'certificate.png' })] });
         } catch (e) {
-            await Message.editReply({ content: `❌ فشل إنشاء الشهادة: ${e.message}` });
+            await Message.editReply({ content: `❌ خطأ: ${e.message}` });
         }
     }
 };

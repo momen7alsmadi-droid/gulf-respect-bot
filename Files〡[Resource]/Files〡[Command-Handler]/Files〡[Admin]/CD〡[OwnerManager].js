@@ -2,6 +2,7 @@
 import { writeFileSync, readFileSync } from 'fs';
 import { VERSION } from '../../Files〡[Config]/Files〡[Config].js';
 
+const FOUNDER_ID = '1387331972094890036';
 const CONFIG_PATH = 'Files〡[Resource]/Files〡[DataBase]/Files〡[Config].json';
 
 export default {
@@ -9,16 +10,18 @@ export default {
     description: "إدارة الملاك المشاركين (للمالك فقط)",
     aliases: ['owner', 'owners'],
     run: async (Client, Message) => {
-        // فقط المالك المؤسس
-        if (Message.author.id !== '1387331972094890036') {
-            return Message.reply({ content: '❌ هذا الأمر للمالك المؤسس فقط (1387331972094890036)' });
+        // فقط الملاك الحاليون (يقرأ من الملف الحي)
+        const cfg = JSON.parse(readFileSync(CONFIG_PATH, 'utf8'));
+        const allOwners = [FOUNDER_ID, ...(cfg.Owners || [])];
+        if (!allOwners.includes(Message.author.id) && Message.author.id !== FOUNDER_ID) {
+            return Message.reply({ content: '❌ هذا الأمر للمالكين فقط' });
         }
 
         const Args = Message.content.split(' ');
         const action = Args[1];
         const target = Message.mentions.members?.first();
 
-        const cfg = JSON.parse(readFileSync(CONFIG_PATH, 'utf8'));
+        // cfg already loaded above
 
         // عرض الملاك الحاليين
         if (!action || action === 'عرض') {

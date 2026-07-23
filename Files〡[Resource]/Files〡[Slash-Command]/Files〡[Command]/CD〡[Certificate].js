@@ -18,7 +18,7 @@ export default {
             const member = Message.guild.members.cache.get(user.id);
             const name = member?.displayName || user.username;
             const W = 1000, H = 700;
-            const F = 'Noto Sans Arabic, sans-serif';
+            const F = 'Noto Sans Arabic, Noto Naskh Arabic, Noto Sans, DejaVu Sans, sans-serif';
 
             const canvas = new Canvas(W, H)
                 .setColor('#0a0a1a').printRectangle(0, 0, W, H)

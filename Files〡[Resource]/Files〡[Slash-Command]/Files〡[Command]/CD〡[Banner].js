@@ -2,7 +2,7 @@
 import { ApplicationCommandOptionType, AttachmentBuilder } from 'discord.js';
 import { Canvas } from 'canvas-constructor/cairo';
 
-const F = 'Noto Sans Arabic, sans-serif';
+const F = 'Noto Sans Arabic, Noto Naskh Arabic, Noto Sans, DejaVu Sans, sans-serif';
 
 export default {
     name: "بنر",

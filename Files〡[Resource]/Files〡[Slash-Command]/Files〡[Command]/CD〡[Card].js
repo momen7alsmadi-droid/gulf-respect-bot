@@ -2,9 +2,9 @@
 import { ApplicationCommandOptionType, AttachmentBuilder } from 'discord.js';
 import { Canvas, loadImage } from 'canvas-constructor/cairo';
 
-const FONT = 'bold 36px Noto Sans Arabic, sans-serif';
-const FONT_SM = '24px Noto Sans Arabic, sans-serif';
-const FONT_XS = '18px Noto Sans Arabic, sans-serif';
+const FONT = 'bold 36px Noto Sans Arabic, Noto Naskh Arabic, Noto Sans, DejaVu Sans, sans-serif';
+const FONT_SM = '24px Noto Sans Arabic, Noto Naskh Arabic, Noto Sans, DejaVu Sans, sans-serif';
+const FONT_XS = '18px Noto Sans Arabic, Noto Naskh Arabic, Noto Sans, DejaVu Sans, sans-serif';
 
 export default {
     name: "بطاقة",
@@ -35,7 +35,7 @@ export default {
                 // شريط علوي
                 .setColor('#d4a853').printRectangle(17, 17, W-34, 90)
                 .setColor('#111130')
-                .setTextFont('bold 28px Noto Sans Arabic, sans-serif').setTextAlign('center')
+                .setTextFont('bold 28px Noto Sans Arabic, Noto Naskh Arabic, Noto Sans, DejaVu Sans, sans-serif').setTextAlign('center')
                 .printText('♜ 𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚 ♜', W/2, 70)
                 // صورة العضو
                 .printCircularImage(avatar, 55, 140, 90)

@@ -9,17 +9,14 @@ export default {
     run: async (Client, Message) => {
         const attachment = Message.attachments.first();
         
-        // رفع صورة جديدة للخط
+        // رفع صورة جديدة = تحديث الخط
         if (attachment?.contentType?.startsWith('image/')) {
             const db = JSON.parse(readFileSync(DB_PATH, 'utf8'));
             db.lineImage = { title: 'صورة الخط', content: attachment.url };
             writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf8');
             await Message.delete().catch(() => {});
-            // إرسال الصورة كـ embed لتظهر بشكل صحيح
-            await Message.channel.send({ 
-                content: '✅ **تم تحديث صورة الخط!**',
-                embeds: [{ image: { url: attachment.url }, color: 0xFFD700 }]
-            }).catch(() => {});
+            // إرسال الصورة مباشرة - Discord يعرض الرابط كصورة
+            await Message.channel.send({ content: attachment.url }).catch(() => {});
             return;
         }
 
@@ -29,12 +26,10 @@ export default {
         const imageUrl = db.lineImage?.content;
         
         if (imageUrl?.startsWith('http')) {
-            await Message.channel.send({ 
-                embeds: [{ image: { url: imageUrl }, color: 0xFFD700 }] 
-            }).catch(() => {
-                Message.channel.send({ content: '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬' }).catch(() => {});
-            });
+            // Discord يعرض رابط الصورة كصورة مباشرة
+            await Message.channel.send({ content: imageUrl }).catch(() => {});
         } else {
+            // لا توجد صورة - إرسال خط نصي
             await Message.channel.send({ content: '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬' }).catch(() => {});
         }
     }

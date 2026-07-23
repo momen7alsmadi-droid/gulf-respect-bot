@@ -34,8 +34,8 @@ export default {
             .setColor('#FFD700');
 
         await Member.send({ embeds: [Embed] }).catch(() => { });
-        if (imageUrl.startsWith('http')) {
-            await Member.send({ embeds: [{ image: { url: imageUrl }, color: 0xFFD700 }] }).catch(() => {});
+        if (imageUrl?.startsWith('http')) {
+            await Member.send({ content: imageUrl }).catch(() => {});
         }
         await Message.reply({ content: `**تم ارسال نداء للعضو**` });
     }

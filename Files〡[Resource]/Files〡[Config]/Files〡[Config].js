@@ -3,7 +3,7 @@ import { AttachmentBuilder } from "discord.js";
 // ! ========== المعرفات الأساسية ==========
 export const VERSION = '3.0.0';
 export const Founder = '1387331972094890036';
-export const Owners = ["1387331972094890036", "sp9a"]
+export const Owners = ["1387331972094890036", "1154021789148659813"]
 export const GuildID = '1497265109247201280';
 export const Line = new AttachmentBuilder('line.gif', { name: 'line.gif' })
 

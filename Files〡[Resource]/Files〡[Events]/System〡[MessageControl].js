@@ -24,6 +24,7 @@ export default async function (Client, Message) {
 
     // زر رجوع
     if (Message.isButton() && (Message.customId === 'Msg-Back' || Message.customId === 'Msg-Refresh')) {
+        await Message.deferUpdate();
         const db = JSON.parse(readFileSync(DB_PATH, 'utf8'));
         const Embed = new EmbedBuilder().setTitle('📝 رسائل البوت').setColor('#FFD700')
             .setDescription('اختر قسماً من القائمة أدناه')
@@ -37,6 +38,7 @@ export default async function (Client, Message) {
 
     // اختيار قسم
     if (Message.isStringSelectMenu() && Message.customId === 'MsgCat') {
+        await Message.deferUpdate();
         const cat = CATS[Message.values[0]];
         if (!cat) return;
         const db = JSON.parse(readFileSync(DB_PATH, 'utf8'));
@@ -52,6 +54,7 @@ export default async function (Client, Message) {
 
     // اختيار عنصر للتعديل
     if (Message.isStringSelectMenu() && Message.customId === 'MsgEdit') {
+        await Message.deferUpdate();
         const key = Message.values[0];
         const db = JSON.parse(readFileSync(DB_PATH, 'utf8'));
         if (!db[key]) return;

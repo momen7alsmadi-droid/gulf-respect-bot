@@ -23,6 +23,7 @@ export default async function (Client, Message) {
 
     // زر رجوع
     if (Message.isButton() && Message.customId === 'CtrlBack') {
+        await Message.deferUpdate();
         const Embed = new EmbedBuilder().setTitle('🛡️ لوحة التحكم').setColor('#FFD700')
             .setDescription('اختر قسماً من القائمة أدناه')
             .addFields(Object.entries(SECTIONS).map(([k,v]) => ({ name: v.name, value: `${v.keys.length} إعداد`, inline: true })))
@@ -35,6 +36,7 @@ export default async function (Client, Message) {
 
     // اختيار قسم
     if (Message.isStringSelectMenu() && Message.customId === 'CtrlCat') {
+        await Message.deferUpdate();
         const sec = SECTIONS[Message.values[0]];
         if (!sec) return;
         const cfg = JSON.parse(readFileSync(CONFIG_PATH, 'utf8'));
@@ -53,6 +55,7 @@ export default async function (Client, Message) {
 
     // توافق مع القديم
     if (Message.isStringSelectMenu() && (Message.customId === 'Control-AllSections' || Message.customId === 'ControlPanel-MainMenu')) {
+        await Message.deferUpdate();
         const sec = SECTIONS[Message.values[0]];
         if (!sec && Message.values[0] !== 'show') return;
         if (Message.values[0] === 'show') {

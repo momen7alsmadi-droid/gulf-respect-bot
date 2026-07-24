@@ -27,7 +27,23 @@ function httpReq(opts, body) {
   });
 }
 
-let lastG = 0, lastM = 0;
+let lastD = 0, lastG = 0, lastM = 0;
+
+async function askDeepSeek(sys, msg) {
+  const key = process.env.DEEPSEEK_API_KEY;
+  if (!key) { lastD = -1; return null; }
+  const body = JSON.stringify({
+    model: 'deepseek-chat',
+    messages: [{ role: 'system', content: sys }, { role: 'user', content: msg }],
+    max_tokens: 250, temperature: 0.7
+  });
+  const { ok, code, data } = await httpReq({
+    hostname: 'api.deepseek.com', path: '/v1/chat/completions', method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer '+key, 'Content-Length': Buffer.byteLength(body) }
+  }, body);
+  lastD = code || 0;
+  return ok ? data?.choices?.[0]?.message?.content : null;
+}
 
 async function askGemini(sys, msg) {
   const key = process.env.GEMINI_API_KEY;
@@ -73,9 +89,10 @@ export default async (Client, Message) => {
 
     await Message.channel.sendTyping();
     const sys = buildSys(Message.guild);
-    let reply = await askGroq(sys, txt);
+    let reply = await askDeepSeek(sys, txt);
+    if (!reply) reply = await askGroq(sys, txt);
     if (!reply) reply = await askGemini(sys, txt);
-    if (!reply) reply = 'المعذرة، عاود المحاولة بعد قليل. [G:'+lastG+'|M:'+lastM+']';
+    if (!reply) reply = 'المعذرة، عاود المحاولة بعد قليل. [D:'+lastD+'|G:'+lastG+'|M:'+lastM+']';
     
     save(Message.channel.id, 'user', txt);
     save(Message.channel.id, 'assistant', reply);

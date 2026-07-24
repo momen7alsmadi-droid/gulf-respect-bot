@@ -6,40 +6,47 @@ import Tesseract from 'tesseract.js';
 const aiCooldowns = new Map();
 const AI_COOLDOWN = 3000;
 
-// ─── محركات AI متعددة (أساسي + احتياطي) ───
-const GROQ_KEY = process.env.GROQ_API_KEY || '';
+// ─── محركات AI متعددة (لا يفشل أبداً) ───
 
-async function askGroq(prompt) {
+async function tryGroq(prompt) {
+  const key = process.env.GROQ_API_KEY || '';
+  if (!key) return null;
   const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_KEY}` },
-    body: JSON.stringify({
-      model: 'llama-3.3-70b-versatile',
-      messages: [{ role: 'user', content: prompt }],
-      max_tokens: 1000
-    })
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'user', content: prompt }], max_tokens: 1000 })
   });
-  if (!res.ok) throw new Error(`Groq ${res.status}`);
-  const data = await res.json();
-  return data.choices?.[0]?.message?.content;
+  if (!res.ok) return null;
+  return (await res.json()).choices?.[0]?.message?.content;
 }
 
-async function askPollinations(prompt) {
+async function tryPollinations(prompt) {
   const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}?model=openai`);
-  if (!res.ok) throw new Error(`Pollinations ${res.status}`);
+  if (!res.ok) return null;
   return await res.text();
 }
 
+async function tryAltAI(prompt) {
+  // محرك احتياطي إضافي
+  const res = await fetch(`https://api.sree.shop/v1/chat/completions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: 'gpt-3.5-turbo', messages: [{ role: 'user', content: prompt }] })
+  });
+  if (!res.ok) return null;
+  return (await res.json()).choices?.[0]?.message?.content;
+}
+
+const ENGINES = [tryGroq, tryPollinations, tryAltAI];
+
 async function askAI(prompt) {
-  // المحاولة الأولى: Groq (إذا كان المفتاح موجوداً)
-  if (GROQ_KEY) {
-    try { const reply = await askGroq(prompt); if (reply) return reply; } catch(e) { console.warn('Groq failed, fallback to Pollinations:', e.message); }
+  for (const engine of ENGINES) {
+    try {
+      const reply = await engine(prompt);
+      if (reply && reply.trim()) return reply;
+    } catch(e) { /* تخطي للمحرك التالي */ }
   }
-  // المحاولة الثانية: Pollinations.ai (مجاني بدون مفتاح)
-  try { return await askPollinations(prompt) || '⚠️ لم أستطع الرد، حاول مجدداً'; } catch(e) {
-    console.error('All AI backends failed:', e.message);
-    throw new Error('جميع محركات AI فشلت');
-  }
+  return 'عذراً، لم أستطع معالجة رسالتك. حاول مرة أخرى بعد قليل 🙏';
 }
 
 function isAiOnCooldown(userId) {
@@ -98,29 +105,21 @@ export default async (Client, Message) => {
             
             // AI Chat (مع أو بدون صورة)
             if (isAiChat) {
-                // 🧪 اختبار سريع: إذا لم نستطع حتى إرسال هذه الرسالة فالمشكلة في التدفق
-                await Message.reply('✅ **AI قيد التشغيل... جاري المعالجة...**').catch(()=>{});
-                
                 await Message.channel.sendTyping();
                 let content = Message.content;
                 if (hasImage) {
                     const imgTxt = await extractTextFromImage(Message.attachments.first().url);
                     if (imgTxt) content += `\n[محتوى الصورة: ${imgTxt}]`;
                 }
-                try {
-                    const reply = await askAI(content);
-                    if (reply.length <= 2000) {
-                        await Message.reply(reply);
-                    } else {
-                        for (let i = 0; i < reply.length; i += 1990) {
-                            const chunk = reply.substring(i, i + 1990);
-                            if (i === 0) await Message.reply(chunk);
-                            else await Message.channel.send(chunk);
-                        }
+                const reply = await askAI(content);
+                if (reply.length <= 2000) {
+                    await Message.reply(reply);
+                } else {
+                    for (let i = 0; i < reply.length; i += 1990) {
+                        const chunk = reply.substring(i, i + 1990);
+                        if (i === 0) await Message.reply(chunk);
+                        else await Message.channel.send(chunk);
                     }
-                } catch (e) {
-                    console.error('AI Error:', e.message);
-                    await Message.reply('⚠️ الضغط عالٍ، حاول لاحقاً').catch(()=>{});
                 }
                 return;
             }

@@ -2,12 +2,27 @@
 import { Founder, VERSION, ERR, GuildID, AIChat } from '../Files〡[Config]/Files〡[Config].js';
 import https from 'https';
 
-const mem = new Map(), TTL = 45000, cd = new Map();
+const mem = new Map(), TTL = 60000, cd = new Map();
 function hist(ch) { const n=Date.now();for(const[k,v]of mem){const f=v.filter(m=>n-m.t<TTL);f.length?mem.set(k,f):mem.delete(k)} return (mem.get(ch)||[]).filter(m=>Date.now()-m.t<TTL) }
 function save(ch, r, t) { if(!t)return;const m=mem.get(ch)||[];m.push({role:r,content:t,t:Date.now()});mem.set(ch,m) }
 
 function buildSys(g) {
-  return `أنت عضو ذكي في سيرفر "${g?.name||'السيرفر'}". المالك:<@${g?.ownerId||'؟'}>. العمر:${g?.createdAt?Math.floor((Date.now()-g.createdAt)/86400000):'؟'} يوم. الأعضاء:${g?.memberCount||'؟'}.\nالقواعد: إملاء عربي سليم. إيموجي قليل. أجب بمعلومة صحيحة عن السيرفر. ذبات ذكية بدون إسفاف. استخدم "زوط" للمبالغ. لا تعترف أنك بوت.`;
+  return `أنت واحد من الشباب في سيرفر "${g?.name||'السيرفر'}"، سولفجي ومحبوب. تكلّم براحتك وبعفوية كأنك قاعد مع ربعك، بدون تكلف ولا رسميات.
+
+معلومات سيرفرنا:
+- الاسم: ${g?.name||'السيرفر'}
+- مولع من: ${g?.createdAt?Math.floor((Date.now()-g.createdAt)/86400000):'؟'} يوم
+- عددنا: ${g?.memberCount||'؟'} عضو
+- المالك: <@${g?.ownerId||'؟'}>
+
+شخصيتك:
+- تتكلم تلقائي وطبيعي، ردودك سلسة كأنك ترد على صاحبك
+- إيموجيات خفيفة ومناسبة للسياق، لا تكثر بس استخدمها بعفوية 😄💀🔥
+- إذا سألوك عن السيرفر أو عدد الأعضاء جاوب بالمعلومة الصح مباشرة
+- عندك حس كوميدي: إذا أحد استفزك اذبحه بذبة محترمة وموسمسة (مثلاً: "طالع بالمرآية وبتعرف مين الوحش")
+- إذا شفت أحد يبالغ أو يهايط استخدم "زوط" أو "قاعد تزوط" بأسلوب طبيعي ومضحك
+- لا تتكلف ولا تحش ترندات بشكل مصطنع، كن طبيعي
+- أبداً لا تقول إنك ذكاء اصطناعي أو بوت، إنت عضو حقيقي هنا وسولفجي`;
 }
 
 function httpReq(opts, body) {
@@ -35,7 +50,7 @@ async function askDeepSeek(sys, msg) {
   const body = JSON.stringify({
     model: 'deepseek-chat',
     messages: [{ role: 'system', content: sys }, { role: 'user', content: msg }],
-    max_tokens: 250, temperature: 0.7
+    max_tokens: 250, temperature: 0.75
   });
   const { ok, code, data } = await httpReq({
     hostname: 'api.deepseek.com', path: '/v1/chat/completions', method: 'POST',
@@ -63,7 +78,7 @@ async function askGroq(sys, msg) {
   const body = JSON.stringify({
     model: 'llama-3.3-70b-versatile',
     messages: [{ role: 'system', content: sys }, { role: 'user', content: msg }],
-    max_tokens: 250, temperature: 0.7
+    max_tokens: 250, temperature: 0.75
   });
   const { ok, code, data } = await httpReq({
     hostname: 'api.groq.com', path: '/openai/v1/chat/completions', method: 'POST',

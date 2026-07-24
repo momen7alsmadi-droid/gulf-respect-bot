@@ -2,20 +2,12 @@
 import { Founder, VERSION, ERR, GuildID, AIChat } from '../Files〡[Config]/Files〡[Config].js';
 import https from 'https';
 
-const mem = new Map(); // ذاكرة المحادثة
-const TTL = 45000; // 45 ثانية
-const cd = new Map();
+const mem = new Map(), TTL = 45000, cd = new Map();
+function hist(ch) { const n=Date.now();for(const[k,v]of mem){const f=v.filter(m=>n-m.t<TTL);f.length?mem.set(k,f):mem.delete(k)} return (mem.get(ch)||[]).filter(m=>Date.now()-m.t<TTL) }
+function save(ch, r, t) { if(!t)return;const m=mem.get(ch)||[];m.push({role:r,content:t,t:Date.now()});mem.set(ch,m) }
 
-function gc() { const n=Date.now(); for(const[k,v]of mem){const f=v.filter(m=>n-m.t<TTL);f.length?mem.set(k,f):mem.delete(k)} }
-function hist(ch) { gc(); return (mem.get(ch)||[]).filter(m=>Date.now()-m.t<TTL) }
-function save(ch, role, txt) { if(!txt)return; const m=mem.get(ch)||[]; m.push({role,content:txt,t:Date.now()}); mem.set(ch,m) }
-
-function buildSys(guild) {
-  const name = guild?.name || 'السيرفر';
-  const owner = guild?.ownerId || 'المالك';
-  const created = guild?.createdAt ? Math.floor((Date.now()-guild.createdAt.getTime())/86400000) : '؟';
-  const members = guild?.memberCount ?? 'غير معروف';
-  return `أنت عضو بارز وذكي جداً في سيرفر "${name}"، ولست مهرجاً ولا روبوتاً.\n\nمعلومات السيرفر (أجب عنها بدقة عند السؤال):\n- الاسم: ${name} | المالك: <@${owner}> | العمر: ${created} يوم | الأعضاء: ${members}\n\nالقواعد:\n1- إملاء عربي صحيح 100%. إيموجي واحد أو اثنين فقط، وأحياناً بدون.\n2- إذا سُئلت عن عدد الأعضاء أو معلومات السيرفر، أجب بالرقم الصحيح فوراً.\n3- ذبات ذكية ومحترفة بدون Cringe. إذا أهانك أحد، قصف جبهته بذكاء.\n4- استخدم "زوط" فقط عندما يبالغ أحد أو يكذب.\n5- ردودك طبيعية هادئة. لا تعترف أبداً أنك بوت أو AI.`;
+function buildSys(g) {
+  return `أنت عضو ذكي في سيرفر "${g?.name||'السيرفر'}". المالك:<@${g?.ownerId||'؟'}>. العمر:${g?.createdAt?Math.floor((Date.now()-g.createdAt)/86400000):'؟'} يوم. الأعضاء:${g?.memberCount||'؟'}.\nالقواعد: إملاء عربي سليم. إيموجي قليل. أجب بمعلومة صحيحة عن السيرفر. ذبات ذكية بدون إسفاف. استخدم "زوط" للمبالغ. لا تعترف أنك بوت.`;
 }
 
 function httpReq(opts, body) {
@@ -28,8 +20,8 @@ function httpReq(opts, body) {
         catch { resolve({ ok: false, code: res.statusCode }); }
       });
     });
-    req.on('error', e => resolve({ ok: false, code: 0, err: e.message }));
-    req.setTimeout(10000, () => { req.destroy(); resolve({ ok: false, code: 0, err: 'timeout' }); });
+    req.on('error', e => resolve({ ok: false, code: 0 }));
+    req.setTimeout(10000, () => { req.destroy(); resolve({ ok: false, code: 0 }); });
     if (body) req.write(body);
     req.end();
   });
@@ -37,29 +29,26 @@ function httpReq(opts, body) {
 
 let lastG = 0, lastM = 0;
 
-async function askGemini(sys, histMsgs, msg) {
+async function askGemini(sys, msg) {
   const key = process.env.GEMINI_API_KEY;
   if (!key) { lastM = -1; return null; }
-  const contents = [];
-  for (const h of histMsgs) contents.push({ role: h.role==='assistant'?'model':'user', parts: [{ text: h.content }] });
-  contents.push({ role: 'user', parts: [{ text: msg }] });
-  const body = JSON.stringify({ system_instruction: { parts: [{ text: sys }] }, contents });
+  const body = JSON.stringify({ system_instruction: { parts: [{ text: sys }] }, contents: [{ parts: [{ text: msg }] }] });
   const { ok, code, data } = await httpReq({
-    hostname: 'generativelanguage.googleapis.com',
-    path: '/v1beta/models/gemini-2.0-flash:generateContent?key='+key,
+    hostname: 'generativelanguage.googleapis.com', path: '/v1beta/models/gemini-2.0-flash:generateContent?key='+key,
     method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) }
   }, body);
   lastM = code || 0;
   return ok ? data?.candidates?.[0]?.content?.parts?.[0]?.text : null;
 }
 
-async function askGroq(sys, histMsgs, msg) {
+async function askGroq(sys, msg) {
   const key = process.env.GROQ_API_KEY;
   if (!key) { lastG = -1; return null; }
-  const msgs = [{ role: 'system', content: sys }];
-  for (const h of histMsgs) msgs.push({ role: h.role, content: h.content });
-  msgs.push({ role: 'user', content: msg });
-  const body = JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: msgs, max_tokens: 500, temperature: 0.7 });
+  const body = JSON.stringify({
+    model: 'llama-3.3-70b-versatile',
+    messages: [{ role: 'system', content: sys }, { role: 'user', content: msg }],
+    max_tokens: 250, temperature: 0.7
+  });
   const { ok, code, data } = await httpReq({
     hostname: 'api.groq.com', path: '/openai/v1/chat/completions', method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer '+key, 'Content-Length': Buffer.byteLength(body) }
@@ -84,11 +73,8 @@ export default async (Client, Message) => {
 
     await Message.channel.sendTyping();
     const sys = buildSys(Message.guild);
-    const h = hist(Message.channel.id);
-    
-    // Gemini أولاً، Groq ثانياً
-    let reply = await askGemini(sys, h, txt);
-    if (!reply) reply = await askGroq(sys, h, txt);
+    let reply = await askGroq(sys, txt);
+    if (!reply) reply = await askGemini(sys, txt);
     if (!reply) reply = 'المعذرة، عاود المحاولة بعد قليل. [G:'+lastG+'|M:'+lastM+']';
     
     save(Message.channel.id, 'user', txt);

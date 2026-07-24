@@ -4,12 +4,23 @@
 // مدمج مع بوت CIA Community
 // ═══════════════════════════════════════════════════════════════
 
-import { Hercai } from 'hercai';
 import Tesseract from 'tesseract.js';
 import fetch from 'node-fetch';
 import { AIChat } from '../Files〡[Config]/Files〡[Config].js';
 
-const herc = new Hercai();
+// ─── دالة استدعاء AI عبر HTTP ───
+async function askAI(prompt) {
+  const res = await fetch('https://api.nyro.zeet.app/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      messages: [{ role: 'user', content: prompt }],
+      model: 'gpt-3.5-turbo'
+    })
+  });
+  const data = await res.json();
+  return data?.choices?.[0]?.message?.content || data?.reply || data?.response || '⚠️ لم أستطع الرد، حاول مجدداً';
+}
 
 // ─── معدل الاستخدام (Rate Limit) ───
 const cooldowns = new Map();
@@ -117,12 +128,7 @@ export default async function (Client, Message) {
 
     // ─── إرسال السؤال للذكاء الاصطناعي ───
     try {
-      const response = await herc.question({
-        model: 'v3-beta',
-        content: fullContent,
-      });
-
-      const replyText = response.reply;
+      const replyText = await askAI(fullContent);
       if (replyText.length <= 2000) {
         await Message.reply(replyText);
       } else {

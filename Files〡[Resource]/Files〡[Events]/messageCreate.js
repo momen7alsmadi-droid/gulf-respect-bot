@@ -1,13 +1,25 @@
 "use strict";
 import { Founder, VERSION, ERR, GuildID, AIChat } from '../Files〡[Config]/Files〡[Config].js';
-import { Hercai } from 'hercai';
 import Tesseract from 'tesseract.js';
 import fetch from 'node-fetch';
 
 // ─── إعدادات الذكاء الاصطناعي ───
-const herc = new Hercai();
 const aiCooldowns = new Map();
 const AI_COOLDOWN = 3000;
+
+// ─── دالة استدعاء AI عبر HTTP ───
+async function askAI(prompt) {
+  const res = await fetch('https://api.nyro.zeet.app/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      messages: [{ role: 'user', content: prompt }],
+      model: 'gpt-3.5-turbo'
+    })
+  });
+  const data = await res.json();
+  return data?.choices?.[0]?.message?.content || data?.reply || data?.response || '⚠️ لم أستطع الرد، حاول مجدداً';
+}
 
 function isAiOnCooldown(userId) {
   const now = Date.now();
@@ -81,8 +93,7 @@ export default async (Client, Message) => {
                     if (imgTxt) content += `\n[محتوى الصورة: ${imgTxt}]`;
                 }
                 try {
-                    const res = await herc.question({ model: 'v3-beta', content });
-                    const reply = res.reply;
+                    const reply = await askAI(content);
                     if (reply.length <= 2000) {
                         await Message.reply(reply);
                     } else {

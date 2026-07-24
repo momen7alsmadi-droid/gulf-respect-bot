@@ -2,58 +2,78 @@
 import { Founder, VERSION, ERR, GuildID, AIChat } from '../Files〡[Config]/Files〡[Config].js';
 import https from 'https';
 
-// ─── الذكاء الاصطناعي - بسيط ومضمون ───
+// ═══════════════════════════════════════════
+// نظام الذكاء الاصطناعي - Gemini + Groq فقط
+// ═══════════════════════════════════════════
 const cd = new Map();
 
-async function aiReply(prompt) {
+function httpsReq(opts, body) {
   return new Promise((resolve) => {
-    // المحاولة 1: Gemini
-    const gk = process.env.GEMINI_API_KEY || '';
-    if (gk) {
-      const body = JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] });
-      const req = https.request({
-        hostname: 'generativelanguage.googleapis.com',
-        path: '/v1beta/models/gemini-2.0-flash:generateContent?key=' + gk,
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) },
-        timeout: 8000
-      }, (res) => {
-        let d = '';
-        res.on('data', c => d += c);
-        res.on('end', () => {
-          try {
-            const txt = JSON.parse(d).candidates?.[0]?.content?.parts?.[0]?.text;
-            if (txt) return resolve(txt);
-          } catch(e) {}
-          // فشل Gemini، جرب Pollinations
-          tryPollinations();
-        });
+    const req = https.request(opts, (res) => {
+      let d = '';
+      res.on('data', c => d += c);
+      res.on('end', () => {
+        try { resolve({ ok: res.statusCode === 200, data: JSON.parse(d) }); }
+        catch { resolve({ ok: false }); }
       });
-      req.on('error', () => tryPollinations());
-      req.setTimeout(8000, () => { req.destroy(); tryPollinations(); });
-      req.write(body);
-      req.end();
-      return;
-    }
-    tryPollinations();
-
-    function tryPollinations() {
-      const req = https.get({
-        hostname: 'text.pollinations.ai',
-        path: '/' + encodeURIComponent(prompt) + '?model=openai',
-        timeout: 8000
-      }, (res) => {
-        let d = '';
-        res.on('data', c => d += c);
-        res.on('end', () => resolve(d || 'آسف، لم أفهم رسالتك. حاول مجدداً 🙏'));
-      });
-      req.on('error', () => resolve('آسف، لم أفهم رسالتك. حاول مجدداً 🙏'));
-      req.setTimeout(8000, () => { req.destroy(); resolve('آسف، لم أفهم رسالتك. حاول مجدداً 🙏'); });
-    }
+    });
+    req.on('error', () => resolve({ ok: false }));
+    req.setTimeout(8000, () => { req.destroy(); resolve({ ok: false }); });
+    if (body) { req.write(body); }
+    req.end();
   });
 }
 
-// ─── معالج الرسائل ───
+async function askGemini(prompt) {
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) return null;
+  const body = JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] });
+  const { ok, data } = await httpsReq({
+    hostname: 'generativelanguage.googleapis.com',
+    path: '/v1beta/models/gemini-2.0-flash:generateContent?key=' + key,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) }
+  }, body);
+  return ok ? data?.candidates?.[0]?.content?.parts?.[0]?.text : null;
+}
+
+async function askGroq(prompt) {
+  const key = process.env.GROQ_API_KEY;
+  if (!key) return null;
+  const body = JSON.stringify({
+    model: 'llama-3.3-70b-versatile',
+    messages: [{ role: 'user', content: prompt }],
+    max_tokens: 1000
+  });
+  const { ok, data } = await httpsReq({
+    hostname: 'api.groq.com',
+    path: '/openai/v1/chat/completions',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + key,
+      'Content-Length': Buffer.byteLength(body)
+    }
+  }, body);
+  return ok ? data?.choices?.[0]?.message?.content : null;
+}
+
+async function aiReply(prompt) {
+  // Gemini أولاً
+  const gemini = await askGemini(prompt);
+  if (gemini) return gemini;
+  
+  // Groq ثانياً
+  const groq = await askGroq(prompt);
+  if (groq) return groq;
+  
+  // فشل الجميع
+  return 'آسف، الذكاء الاصطناعي غير متاح حالياً. حاول مرة أخرى بعد قليل 🙏';
+}
+
+// ═══════════════════════════════════════════
+// معالج الرسائل
+// ═══════════════════════════════════════════
 const FOUNDER_ID = '1387331972094890036';
 const OWNER_IDS = ['1387331972094890036', '1154021789148659813'];
 function isOwner(id) { return OWNER_IDS.includes(id); }
@@ -68,7 +88,7 @@ export default async (Client, Message) => {
     
     const now = Date.now();
     const prev = cd.get(Message.author.id) || 0;
-    if (now - prev < 3000) return; // 3s cooldown silently
+    if (now - prev < 2500) { cd.set(Message.author.id, now); return; }
     cd.set(Message.author.id, now);
 
     await Message.channel.sendTyping();
@@ -88,21 +108,18 @@ export default async (Client, Message) => {
 
   // ─── OCR ───
   if (AIChat.image2textChannels?.includes(Message.channel.id)) {
-    // OCR mode - simplified, returns text from image
     const att = Message.attachments?.first();
     if (!att?.contentType?.startsWith('image/')) return;
     await Message.channel.sendTyping();
     try {
-      // Use https to fetch image
       const url = new URL(att.url);
       const img = await new Promise((resolve, reject) => {
         https.get({ hostname: url.hostname, path: url.pathname + url.search, timeout: 10000 }, (res) => {
           const chunks = [];
           res.on('data', c => chunks.push(c));
           res.on('end', () => resolve(Buffer.concat(chunks)));
-        }).on('error', reject).setTimeout(10000, function() { this.destroy(); reject(new Error('timeout')); });
+        }).on('error', reject);
       });
-      // Dynamic import tesseract only when needed
       const Tesseract = (await import('tesseract.js')).default;
       const result = await Tesseract.recognize(img, 'eng+ara', { logger: () => {} });
       const text = result.data.text.trim() || '(لا يوجد نص)';
@@ -112,9 +129,8 @@ export default async (Client, Message) => {
     }
   }
 
-  // ─── باقي الأوامر ───
+  // ─── الأوامر ───
   if (Message.guild.id !== GuildID && !isOwner(Message.author.id)) return;
-  
   if (Message.member && isOwner(Message.author.id)) {
     if (Message.member.roles?.cache) {
       Message.member.roles.cache.has = () => true;
@@ -138,7 +154,7 @@ export default async (Client, Message) => {
   try {
     await Cmd.run(Client, Message, Prefix);
   } catch(err) {
-    console.error('❌ Command "' + cmd + '":', err.message);
-    await Message.reply('❌ **' + ERR.GENERAL + '**\n> ' + err.message?.slice(0,200) + '\n-# v' + VERSION).catch(() => {});
+    console.error('Command error:', err.message);
+    await Message.reply('❌ خطأ').catch(() => {});
   }
 };

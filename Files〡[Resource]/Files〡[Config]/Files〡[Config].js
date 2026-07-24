@@ -354,8 +354,8 @@ export const Dissenting = {
 
 // ! - الذكاء الاصطناعي (AI Chat + OCR)
 export const AIChat = {
-    allowed_channel_ids: ['1503765640115261450'],
-    image2textChannels: ['1503765640115261450']
+    allowed_channel_ids: ['1530138484218662963'],
+    image2textChannels: ['1530138484218662963']
 }
 
 // ! - التعاميم

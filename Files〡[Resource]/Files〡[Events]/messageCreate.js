@@ -51,7 +51,23 @@ function httpReq(opts, body) {
   });
 }
 
-let lastD = 0, lastG = 0, lastM = 0;
+let lastO = 0, lastD = 0, lastG = 0, lastM = 0;
+
+async function askOpenRouter(sys, msg) {
+  const key = process.env.OPENROUTER_API_KEY;
+  if (!key) { lastO = -1; return null; }
+  const body = JSON.stringify({
+    model: 'deepseek/deepseek-chat-v3-0324',
+    messages: [{ role: 'system', content: sys }, { role: 'user', content: msg }],
+    max_tokens: 250, temperature: 0.75
+  });
+  const { ok, code, data } = await httpReq({
+    hostname: 'openrouter.ai', path: '/api/v1/chat/completions', method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer '+key, 'HTTP-Referer': 'https://discord.com', 'Content-Length': Buffer.byteLength(body) }
+  }, body);
+  lastO = code || 0;
+  return ok ? data?.choices?.[0]?.message?.content : null;
+}
 
 async function askDeepSeek(sys, msg) {
   const key = process.env.DEEPSEEK_API_KEY;
@@ -113,10 +129,11 @@ export default async (Client, Message) => {
 
     await Message.channel.sendTyping();
     const sys = buildSys(Message.guild);
-    let reply = await askDeepSeek(sys, txt);
+    let reply = await askOpenRouter(sys, txt);
+    if (!reply) reply = await askDeepSeek(sys, txt);
     if (!reply) reply = await askGroq(sys, txt);
     if (!reply) reply = await askGemini(sys, txt);
-    if (!reply) reply = 'المعذرة، عاود المحاولة بعد قليل. [D:'+lastD+'|G:'+lastG+'|M:'+lastM+']';
+    if (!reply) reply = 'المعذرة، عاود المحاولة بعد قليل. [O:'+lastO+'|D:'+lastD+'|G:'+lastG+'|M:'+lastM+']';
     
     save(Message.channel.id, 'user', txt);
     save(Message.channel.id, 'assistant', reply);

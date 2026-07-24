@@ -74,13 +74,20 @@ async function tryPollinations(prompt) {
 const ENGINES = [tryGemini, tryGroq, tryPollinations];
 
 async function askAI(prompt) {
+  const errors = [];
   for (const engine of ENGINES) {
     try {
+      const start = Date.now();
       const reply = await engine(prompt);
       if (reply && reply.trim()) return reply;
-    } catch(e) { /* تخطي للمحرك التالي */ }
+      errors.push(`${engine.name}: returned empty (${Date.now()-start}ms)`);
+    } catch(e) {
+      errors.push(`${engine.name}: ${e.message}`);
+    }
   }
-  return 'عذراً، لم أستطع معالجة رسالتك. حاول مرة أخرى بعد قليل 🙏';
+  // تسجيل الأخطاء للمساعدة في التشخيص
+  console.error('AI engines failed:', errors.join(' | '));
+  return `عذراً، لم أستطع معالجة رسالتك. حاول مرة أخرى بعد قليل 🙏\n\n🔧 تشخيص: ${errors.join(' → ')}`;
 }
 
 function isAiOnCooldown(userId) {

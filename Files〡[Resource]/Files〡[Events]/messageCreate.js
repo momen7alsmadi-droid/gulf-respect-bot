@@ -8,77 +8,70 @@ import http from 'http';
 const aiCooldowns = new Map();
 const AI_COOLDOWN = 3000;
 
-// ─── محركات AI متعددة (لا يفشل أبداً) ───
-
-async function tryGemini(prompt) {
-  const key = process.env.GEMINI_API_KEY || '';
-  if (!key) return null;
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-  });
-  if (!res.ok) return null;
-  const data = await res.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text;
-}
-
-async function tryGroq(prompt) {
-  const key = process.env.GROQ_API_KEY || '';
-  if (!key) return null;
-  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'user', content: prompt }], max_tokens: 1000 })
-  });
-  if (!res.ok) return null;
-  return (await res.json()).choices?.[0]?.message?.content;
-}
-
-async function tryPollinations(prompt) {
-  const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}?model=openai`);
-  if (!res.ok) return null;
-  return await res.text();
-}
-
-async function tryAltAI(prompt) {
-  // محرك احتياطي إضافي
-  const res = await fetch(`https://api.sree.shop/v1/chat/completions`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: 'gpt-3.5-turbo', messages: [{ role: 'user', content: prompt }] })
-  });
-  if (!res.ok) return null;
-  return (await res.json()).choices?.[0]?.message?.content;
-}
-
-// ─── محرك خامس: Gemini بـ https خام (يعمل حتى لو fetch معطل) ───
-async function tryGeminiRaw(prompt) {
-  const key = process.env.GEMINI_API_KEY || '';
-  if (!key) return null;
+// ─── دالة مساعدة: طلب POST بـ https خام (تعمل حتى لو fetch معطل) ───
+function httpsPost(hostname, path, headers, body) {
   return new Promise((resolve) => {
-    const body = JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] });
-    const req = https.request({
-      hostname: 'generativelanguage.googleapis.com',
-      path: `/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) }
-    }, (res) => {
+    const req = https.request({ hostname, path, method: 'POST', headers, timeout: 10000 }, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
-        try { resolve(JSON.parse(data).candidates?.[0]?.content?.parts?.[0]?.text || null); }
-        catch { resolve(null); }
+        try { resolve({ ok: res.statusCode >= 200 && res.statusCode < 300, status: res.statusCode, data: JSON.parse(data) }); }
+        catch { resolve({ ok: false, status: res.statusCode, data: null }); }
       });
     });
-    req.on('error', () => resolve(null));
-    req.setTimeout(10000, () => { req.destroy(); resolve(null); });
+    req.on('error', () => resolve({ ok: false, status: 0, data: null }));
+    req.setTimeout(10000, () => { req.destroy(); resolve({ ok: false, status: 0, data: null }); });
     req.write(body);
     req.end();
   });
 }
 
-const ENGINES = [tryGeminiRaw, tryGemini, tryGroq, tryPollinations, tryAltAI];
+function httpsGet(hostname, path) {
+  return new Promise((resolve) => {
+    const req = https.get({ hostname, path, timeout: 10000 }, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => resolve({ ok: res.statusCode >= 200 && res.statusCode < 300, status: res.statusCode, data }));
+    });
+    req.on('error', () => resolve({ ok: false, status: 0, data: null }));
+    req.setTimeout(10000, () => { req.destroy(); resolve({ ok: false, status: 0, data: null }); });
+  });
+}
+
+// ─── 5 محركات AI - كلها بـ https خام ───
+
+async function tryGemini(prompt) {
+  const key = process.env.GEMINI_API_KEY || '';
+  if (!key) return null;
+  const body = JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] });
+  const { ok, data } = await httpsPost(
+    'generativelanguage.googleapis.com',
+    `/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,
+    { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) },
+    body
+  );
+  return ok ? data?.candidates?.[0]?.content?.parts?.[0]?.text : null;
+}
+
+async function tryGroq(prompt) {
+  const key = process.env.GROQ_API_KEY || '';
+  if (!key) return null;
+  const body = JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'user', content: prompt }], max_tokens: 1000 });
+  const { ok, data } = await httpsPost(
+    'api.groq.com',
+    '/openai/v1/chat/completions',
+    { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}`, 'Content-Length': Buffer.byteLength(body) },
+    body
+  );
+  return ok ? data?.choices?.[0]?.message?.content : null;
+}
+
+async function tryPollinations(prompt) {
+  const { ok, data } = await httpsGet('text.pollinations.ai', `/${encodeURIComponent(prompt)}?model=openai`);
+  return ok ? data : null;
+}
+
+const ENGINES = [tryGemini, tryGroq, tryPollinations];
 
 async function askAI(prompt) {
   for (const engine of ENGINES) {

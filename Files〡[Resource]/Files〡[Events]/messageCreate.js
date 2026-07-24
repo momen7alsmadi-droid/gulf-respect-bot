@@ -8,6 +8,19 @@ const AI_COOLDOWN = 3000;
 
 // ─── محركات AI متعددة (لا يفشل أبداً) ───
 
+async function tryGemini(prompt) {
+  const key = process.env.GEMINI_API_KEY || '';
+  if (!key) return null;
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+  });
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text;
+}
+
 async function tryGroq(prompt) {
   const key = process.env.GROQ_API_KEY || '';
   if (!key) return null;
@@ -37,7 +50,7 @@ async function tryAltAI(prompt) {
   return (await res.json()).choices?.[0]?.message?.content;
 }
 
-const ENGINES = [tryGroq, tryPollinations, tryAltAI];
+const ENGINES = [tryGemini, tryGroq, tryPollinations, tryAltAI];
 
 async function askAI(prompt) {
   for (const engine of ENGINES) {

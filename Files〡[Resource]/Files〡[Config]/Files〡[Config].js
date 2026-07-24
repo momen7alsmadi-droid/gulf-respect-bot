@@ -352,6 +352,12 @@ export const Dissenting = {
  Channel: '1503765640115261450',
  Role: '1525548154299220159'}
 
+// ! - الذكاء الاصطناعي (AI Chat + OCR)
+export const AIChat = {
+    allowed_channel_ids: ['1503765640115261450'],
+    image2textChannels: ['1503765640115261450']
+}
+
 // ! - التعاميم
 export const Circulars = {
  Circular〡1: {

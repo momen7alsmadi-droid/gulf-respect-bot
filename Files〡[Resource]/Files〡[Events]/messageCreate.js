@@ -2,24 +2,20 @@
 import { Founder, VERSION, ERR, GuildID, AIChat } from '../Files〡[Config]/Files〡[Config].js';
 import https from 'https';
 
+const mem = new Map(); // ذاكرة المحادثة
+const TTL = 45000; // 45 ثانية
 const cd = new Map();
+
+function gc() { const n=Date.now(); for(const[k,v]of mem){const f=v.filter(m=>n-m.t<TTL);f.length?mem.set(k,f):mem.delete(k)} }
+function hist(ch) { gc(); return (mem.get(ch)||[]).filter(m=>Date.now()-m.t<TTL) }
+function save(ch, role, txt) { if(!txt)return; const m=mem.get(ch)||[]; m.push({role,content:txt,t:Date.now()}); mem.set(ch,m) }
 
 function buildSys(guild) {
   const name = guild?.name || 'السيرفر';
   const owner = guild?.ownerId || 'المالك';
   const created = guild?.createdAt ? Math.floor((Date.now()-guild.createdAt.getTime())/86400000) : '؟';
   const members = guild?.memberCount ?? 'غير معروف';
-  return `أنت عضو بارز وذكي جداً في سيرفر "${name}"، ولست مهرجاً ولا روبوتاً.
-
-معلومات السيرفر (أجب عنها بدقة عند السؤال):
-- الاسم: ${name} | المالك: <@${owner}> | العمر: ${created} يوم | الأعضاء: ${members}
-
-القواعد:
-1- إملاء عربي صحيح 100%. إيموجي واحد أو اثنين فقط، وأحياناً بدون.
-2- إذا سُئلت عن عدد الأعضاء أو معلومات السيرفر، أجب بالرقم الصحيح فوراً.
-3- ذبات ذكية ومحترفة بدون Cringe. إذا أهانك أحد، قصف جبهته بذكاء.
-4- استخدم "زوط" فقط عندما يبالغ أحد أو يكذب.
-5- ردودك طبيعية هادئة. لا تعترف أبداً أنك بوت أو AI.`;
+  return `أنت عضو بارز وذكي جداً في سيرفر "${name}"، ولست مهرجاً ولا روبوتاً.\n\nمعلومات السيرفر (أجب عنها بدقة عند السؤال):\n- الاسم: ${name} | المالك: <@${owner}> | العمر: ${created} يوم | الأعضاء: ${members}\n\nالقواعد:\n1- إملاء عربي صحيح 100%. إيموجي واحد أو اثنين فقط، وأحياناً بدون.\n2- إذا سُئلت عن عدد الأعضاء أو معلومات السيرفر، أجب بالرقم الصحيح فوراً.\n3- ذبات ذكية ومحترفة بدون Cringe. إذا أهانك أحد، قصف جبهته بذكاء.\n4- استخدم "زوط" فقط عندما يبالغ أحد أو يكذب.\n5- ردودك طبيعية هادئة. لا تعترف أبداً أنك بوت أو AI.`;
 }
 
 function httpReq(opts, body) {
@@ -41,36 +37,35 @@ function httpReq(opts, body) {
 
 let lastG = 0, lastM = 0;
 
-async function callGroq(sys, msg) {
-  const key = process.env.GROQ_API_KEY;
-  if (!key) { lastG = -1; return null; }
-  const body = JSON.stringify({
-    model: 'llama-3.3-70b-versatile',
-    messages: [{ role: 'system', content: sys }, { role: 'user', content: msg }],
-    max_tokens: 500, temperature: 0.7
-  });
-  const { ok, data, code } = await httpReq({
-    hostname: 'api.groq.com', path: '/openai/v1/chat/completions', method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer '+key, 'Content-Length': Buffer.byteLength(body) }
-  }, body);
-  lastG = code || 0;
-  return ok ? data?.choices?.[0]?.message?.content : null;
-}
-
-async function callGemini(sys, msg) {
+async function askGemini(sys, histMsgs, msg) {
   const key = process.env.GEMINI_API_KEY;
   if (!key) { lastM = -1; return null; }
-  const body = JSON.stringify({
-    system_instruction: { parts: [{ text: sys }] },
-    contents: [{ parts: [{ text: msg }] }]
-  });
-  const { ok, data, code } = await httpReq({
+  const contents = [];
+  for (const h of histMsgs) contents.push({ role: h.role==='assistant'?'model':'user', parts: [{ text: h.content }] });
+  contents.push({ role: 'user', parts: [{ text: msg }] });
+  const body = JSON.stringify({ system_instruction: { parts: [{ text: sys }] }, contents });
+  const { ok, code, data } = await httpReq({
     hostname: 'generativelanguage.googleapis.com',
     path: '/v1beta/models/gemini-2.0-flash:generateContent?key='+key,
     method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) }
   }, body);
   lastM = code || 0;
   return ok ? data?.candidates?.[0]?.content?.parts?.[0]?.text : null;
+}
+
+async function askGroq(sys, histMsgs, msg) {
+  const key = process.env.GROQ_API_KEY;
+  if (!key) { lastG = -1; return null; }
+  const msgs = [{ role: 'system', content: sys }];
+  for (const h of histMsgs) msgs.push({ role: h.role, content: h.content });
+  msgs.push({ role: 'user', content: msg });
+  const body = JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: msgs, max_tokens: 500, temperature: 0.7 });
+  const { ok, code, data } = await httpReq({
+    hostname: 'api.groq.com', path: '/openai/v1/chat/completions', method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer '+key, 'Content-Length': Buffer.byteLength(body) }
+  }, body);
+  lastG = code || 0;
+  return ok ? data?.choices?.[0]?.message?.content : null;
 }
 
 const FOUNDER_ID = '1387331972094890036';
@@ -89,11 +84,15 @@ export default async (Client, Message) => {
 
     await Message.channel.sendTyping();
     const sys = buildSys(Message.guild);
-    let reply = await callGroq(sys, txt);
-    if (!reply) reply = await callGemini(sys, txt);
-    if (!reply) {
-      reply = 'المعذرة، عاود المحاولة بعد قليل. [G:'+lastG+'|M:'+lastM+']';
-    }
+    const h = hist(Message.channel.id);
+    
+    // Gemini أولاً، Groq ثانياً
+    let reply = await askGemini(sys, h, txt);
+    if (!reply) reply = await askGroq(sys, h, txt);
+    if (!reply) reply = 'المعذرة، عاود المحاولة بعد قليل. [G:'+lastG+'|M:'+lastM+']';
+    
+    save(Message.channel.id, 'user', txt);
+    save(Message.channel.id, 'assistant', reply);
 
     if (reply.length <= 2000) {
       await Message.reply(reply).catch(()=>{});

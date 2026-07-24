@@ -6,12 +6,40 @@ import Tesseract from 'tesseract.js';
 const aiCooldowns = new Map();
 const AI_COOLDOWN = 3000;
 
-// ─── دالة استدعاء AI عبر Pollinations.ai (مجاني) ───
+// ─── محركات AI متعددة (أساسي + احتياطي) ───
+const GROQ_KEY = process.env.GROQ_API_KEY || '';
+
+async function askGroq(prompt) {
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_KEY}` },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 1000
+    })
+  });
+  if (!res.ok) throw new Error(`Groq ${res.status}`);
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content;
+}
+
+async function askPollinations(prompt) {
+  const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}?model=openai`);
+  if (!res.ok) throw new Error(`Pollinations ${res.status}`);
+  return await res.text();
+}
+
 async function askAI(prompt) {
-  const url = `https://text.pollinations.ai/${encodeURIComponent(prompt)}?model=openai`;
-  const res = await fetch(url);
-  const text = await res.text();
-  return text || '⚠️ لم أستطع الرد، حاول مجدداً';
+  // المحاولة الأولى: Groq (إذا كان المفتاح موجوداً)
+  if (GROQ_KEY) {
+    try { const reply = await askGroq(prompt); if (reply) return reply; } catch(e) { console.warn('Groq failed, fallback to Pollinations:', e.message); }
+  }
+  // المحاولة الثانية: Pollinations.ai (مجاني بدون مفتاح)
+  try { return await askPollinations(prompt) || '⚠️ لم أستطع الرد، حاول مجدداً'; } catch(e) {
+    console.error('All AI backends failed:', e.message);
+    throw new Error('جميع محركات AI فشلت');
+  }
 }
 
 function isAiOnCooldown(userId) {

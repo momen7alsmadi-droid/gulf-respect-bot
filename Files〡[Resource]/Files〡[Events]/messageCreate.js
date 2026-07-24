@@ -134,13 +134,28 @@ async function aiReply(guild, channelId, userMsg) {
   const sys = buildSystemPrompt(guild);
   const hist = getHistory(channelId);
   
-  const groq = await askGroq(sys, hist, userMsg);
-  if (groq) return groq;
+  // Groq
+  const gk = process.env.GROQ_API_KEY;
+  if (gk) {
+    const groq = await askGroq(sys, hist, userMsg);
+    if (groq) return groq;
+  }
   
-  const gemini = await askGemini(sys, hist, userMsg);
-  if (gemini) return gemini;
+  // Gemini
+  const gemk = process.env.GEMINI_API_KEY;
+  if (gemk) {
+    const gemini = await askGemini(sys, hist, userMsg);
+    if (gemini) return gemini;
+  }
   
-  return 'المعذرة، ظروف تقنية خارجة عن إرادتي. عاود المحاولة بعد قليل.';
+  // فشل - تشخيص
+  const diag = [];
+  if (!gk) diag.push('Groq: مفتاح مفقود');
+  else diag.push('Groq: فشل الاتصال');
+  if (!gemk) diag.push('Gemini: مفتاح مفقود');
+  else diag.push('Gemini: فشل الاتصال');
+  
+  return 'المعذرة، ظروف تقنية خارجة عن إرادتي. عاود المحاولة بعد قليل.\n-# ' + diag.join(' | ');
 }
 
 // ═══════════════════════════════════════════

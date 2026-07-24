@@ -104,7 +104,7 @@ export default async (Client, Message) => {
     const txt = Message.content?.trim();
     if (!txt) return;
     const now = Date.now();
-    if (now - (cd.get(Message.author.id)||0) < 2000) return;
+    if (now - (cd.get(Message.author.id)||0) < 3000) return;
     cd.set(Message.author.id, now);
 
     await Message.channel.sendTyping();

@@ -51,50 +51,24 @@ function httpReq(opts, body) {
   });
 }
 
-let lastO = 0, lastD = 0, lastG = 0, lastM = 0;
-
-async function askOpenRouter(sys, msg) {
-  const key = process.env.OPENROUTER_API_KEY;
-  if (!key) { lastO = -1; return null; }
-  const body = JSON.stringify({
-    model: 'deepseek/deepseek-chat-v3-0324',
-    messages: [{ role: 'system', content: sys }, { role: 'user', content: msg }],
-    max_tokens: 250, temperature: 0.75
-  });
-  const { ok, code, data } = await httpReq({
-    hostname: 'openrouter.ai', path: '/api/v1/chat/completions', method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer '+key, 'HTTP-Referer': 'https://discord.com', 'Content-Length': Buffer.byteLength(body) }
-  }, body);
-  lastO = code || 0;
-  return ok ? data?.choices?.[0]?.message?.content : null;
-}
-
-async function askDeepSeek(sys, msg) {
-  const key = process.env.DEEPSEEK_API_KEY;
-  if (!key) { lastD = -1; return null; }
-  const body = JSON.stringify({
-    model: 'deepseek-chat',
-    messages: [{ role: 'system', content: sys }, { role: 'user', content: msg }],
-    max_tokens: 250, temperature: 0.75
-  });
-  const { ok, code, data } = await httpReq({
-    hostname: 'api.deepseek.com', path: '/v1/chat/completions', method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer '+key, 'Content-Length': Buffer.byteLength(body) }
-  }, body);
-  lastD = code || 0;
-  return ok ? data?.choices?.[0]?.message?.content : null;
-}
+let lastG = 0, lastM = 0;
 
 async function askGemini(sys, msg) {
   const key = process.env.GEMINI_API_KEY;
   if (!key) { lastM = -1; return null; }
   const body = JSON.stringify({ system_instruction: { parts: [{ text: sys }] }, contents: [{ parts: [{ text: msg }] }] });
-  const { ok, code, data } = await httpReq({
+  const opts = {
     hostname: 'generativelanguage.googleapis.com', path: '/v1beta/models/gemini-2.0-flash:generateContent?key='+key,
     method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) }
-  }, body);
-  lastM = code || 0;
-  return ok ? data?.candidates?.[0]?.content?.parts?.[0]?.text : null;
+  };
+  for (let i = 0; i < 3; i++) {
+    const { ok, code, data } = await httpReq(opts, body);
+    lastM = code || 0;
+    if (ok) return data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (code !== 429 || i === 2) return null;
+    await new Promise(r => setTimeout(r, 3000));
+  }
+  return null;
 }
 
 async function askGroq(sys, msg) {
@@ -105,12 +79,18 @@ async function askGroq(sys, msg) {
     messages: [{ role: 'system', content: sys }, { role: 'user', content: msg }],
     max_tokens: 250, temperature: 0.75
   });
-  const { ok, code, data } = await httpReq({
+  const opts = {
     hostname: 'api.groq.com', path: '/openai/v1/chat/completions', method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer '+key, 'Content-Length': Buffer.byteLength(body) }
-  }, body);
-  lastG = code || 0;
-  return ok ? data?.choices?.[0]?.message?.content : null;
+  };
+  for (let i = 0; i < 3; i++) {
+    const { ok, code, data } = await httpReq(opts, body);
+    lastG = code || 0;
+    if (ok) return data?.choices?.[0]?.message?.content;
+    if (code !== 429 || i === 2) return null;
+    await new Promise(r => setTimeout(r, 3000));
+  }
+  return null;
 }
 
 const FOUNDER_ID = '1387331972094890036';
@@ -124,16 +104,14 @@ export default async (Client, Message) => {
     const txt = Message.content?.trim();
     if (!txt) return;
     const now = Date.now();
-    if (now - (cd.get(Message.author.id)||0) < 2500) return;
+    if (now - (cd.get(Message.author.id)||0) < 2000) return;
     cd.set(Message.author.id, now);
 
     await Message.channel.sendTyping();
     const sys = buildSys(Message.guild);
-    let reply = await askOpenRouter(sys, txt);
-    if (!reply) reply = await askDeepSeek(sys, txt);
+    let reply = await askGemini(sys, txt);
     if (!reply) reply = await askGroq(sys, txt);
-    if (!reply) reply = await askGemini(sys, txt);
-    if (!reply) reply = 'المعذرة، عاود المحاولة بعد قليل. [O:'+lastO+'|D:'+lastD+'|G:'+lastG+'|M:'+lastM+']';
+    if (!reply) reply = 'المعذرة، عاود المحاولة بعد قليل. [G:'+lastG+'|M:'+lastM+']';
     
     save(Message.channel.id, 'user', txt);
     save(Message.channel.id, 'assistant', reply);

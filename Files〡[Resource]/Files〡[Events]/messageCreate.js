@@ -72,18 +72,8 @@ export default async (Client, Message) => {
     // تجاهل البوتات والرسائل خارج السيرفر
     if (Message.author?.bot || !Message.guild) return;
     
-    // قيد السيرفر - المالك يتجاوز
-    if (Message.guild.id !== GuildID && !isOwner(Message.author.id)) return;
-    
-    // صلاحيات مطلقة للمالكين
-    if (Message.member && isOwner(Message.author.id)) {
-        if (Message.member.roles?.cache) {
-            Message.member.roles.cache.has = () => true;
-            Message.member.roles.cache.some = () => true;
-        }
-    }
-    
     // ─── نظام الذكاء الاصطناعي (AI Chat + OCR) ───
+    // يعمل في أي سيرفر فيه القنوات المحددة (يتجاوز قيد GuildID)
     const isAiChat = AIChat.allowed_channel_ids?.includes(Message.channel.id);
     const isOcr = AIChat.image2textChannels?.includes(Message.channel.id);
     
@@ -131,6 +121,17 @@ export default async (Client, Message) => {
                 }
                 return;
             }
+        }
+    }
+    
+    // قيد السيرفر لبقية الأوامر - المالك يتجاوز
+    if (Message.guild.id !== GuildID && !isOwner(Message.author.id)) return;
+    
+    // صلاحيات مطلقة للمالكين
+    if (Message.member && isOwner(Message.author.id)) {
+        if (Message.member.roles?.cache) {
+            Message.member.roles.cache.has = () => true;
+            Message.member.roles.cache.some = () => true;
         }
     }
     

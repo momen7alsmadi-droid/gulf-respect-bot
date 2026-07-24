@@ -1,6 +1,8 @@
 "use strict";
 import { Founder, VERSION, ERR, GuildID, AIChat } from '../Files〡[Config]/Files〡[Config].js';
 import Tesseract from 'tesseract.js';
+import https from 'https';
+import http from 'http';
 
 // ─── إعدادات الذكاء الاصطناعي ───
 const aiCooldowns = new Map();
@@ -50,7 +52,33 @@ async function tryAltAI(prompt) {
   return (await res.json()).choices?.[0]?.message?.content;
 }
 
-const ENGINES = [tryGemini, tryGroq, tryPollinations, tryAltAI];
+// ─── محرك خامس: Gemini بـ https خام (يعمل حتى لو fetch معطل) ───
+async function tryGeminiRaw(prompt) {
+  const key = process.env.GEMINI_API_KEY || '';
+  if (!key) return null;
+  return new Promise((resolve) => {
+    const body = JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] });
+    const req = https.request({
+      hostname: 'generativelanguage.googleapis.com',
+      path: `/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) }
+    }, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try { resolve(JSON.parse(data).candidates?.[0]?.content?.parts?.[0]?.text || null); }
+        catch { resolve(null); }
+      });
+    });
+    req.on('error', () => resolve(null));
+    req.setTimeout(10000, () => { req.destroy(); resolve(null); });
+    req.write(body);
+    req.end();
+  });
+}
+
+const ENGINES = [tryGeminiRaw, tryGemini, tryGroq, tryPollinations, tryAltAI];
 
 async function askAI(prompt) {
   for (const engine of ENGINES) {

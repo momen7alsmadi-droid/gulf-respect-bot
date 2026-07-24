@@ -2,9 +2,18 @@
 import { ApplicationCommandOptionType, AttachmentBuilder } from 'discord.js';
 import { Canvas, loadImage } from 'canvas-constructor/cairo';
 import QRCode from 'qrcode';
+import { createRequire } from 'module';
 
-// خطوط النظام (مثبتة عبر fonts-noto) - بدون registerFont
-const F = (s, w='') => `${w} ${s}px Noto Sans Arabic, Noto Color Emoji, Noto Emoji, Noto Sans Math, Noto Sans Symbols2, DejaVu Sans, sans-serif`.trim();
+// تحميل الخطوط العربية والرموز
+const require = createRequire(import.meta.url);
+try {
+  const cvs = require('canvas');
+  cvs.registerFont('NotoSansArabic.ttf', { family: 'Noto Arabic' });
+  cvs.registerFont('NotoEmoji.ttf', { family: 'Noto Emoji' });
+  cvs.registerFont('NotoSansMath.ttf', { family: 'Noto Math' });
+} catch(e) { console.error('Font reg failed:', e.message); }
+
+const F = (s, w='') => `${w} ${s}px Noto Arabic, Noto Emoji, Noto Math, Noto Sans Arabic, Noto Color Emoji, DejaVu Sans, sans-serif`.trim();
 
 
 // تصغير الخط للاسم الطويل
@@ -105,12 +114,12 @@ export default {
                 .printText('تاريخ الإصدار / Issued',330,510)
                 .setColor('#ffffff').setTextFont(F(20))
                 .printText(now,330,540)
-                // QR كود - يمين وسط
-                .setColor('#ffffff').printRoundedRectangle(W-165,370,125,125,10)
-                .printImage(qrImg, W-162,373,119,119)
+                // QR كود - يمين، فوق التذييل
+                .setColor('#ffffff').printRoundedRectangle(W-165,420,125,125,10)
+                .printImage(qrImg, W-162,423,119,119)
                 .setColor('#888888').setTextAlign('center')
                 .setTextFont(F(9,'bold'))
-                .printText('SCAN',W-102,510)
+                .printText('SCAN',W-102,560)
                 // تذييل
                 .setColor(G).printRectangle(30,H-55,W-60,3)
                 .setColor('#666666').setTextAlign('center')

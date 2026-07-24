@@ -6,7 +6,6 @@ import QRCode from 'qrcode';
 // خطوط النظام (مثبتة عبر fonts-noto) - بدون registerFont
 const F = (s, w='') => `${w} ${s}px Noto Sans Arabic, Noto Color Emoji, Noto Emoji, Noto Sans Math, Noto Sans Symbols2, DejaVu Sans, sans-serif`.trim();
 
-const F = (s,w='')=>`${w} ${s}px Arabic,Emoji,Math,Noto Sans Symbols2,sans-serif`.trim();
 
 // تصغير الخط للاسم الطويل
 function fitText(canvas, text, maxW, maxSize, x, y, color) {

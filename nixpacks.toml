@@ -1,6 +1,5 @@
 [nixpacks]
-providers = ["node", "apt"]
-nodeVersion = "22"
+providers = ["node"]
 
 [apt]
 packages = ["libcairo2-dev", "libpango1.0-dev", "libjpeg-dev", "libgif-dev", "librsvg2-dev", "fonts-noto", "libpixman-1-dev", "libfreetype6-dev", "build-essential"]
@@ -8,8 +7,12 @@ packages = ["libcairo2-dev", "libpango1.0-dev", "libjpeg-dev", "libgif-dev", "li
 [phases.setup]
 cmds = ["apt-get update -qq"]
 
-[phases.install]
+[phases.build]
 cmds = ["npm install --legacy-peer-deps --ignore-engines"]
 
 [start]
 cmd = "node index.js"
+
+[variables]
+NODE_VERSION = "22"
+NPM_CONFIG_LEGACY_PEER_DEPS = "true"

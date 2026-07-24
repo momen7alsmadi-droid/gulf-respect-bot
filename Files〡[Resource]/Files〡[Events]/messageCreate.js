@@ -28,44 +28,48 @@ function httpReq(opts, body) {
       let d = '';
       res.on('data', c => d += c);
       res.on('end', () => {
-        try { resolve({ ok: res.statusCode===200, data: JSON.parse(d) }); }
-        catch { resolve({ ok: false }); }
+        try { resolve({ ok: res.statusCode===200, code: res.statusCode, data: JSON.parse(d) }); }
+        catch { resolve({ ok: false, code: res.statusCode }); }
       });
     });
-    req.on('error', () => resolve({ ok: false }));
-    req.setTimeout(10000, () => { req.destroy(); resolve({ ok: false }); });
+    req.on('error', e => resolve({ ok: false, code: 0, err: e.message }));
+    req.setTimeout(10000, () => { req.destroy(); resolve({ ok: false, code: 0, err: 'timeout' }); });
     if (body) req.write(body);
     req.end();
   });
 }
 
+let lastG = 0, lastM = 0;
+
 async function callGroq(sys, msg) {
   const key = process.env.GROQ_API_KEY;
-  if (!key) return null;
+  if (!key) { lastG = -1; return null; }
   const body = JSON.stringify({
     model: 'llama-3.3-70b-versatile',
     messages: [{ role: 'system', content: sys }, { role: 'user', content: msg }],
     max_tokens: 500, temperature: 0.7
   });
-  const { ok, data } = await httpReq({
+  const { ok, data, code } = await httpReq({
     hostname: 'api.groq.com', path: '/openai/v1/chat/completions', method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer '+key, 'Content-Length': Buffer.byteLength(body) }
   }, body);
+  lastG = code || 0;
   return ok ? data?.choices?.[0]?.message?.content : null;
 }
 
 async function callGemini(sys, msg) {
   const key = process.env.GEMINI_API_KEY;
-  if (!key) return null;
+  if (!key) { lastM = -1; return null; }
   const body = JSON.stringify({
     system_instruction: { parts: [{ text: sys }] },
     contents: [{ parts: [{ text: msg }] }]
   });
-  const { ok, data } = await httpReq({
+  const { ok, data, code } = await httpReq({
     hostname: 'generativelanguage.googleapis.com',
     path: '/v1beta/models/gemini-2.0-flash:generateContent?key='+key,
     method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) }
   }, body);
+  lastM = code || 0;
   return ok ? data?.candidates?.[0]?.content?.parts?.[0]?.text : null;
 }
 
@@ -87,7 +91,9 @@ export default async (Client, Message) => {
     const sys = buildSys(Message.guild);
     let reply = await callGroq(sys, txt);
     if (!reply) reply = await callGemini(sys, txt);
-    if (!reply) reply = 'المعذرة، عاود المحاولة بعد قليل.';
+    if (!reply) {
+      reply = 'المعذرة، عاود المحاولة بعد قليل. [G:'+lastG+'|M:'+lastM+']';
+    }
 
     if (reply.length <= 2000) {
       await Message.reply(reply).catch(()=>{});

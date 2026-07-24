@@ -138,14 +138,17 @@ export function logAr(...args) {
 }
 
 /**
- * تغليف console.log الأصلي لتشكيل كل النصوص العربية تلقائياً
+ * تغليف console.log الأصلي لضبط اتجاه النصوص العربية تلقائياً
+ * نستخدم RLE فقط لأن الطرفيات الحديثة تشكّل الحروف تلقائياً
  */
 export function patchConsole() {
   const originalLog = console.log;
   console.log = function(...args) {
     const shaped = args.map(arg => {
       if (typeof arg === 'string' && ARABIC_RANGE.test(arg)) {
-        return applyRTL(reshapeArabic(arg));
+        // RLE يجعل النص يُقرأ من اليمين لليسار
+        // PDF ينهي التضمين + RLM يثبت الاتجاه
+        return '‫' + arg + '‬‏';
       }
       return arg;
     });

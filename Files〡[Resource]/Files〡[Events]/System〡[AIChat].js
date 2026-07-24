@@ -5,21 +5,14 @@
 // ═══════════════════════════════════════════════════════════════
 
 import Tesseract from 'tesseract.js';
-import fetch from 'node-fetch';
 import { AIChat } from '../Files〡[Config]/Files〡[Config].js';
 
-// ─── دالة استدعاء AI عبر HTTP ───
+// ─── دالة استدعاء AI عبر Pollinations.ai (مجاني) ───
 async function askAI(prompt) {
-  const res = await fetch('https://api.nyro.zeet.app/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      messages: [{ role: 'user', content: prompt }],
-      model: 'gpt-3.5-turbo'
-    })
-  });
-  const data = await res.json();
-  return data?.choices?.[0]?.message?.content || data?.reply || data?.response || '⚠️ لم أستطع الرد، حاول مجدداً';
+  const url = `https://text.pollinations.ai/${encodeURIComponent(prompt)}?model=openai`;
+  const res = await fetch(url);
+  const text = await res.text();
+  return text || '⚠️ لم أستطع الرد، حاول مجدداً';
 }
 
 // ─── معدل الاستخدام (Rate Limit) ───
@@ -41,7 +34,8 @@ function isOnCooldown(userId) {
 // ─── استخراج النص من الصورة (OCR) ───
 async function extractTextFromImage(url) {
   try {
-    const imageBuffer = await fetch(url).then((res) => res.buffer());
+    const res = await fetch(url);
+    const imageBuffer = Buffer.from(await res.arrayBuffer());
     const result = await Tesseract.recognize(imageBuffer, 'eng+ara', {
       logger: () => {}, // تعطيل سجلات Tesseract
     });

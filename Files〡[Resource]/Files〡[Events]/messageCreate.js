@@ -59,15 +59,14 @@ async function askGroq(prompt) {
 }
 
 async function aiReply(prompt) {
-  // Gemini أولاً
-  const gemini = await askGemini(prompt);
-  if (gemini) return gemini;
-  
-  // Groq ثانياً
+  // Groq أولاً (الأسرع والأكثر موثوقية)
   const groq = await askGroq(prompt);
   if (groq) return groq;
   
-  // فشل الجميع
+  // Gemini ثانياً
+  const gemini = await askGemini(prompt);
+  if (gemini) return gemini;
+  
   return 'آسف، الذكاء الاصطناعي غير متاح حالياً. حاول مرة أخرى بعد قليل 🙏';
 }
 

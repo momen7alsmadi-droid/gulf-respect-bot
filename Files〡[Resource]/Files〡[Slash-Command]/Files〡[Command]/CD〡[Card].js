@@ -2,13 +2,16 @@
 import { ApplicationCommandOptionType, AttachmentBuilder } from 'discord.js';
 import { Canvas, loadImage } from 'canvas-constructor/cairo';
 import QRCode from 'qrcode';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 
-// تسجيل الخطوط
-try { const m = await import('canvas');
-  m.registerFont('NotoSansArabic.ttf',{family:'Arabic'});
-  m.registerFont('NotoEmoji.ttf',{family:'Emoji'});
-  m.registerFont('NotoSansMath.ttf',{family:'Math'});
-} catch {}
+// تسجيل الخطوط - استخدام createRequire لضمان تحميل canvas بشكل صحيح
+try {
+  const canvasPkg = require('canvas');
+  canvasPkg.registerFont('NotoSansArabic.ttf', { family: 'Arabic' });
+  canvasPkg.registerFont('NotoEmoji.ttf', { family: 'Emoji' });
+  canvasPkg.registerFont('NotoSansMath.ttf', { family: 'Math' });
+} catch(e) { console.log('Font registration skipped:', e.message); }
 
 const F = (s,w='')=>`${w} ${s}px Arabic,Emoji,Math,Noto Sans Symbols2,sans-serif`.trim();
 
@@ -52,7 +55,7 @@ export default {
 
             // QR كود
             const qrData = `ID:${uid}|Name:${displayName}|Server:${guildName}`;
-            const qrBuf = await QRCode.toBuffer(qrData,{width:180,margin:1,color:{dark:'#1a1a2e',light:'#ffffff'}});
+            const qrBuf = await QRCode.toBuffer(qrData,{width:120,margin:1,color:{dark:'#1a1a2e',light:'#ffffff'}});
             const qrImg = await loadImage(qrBuf);
 
             const canvas = new Canvas(W, H)
@@ -111,11 +114,11 @@ export default {
                 .setColor('#ffffff').setTextFont(F(20))
                 .printText(now,330,540)
                 // QR كود - زاوية يمين
-                .setColor('#ffffff').printRoundedRectangle(W-225,145,190,190,12)
-                .printImage(qrImg, W-220,150,180,180)
+                .setColor('#ffffff').printRoundedRectangle(W-165,490,125,125,10)
+                .printImage(qrImg, W-162,493,119,119)
                 .setColor('#888888').setTextAlign('center')
-                .setTextFont(F(10,'bold'))
-                .printText('SCAN ME',W-130,350)
+                .setTextFont(F(9,'bold'))
+                .printText('SCAN',W-102,630)
                 // تذييل
                 .setColor(G).printRectangle(30,H-55,W-60,3)
                 .setColor('#666666').setTextAlign('center')

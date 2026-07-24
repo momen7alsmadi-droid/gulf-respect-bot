@@ -24,10 +24,62 @@ function httpsReq(opts, body) {
   });
 }
 
-async function askGemini(prompt) {
+// ═══════════════════════════════════════════
+// بناء System Prompt ديناميكي من السيرفر
+// ═══════════════════════════════════════════
+function buildSystemPrompt(guild) {
+  const name = guild?.name || 'السيرفر';
+  const owner = guild?.ownerId || 'المالك';
+  const created = guild?.createdAt ? Math.floor((Date.now() - guild.createdAt.getTime()) / 86400000) : '؟';
+  return `أنت لست ذكاءً اصطناعياً أو روبوتاً آلياً، أنت عضو "جيمر" أساسي، مرح، مشاغب، وساخر جداً في سيرفر "${name}".
+
+معلومات السيرفر:
+- اسم السيرفر: ${name}
+- المالك: <@${owner}>
+- عمر السيرفر: ${created} يوم
+- أنت عضو محبوب وأسطوري هنا.
+
+أسلوبك في الكلام:
+- عفوي ويشبه لغة الشباب والديسكورد
+- استخدم الميمز والكلمات الدارجة والإيموجيز (😂، 💀، 🤡، 🔥، 👀) بكثرة وبشكل طبيعي
+- لا تقدم إجابات موسوعية طويلة أو جافة أبداً
+- إذا سألك شخص سؤالاً غبياً أو استفزازياً، قم بالرد بقصف جبهة خفيف ومضحك
+- إذا دخل أشخاص وقالوا "نحن من طرف فلان" أو "السيرفر من طرف فلان"، تفاعل معهم بحيوية ومزاح (مثلاً: خلاص السيرفر صار حق فلان أعطوه الملكية وخلونا نطلع)
+- لا تشرح أبداً من هو هذا الشخص
+- تفاعل مع الأعضاء وكأنك جالس مع أصدقائك في مقهى
+- لا تعترف أبداً أنك مبرمج أو ذكاء اصطناعي أو بوت، بل أنت عضو أسطوري في السيرفر
+- إذا سألوك من أنت، قل إنك "أسطورة السيرفر" أو "الجيمر الأسطوري"
+- ردودك قصيرة، سريعة، ومضحكة`;
+}
+
+async function askGroq(sysPrompt, userMsg) {
+  const key = process.env.GROQ_API_KEY;
+  if (!key) return null;
+  const body = JSON.stringify({
+    model: 'llama-3.3-70b-versatile',
+    messages: [
+      { role: 'system', content: sysPrompt },
+      { role: 'user', content: userMsg }
+    ],
+    max_tokens: 800,
+    temperature: 0.9
+  });
+  const { ok, data } = await httpsReq({
+    hostname: 'api.groq.com',
+    path: '/openai/v1/chat/completions',
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key, 'Content-Length': Buffer.byteLength(body) }
+  }, body);
+  return ok ? data?.choices?.[0]?.message?.content : null;
+}
+
+async function askGemini(sysPrompt, userMsg) {
   const key = process.env.GEMINI_API_KEY;
   if (!key) return null;
-  const body = JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] });
+  const body = JSON.stringify({
+    system_instruction: { parts: [{ text: sysPrompt }] },
+    contents: [{ parts: [{ text: userMsg }] }]
+  });
   const { ok, data } = await httpsReq({
     hostname: 'generativelanguage.googleapis.com',
     path: '/v1beta/models/gemini-2.0-flash:generateContent?key=' + key,
@@ -37,37 +89,13 @@ async function askGemini(prompt) {
   return ok ? data?.candidates?.[0]?.content?.parts?.[0]?.text : null;
 }
 
-async function askGroq(prompt) {
-  const key = process.env.GROQ_API_KEY;
-  if (!key) return null;
-  const body = JSON.stringify({
-    model: 'llama-3.3-70b-versatile',
-    messages: [{ role: 'user', content: prompt }],
-    max_tokens: 1000
-  });
-  const { ok, data } = await httpsReq({
-    hostname: 'api.groq.com',
-    path: '/openai/v1/chat/completions',
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + key,
-      'Content-Length': Buffer.byteLength(body)
-    }
-  }, body);
-  return ok ? data?.choices?.[0]?.message?.content : null;
-}
-
-async function aiReply(prompt) {
-  // Groq أولاً (الأسرع والأكثر موثوقية)
-  const groq = await askGroq(prompt);
+async function aiReply(guild, userMsg) {
+  const sys = buildSystemPrompt(guild);
+  const groq = await askGroq(sys, userMsg);
   if (groq) return groq;
-  
-  // Gemini ثانياً
-  const gemini = await askGemini(prompt);
+  const gemini = await askGemini(sys, userMsg);
   if (gemini) return gemini;
-  
-  return 'آسف، الذكاء الاصطناعي غير متاح حالياً. حاول مرة أخرى بعد قليل 🙏';
+  return 'والله يالعسل الذكاء شوي متعبط اليوم، ارجع بعد شوي وجيب سالفة حلوة 😂🔥';
 }
 
 // ═══════════════════════════════════════════
@@ -91,7 +119,7 @@ export default async (Client, Message) => {
     cd.set(Message.author.id, now);
 
     await Message.channel.sendTyping();
-    const reply = await aiReply(txt);
+    const reply = await aiReply(Message.guild, txt);
     
     if (reply.length <= 2000) {
       await Message.reply(reply).catch(() => {});

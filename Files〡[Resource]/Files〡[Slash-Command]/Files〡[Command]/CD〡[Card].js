@@ -15,6 +15,15 @@ try {
 
 const F = (s, w='') => `${w} ${s}px Noto Arabic, Noto Emoji, Noto Math, Noto Sans Arabic, Noto Color Emoji, DejaVu Sans, sans-serif`.trim();
 
+// تحويل الرموز الرياضية المزخرفة → حروف عادية
+function sanitize(text) {
+  return text.replace(/[\u{1D400}-\u{1D7FF}]/gu, c => {
+    const code = c.codePointAt(0);
+    const ranges = [[0x1D400,65],[0x1D41A,97],[0x1D434,65],[0x1D44E,97],[0x1D468,65],[0x1D482,97],[0x1D49C,65],[0x1D4B6,97],[0x1D4D0,65],[0x1D4EA,97],[0x1D504,65],[0x1D51E,97],[0x1D538,65],[0x1D552,97],[0x1D56C,65],[0x1D586,97],[0x1D5A0,65],[0x1D5BA,97],[0x1D5D4,65],[0x1D5EE,97],[0x1D608,65],[0x1D622,97],[0x1D63C,65],[0x1D656,97],[0x1D670,65],[0x1D68A,97]];
+    for (const [r,base] of ranges) if (code >= r && code < r + 26) return String.fromCharCode(base + code - r);
+    return c;
+  });
+}
 
 // تصغير الخط للاسم الطويل
 function fitText(canvas, text, maxW, maxSize, x, y, color) {
@@ -43,8 +52,8 @@ export default {
             const dob = Message.options.getString('تاريخ-الميلاد') || '----';
             const age = Message.options.getString('العمر') || '--';
             const member = Message.guild.members.cache.get(user.id);
-            const displayName = member?.displayName || user.username;
-            const guildName = Message.guild.name;
+            const displayName = sanitize(member?.displayName || user.username);
+            const guildName = sanitize(Message.guild.name);
             const uid = user.id;
             const now = new Date().toLocaleDateString('ar-SA');
 
@@ -88,7 +97,7 @@ export default {
                 // البيانات
                 .setColor('#888888').setTextFont(F(14,'bold')).setTextAlign('left')
                 .printText('الاسم / Name',330,185);
-                fitText(canvas, displayName.substring(0,35), 500, 28, 330, 220, '#ffffff');
+                fitText(canvas, sanitize(displayName).substring(0,35), 500, 28, 330, 220, '#ffffff');
                 
                 canvas.setColor('#888888').setTextFont(F(14,'bold'))
                 .printText('الايدي / ID',330,270)
@@ -108,7 +117,7 @@ export default {
                 canvas.setColor('#888888').setTextFont(F(14,'bold'))
                 .printText('السيرفر / Server',330,430)
                 .setColor(G).setTextFont(F(18));
-                fitText(canvas, guildName.substring(0,30), 450, 22, 330, 460, G);
+                fitText(canvas, sanitize(guildName).substring(0,30), 450, 22, 330, 460, G);
                 
                 canvas.setColor('#888888').setTextFont(F(14,'bold'))
                 .printText('تاريخ الإصدار / Issued',330,510)

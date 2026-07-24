@@ -98,6 +98,9 @@ export default async (Client, Message) => {
             
             // AI Chat (مع أو بدون صورة)
             if (isAiChat) {
+                // 🧪 اختبار سريع: إذا لم نستطع حتى إرسال هذه الرسالة فالمشكلة في التدفق
+                await Message.reply('✅ **AI قيد التشغيل... جاري المعالجة...**').catch(()=>{});
+                
                 await Message.channel.sendTyping();
                 let content = Message.content;
                 if (hasImage) {

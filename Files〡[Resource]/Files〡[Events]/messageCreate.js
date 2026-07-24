@@ -3,7 +3,33 @@ import { Founder, VERSION, ERR, GuildID, AIChat } from '../Files〡[Config]/File
 import https from 'https';
 
 // ═══════════════════════════════════════════
-// نظام الذكاء الاصطناعي - Gemini + Groq فقط
+// ذاكرة محادثة مؤقتة (60 ثانية) + تنظيف تلقائي
+// ═══════════════════════════════════════════
+const memory = new Map(); // channelId -> [{ role, content, time }]
+const TTL = 60000; // 60 ثانية
+
+function gcMemory() {
+  const now = Date.now();
+  for (const [chId, msgs] of memory) {
+    const fresh = msgs.filter(m => now - m.time < TTL);
+    fresh.length ? memory.set(chId, fresh) : memory.delete(chId);
+  }
+}
+
+function getHistory(channelId) {
+  gcMemory();
+  return (memory.get(channelId) || []).filter(m => Date.now() - m.time < TTL);
+}
+
+function saveTurn(channelId, role, content) {
+  if (!content) return;
+  const msgs = memory.get(channelId) || [];
+  msgs.push({ role, content, time: Date.now() });
+  memory.set(channelId, msgs);
+}
+
+// ═══════════════════════════════════════════
+// نظام الذكاء الاصطناعي - Gemini + Groq
 // ═══════════════════════════════════════════
 const cd = new Map();
 
@@ -52,15 +78,17 @@ function buildSystemPrompt(guild) {
 - ردودك قصيرة، سريعة، ومضحكة`;
 }
 
-async function askGroq(sysPrompt, userMsg) {
+async function askGroq(sysPrompt, history, userMsg) {
   const key = process.env.GROQ_API_KEY;
   if (!key) return null;
+  // بناء المصفوفة: system أولاً، ثم التاريخ، ثم رسالة المستخدم الحالية
+  const msgs = [{ role: 'system', content: sysPrompt }];
+  for (const h of history) msgs.push({ role: h.role, content: h.content });
+  msgs.push({ role: 'user', content: userMsg });
+  
   const body = JSON.stringify({
     model: 'llama-3.3-70b-versatile',
-    messages: [
-      { role: 'system', content: sysPrompt },
-      { role: 'user', content: userMsg }
-    ],
+    messages: msgs,
     max_tokens: 800,
     temperature: 0.9
   });
@@ -73,12 +101,19 @@ async function askGroq(sysPrompt, userMsg) {
   return ok ? data?.choices?.[0]?.message?.content : null;
 }
 
-async function askGemini(sysPrompt, userMsg) {
+async function askGemini(sysPrompt, history, userMsg) {
   const key = process.env.GEMINI_API_KEY;
   if (!key) return null;
+  // بناء المصفوفة من التاريخ + الرسالة الحالية
+  const contents = [];
+  for (const h of history) {
+    contents.push({ role: h.role === 'assistant' ? 'model' : 'user', parts: [{ text: h.content }] });
+  }
+  contents.push({ role: 'user', parts: [{ text: userMsg }] });
+  
   const body = JSON.stringify({
     system_instruction: { parts: [{ text: sysPrompt }] },
-    contents: [{ parts: [{ text: userMsg }] }]
+    contents
   });
   const { ok, data } = await httpsReq({
     hostname: 'generativelanguage.googleapis.com',
@@ -89,12 +124,16 @@ async function askGemini(sysPrompt, userMsg) {
   return ok ? data?.candidates?.[0]?.content?.parts?.[0]?.text : null;
 }
 
-async function aiReply(guild, userMsg) {
+async function aiReply(guild, channelId, userMsg) {
   const sys = buildSystemPrompt(guild);
-  const groq = await askGroq(sys, userMsg);
+  const hist = getHistory(channelId);
+  
+  const groq = await askGroq(sys, hist, userMsg);
   if (groq) return groq;
-  const gemini = await askGemini(sys, userMsg);
+  
+  const gemini = await askGemini(sys, hist, userMsg);
   if (gemini) return gemini;
+  
   return 'والله يالعسل الذكاء شوي متعبط اليوم، ارجع بعد شوي وجيب سالفة حلوة 😂🔥';
 }
 
@@ -119,7 +158,9 @@ export default async (Client, Message) => {
     cd.set(Message.author.id, now);
 
     await Message.channel.sendTyping();
-    const reply = await aiReply(Message.guild, txt);
+    const reply = await aiReply(Message.guild, Message.channel.id, txt);
+    saveTurn(Message.channel.id, 'user', txt);
+    saveTurn(Message.channel.id, 'assistant', reply);
     
     if (reply.length <= 2000) {
       await Message.reply(reply).catch(() => {});

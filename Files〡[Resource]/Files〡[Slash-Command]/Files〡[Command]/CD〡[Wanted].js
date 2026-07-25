@@ -2,6 +2,26 @@
 import { ApplicationCommandOptionType, AttachmentBuilder } from 'discord.js';
 import { Canvas, loadImage } from 'canvas-constructor/cairo';
 
+// ─── تحويل الرموز الرياضية المزخرفة إلى حروف عادية ───
+function convertMathBold(text) {
+  if (!text) return '';
+  return text.replace(/[\u{1D400}-\u{1D7FF}]/gu, c => {
+    const code = c.codePointAt(0);
+    // Mathematical Alphanumeric Symbols → ASCII
+    const ranges = [
+      [0x1D400,65],[0x1D41A,97],[0x1D434,65],[0x1D44E,97],[0x1D468,65],[0x1D482,97],
+      [0x1D49C,65],[0x1D4B6,97],[0x1D4D0,65],[0x1D4EA,97],[0x1D504,65],[0x1D51E,97],
+      [0x1D538,65],[0x1D552,97],[0x1D56C,65],[0x1D586,97],[0x1D5A0,65],[0x1D5BA,97],
+      [0x1D5D4,65],[0x1D5EE,97],[0x1D608,65],[0x1D622,97],[0x1D63C,65],[0x1D656,97],
+      [0x1D670,65],[0x1D68A,97]
+    ];
+    for (const [r,base] of ranges) {
+      if (code >= r && code < r + 26) return String.fromCharCode(base + code - r);
+    }
+    return ''; // أي رمز آخر نحذفه
+  });
+}
+
 function cleanName(text) {
   if (!text) return '';
   return text
@@ -49,7 +69,7 @@ export default {
             const bounty = Message.options.getString('الجائزة');
             const reason = Message.options.getString('السبب');
             const member = Message.guild.members.cache.get(user.id);
-            const name = cleanName(member?.displayName || user.username);
+            const name = convertMathBold(cleanName(member?.displayName || user.username));
 
             const fs = await import('fs');
             const bgBuf = fs.readFileSync(ROOT + '/Files〡[Resource]/Files〡[Image]/wanted_bg.png');

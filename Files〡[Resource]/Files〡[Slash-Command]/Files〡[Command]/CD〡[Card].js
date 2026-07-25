@@ -15,14 +15,20 @@ try {
 
 const F = (s, w='') => `${w} ${s}px Noto Arabic, Noto Emoji, Noto Math, Noto Sans Arabic, Noto Color Emoji, DejaVu Sans, sans-serif`.trim();
 
-// تحويل الرموز الرياضية المزخرفة → حروف عادية
+// ─── تنظيف النص من الرموز غير المدعومة في Canvas ───
 function sanitize(text) {
-  return text.replace(/[\u{1D400}-\u{1D7FF}]/gu, c => {
-    const code = c.codePointAt(0);
-    const ranges = [[0x1D400,65],[0x1D41A,97],[0x1D434,65],[0x1D44E,97],[0x1D468,65],[0x1D482,97],[0x1D49C,65],[0x1D4B6,97],[0x1D4D0,65],[0x1D4EA,97],[0x1D504,65],[0x1D51E,97],[0x1D538,65],[0x1D552,97],[0x1D56C,65],[0x1D586,97],[0x1D5A0,65],[0x1D5BA,97],[0x1D5D4,65],[0x1D5EE,97],[0x1D608,65],[0x1D622,97],[0x1D63C,65],[0x1D656,97],[0x1D670,65],[0x1D68A,97]];
-    for (const [r,base] of ranges) if (code >= r && code < r + 26) return String.fromCharCode(base + code - r);
-    return c;
-  });
+  if (!text) return '';
+  return text
+    .replace(/<a?:\w+:\d+>/g, '')                                    // إيموجي Discord مخصص
+    .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}\u{23CF}\u{23E9}-\u{23F3}\u{23F8}-\u{23FA}\u{2B06}\u{2B50}\u{2934}\u{3030}\u{303D}\u{3297}\u{3299}]/gu, '')  // Emoji Unicode
+    .replace(/[\u{1D400}-\u{1D7FF}]/gu, c => {                        // رموز رياضية مزخرفة → عادية
+      const code = c.codePointAt(0);
+      const ranges = [[0x1D400,65],[0x1D41A,97],[0x1D434,65],[0x1D44E,97],[0x1D468,65],[0x1D482,97],[0x1D49C,65],[0x1D4B6,97],[0x1D4D0,65],[0x1D4EA,97],[0x1D504,65],[0x1D51E,97],[0x1D538,65],[0x1D552,97],[0x1D56C,65],[0x1D586,97],[0x1D5A0,65],[0x1D5BA,97],[0x1D5D4,65],[0x1D5EE,97],[0x1D608,65],[0x1D622,97],[0x1D63C,65],[0x1D656,97],[0x1D670,65],[0x1D68A,97]];
+      for (const [r,base] of ranges) if (code >= r && code < r + 26) return String.fromCharCode(base + code - r);
+      return '';
+    })
+    .replace(/[^\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF\w\s\-_.\/\\@()\[\]]/g, '')  // عربي + إنجليزي + رموز أساسية فقط
+    .replace(/\s+/g, ' ').trim();
 }
 
 // تصغير الخط للاسم الطويل
@@ -42,15 +48,18 @@ export default {
     type: 1,
     options: [
         { name: "العضو", description: "اختر العضو", type: ApplicationCommandOptionType.User, required: true },
-        { name: "تاريخ-الميلاد", description: "مثال: 15/5/1999", type: ApplicationCommandOptionType.String, required: false },
-        { name: "العمر", description: "مثال: 25", type: ApplicationCommandOptionType.String, required: false },
+        { name: "اليوم", description: "يوم الميلاد (1-31)", type: ApplicationCommandOptionType.Integer, required: true, minValue: 1, maxValue: 31 },
+        { name: "الشهر", description: "شهر الميلاد (1-12)", type: ApplicationCommandOptionType.Integer, required: true, minValue: 1, maxValue: 12 },
+        { name: "السنة", description: "سنة الميلاد (مثال: 1999)", type: ApplicationCommandOptionType.Integer, required: true, minValue: 1900, maxValue: 2025 },
     ],
     run: async (Client, Message) => {
         await Message.deferReply();
         try {
             const user = Message.options.getUser('العضو');
-            const dob = Message.options.getString('تاريخ-الميلاد') || '----';
-            const age = Message.options.getString('العمر') || '--';
+            const day = Message.options.getInteger('اليوم');
+            const month = Message.options.getInteger('الشهر');
+            const year = Message.options.getInteger('السنة');
+            const dob = `${day}/${month}/${year}`; // دمج تلقائي: يوم/شهر/سنة
             const member = Message.guild.members.cache.get(user.id);
             const displayName = sanitize(member?.displayName || user.username);
             const guildName = sanitize(Message.guild.name);
@@ -105,14 +114,9 @@ export default {
                 .printText(uid,330,300)
                 
                 canvas.setColor('#888888').setTextFont(F(14,'bold'))
-                .printText('العمر / Age',330,350)
+                .printText('تاريخ الميلاد / DOB',330,350)
                 .setColor('#ffffff').setTextFont(F(22))
-                .printText(age,330,380)
-                
-                canvas.setColor('#888888').setTextFont(F(14,'bold'))
-                .printText('تاريخ الميلاد / DOB',540,350)
-                .setColor('#ffffff').setTextFont(F(22))
-                .printText(dob,540,380)
+                .printText(dob,330,380)
                 
                 canvas.setColor('#888888').setTextFont(F(14,'bold'))
                 .printText('السيرفر / Server',330,430)

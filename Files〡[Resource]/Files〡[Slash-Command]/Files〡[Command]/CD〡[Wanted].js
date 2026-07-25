@@ -50,8 +50,8 @@ export default {
             const bgImg = await loadImage(bgBuf);
             const avatar = await loadImage(user.displayAvatarURL({ extension: 'png', size: 512 }));
 
-            // أبعاد الخلفية
-            const W = 1000, H = 1250;
+            // أبعاد الكانفاس = أبعاد الصورة الأصلية
+            const W = 923, H = 1152;
             // خط عربي يدعم اليونيكود بدون registerFont
             const FONT = 'Arial, Noto Sans Arabic, Noto Naskh Arabic, Tahoma, DejaVu Sans, sans-serif';
 

@@ -2,6 +2,15 @@
 import { ApplicationCommandOptionType, AttachmentBuilder } from 'discord.js';
 import { Canvas, loadImage } from 'canvas-constructor/cairo';
 
+// ─── تسجيل خط Noto Sans Math لرموز 𝑪𝑰𝑨〢 ───
+const ROOT = process.cwd();
+try {
+  const canvasMod = await import('canvas');
+  canvasMod.registerFont(ROOT + '/NotoSansMath.ttf', { family: 'Noto Sans Math' });
+  canvasMod.registerFont(ROOT + '/NotoSansArabic.ttf', { family: 'Noto Sans Arabic' });
+  canvasMod.registerFont(ROOT + '/NotoEmoji.ttf', { family: 'Noto Emoji' });
+} catch(e) { console.error('[/مطلوب] Font register:', e.message); }
+
 function cleanName(text) {
   if (!text) return '';
   return text
@@ -63,7 +72,7 @@ export default {
 
             // الاسم - خط يدعم الرموز الخاصة + Courier للشكل الكلاسيكي
             canvas.setColor('#1a1a1a')
-                .setTextFont('bold 55px DejaVu Sans, Noto Sans Math, Courier New, Noto Sans Arabic, Arial, sans-serif')
+                .setTextFont('bold 55px Noto Sans Math, Noto Sans Arabic, DejaVu Sans, Courier New, sans-serif')
                 .setTextAlign('center')
                 .printText(name, 467, 750);
 

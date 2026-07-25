@@ -46,7 +46,7 @@ export default {
 
             // تحميل الصور - الخلفية من المشروع
             const fs = await import('fs');
-            const bgBuf = fs.readFileSync(process.cwd() + '/Files〡[Resource]/Files〡[Image]/wanted.png');
+            const bgBuf = fs.readFileSync(process.cwd() + '/Files〡[Resource]/Files〡[Image]/wanted_bg.png');
             const bgImg = await loadImage(bgBuf);
             const avatar = await loadImage(user.displayAvatarURL({ extension: 'png', size: 512 }));
 
@@ -96,7 +96,7 @@ export default {
             }
 
             const buffer = canvas.toBuffer();
-            await Message.editReply({ files: [new AttachmentBuilder(buffer, { name: 'wanted.png' })] });
+            await Message.editReply({ files: [new AttachmentBuilder(buffer, { name: 'wanted_bg.png' })] });
         } catch (e) {
             console.error('[/مطلوب] Error:', e.stack || e.message);
             await Message.editReply({ content: '❌ خطأ: ' + (e.message?.substring(0, 300) || 'حدث خطأ غير معروف') });

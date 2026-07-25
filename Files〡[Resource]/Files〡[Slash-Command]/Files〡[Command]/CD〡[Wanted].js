@@ -77,11 +77,17 @@ export default {
                 .setTextAlign('center')
                 .printText(name, 467, 750);
 
-            // مبلغ الجائزة - نفس أحمر WANTED (#8B0000)
+            // اسم السيرفر أسفل الاسم
+            canvas.setColor('#1a1a1a')
+                .setTextFont('bold 40px Courier New, Courier, monospace')
+                .setTextAlign('center')
+                .printText(Message.guild.name, 467, 820);
+
+            // مبلغ الجائزة - نفس إحداثي X
             canvas.setColor('#8B0000')
                 .setTextFont(`bold 65px ${FONT}`)
                 .setTextAlign('center')
-                .printText('REWARD: $' + bounty, 500, 880);
+                .printText('REWARD: $' + bounty, 467, 920);
 
             // سبب المطلوبية مع التفاف النص
             canvas.setColor('#1a1a1a')
@@ -89,9 +95,9 @@ export default {
                 .setTextAlign('center');
 
             const lines = wrapText(reason, 25);
-            let yStart = 990;
+            let yStart = 1020;
             for (let i = 0; i < Math.min(lines.length, 3); i++) {
-                canvas.printText(lines[i], 500, yStart);
+                canvas.printText(lines[i], 467, yStart);
                 yStart += 70;
             }
 

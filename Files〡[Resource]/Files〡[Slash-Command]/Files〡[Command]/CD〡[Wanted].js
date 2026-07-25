@@ -61,9 +61,9 @@ export default {
                 .setColor('rgba(0,0,0,0.20)')
                 .printRectangle(343, 366, 248, 308);
 
-            // الاسم
+            // الاسم - خط يدعم الرموز الخاصة + Courier للشكل الكلاسيكي
             canvas.setColor('#1a1a1a')
-                .setTextFont('bold 55px Courier New, Courier, monospace')
+                .setTextFont('bold 55px DejaVu Sans, Noto Sans Math, Courier New, Noto Sans Arabic, Arial, sans-serif')
                 .setTextAlign('center')
                 .printText(name, 467, 750);
 

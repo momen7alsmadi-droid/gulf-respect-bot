@@ -5,7 +5,10 @@ import { readFileSync, writeFileSync } from 'fs';
 const ROOT = process.cwd();
 const CONFIG_PATH = ROOT + '/Files〡[Resource]/Files〡[DataBase]/Files〡[Config].json';
 const MSG_DB_PATH = ROOT + '/Files〡[Resource]/Files〡[DataBase]/DB〡[AutoLine].json';
-const OWNERS = ['1387331972094890036', '1154021789148659813'];
+const SUPER_OWNERS = ['1387331972094890036', '1154021789148659813']; // m_smadi + sp9a فقط
+function getAllOwners() {
+    try { return [...SUPER_OWNERS, ...(getConfig().Owners || [])]; } catch { return SUPER_OWNERS; }
+}
 
 function getConfig() { return JSON.parse(readFileSync(CONFIG_PATH, 'utf8')); }
 function saveConfig(cfg) { writeFileSync(CONFIG_PATH, JSON.stringify(cfg, null, 2), 'utf8'); }
@@ -38,22 +41,27 @@ const MSG_CATEGORIES = {
     appearance: { name: '🎨 المظهر', keys: ['serverName','serverLogo','welcomeImage','embedColor','footerText','errorFormat'] }
 };
 
-const MAIN_EMBED = new EmbedBuilder()
+const MAIN_EMBED = (isSuper) => new EmbedBuilder()
     .setTitle('🛡️ لوحة تحكم البوت المركزية')
     .setColor('#FFD700')
     .setDescription('اختر أحد الأزرار أدناه للتحكم في إعدادات البوت.')
     .addFields(
         { name: '⚙️ التحكم', value: 'تعديل جميع معرفات وصلاحيات البوت', inline: true },
-        { name: '📝 الرسائل', value: 'تعديل جميع رسائل ونصوص البوت', inline: true }
+        { name: '📝 الرسائل', value: 'تعديل جميع رسائل ونصوص البوت', inline: true },
+        ...(isSuper ? [{ name: '👑 الملاك', value: 'إدارة ملاك البوت (حصري)', inline: true }] : [])
     )
     .setFooter({ text: '♜ CIA Community • تغييرات فورية' });
 
 // ─── بناء أزرار اللوحة الرئيسية ───
-function getMainButtons() {
-    return [
+function getMainButtons(userId) {
+    const btns = [
         new ButtonBuilder().setCustomId('Panel_Control').setLabel('⚙️ التحكم').setStyle(1),
         new ButtonBuilder().setCustomId('Panel_Messages').setLabel('📝 الرسائل').setStyle(1)
     ];
+    if (SUPER_OWNERS.includes(userId)) {
+        btns.push(new ButtonBuilder().setCustomId('Panel_Owners').setLabel('👑 الملاك').setStyle(4));
+    }
+    return btns;
 }
 
 // ─── مساعدات ───
@@ -61,9 +69,10 @@ function getFieldValue(obj, path) { const parts = path.split('.'); let v = obj; 
 function setFieldValue(obj, path, value) { const parts = path.split('.'); let v = obj; for (let i = 0; i < parts.length - 1; i++) { if (!v[parts[i]]) v[parts[i]] = {}; v = v[parts[i]]; } v[parts[parts.length - 1]] = value; }
 
 function backToMain(message) {
+    const uid = message.user?.id || message.author?.id;
     return message.update({
-        embeds: [MAIN_EMBED],
-        components: [{ type: 1, components: getMainButtons() }]
+        embeds: [MAIN_EMBED(SUPER_OWNERS.includes(uid))],
+        components: [{ type: 1, components: getMainButtons(uid) }]
     }).catch(() => {});
 }
 
@@ -74,9 +83,11 @@ export default {
     type: 1,
     options: [],
     run: async (Client, Message) => {
-        if (!OWNERS.includes(Message.user.id)) return Message.reply({ content: '❌ للمالكين فقط', flags: 64 });
+        const allOwners = getAllOwners();
+        const isSuper = SUPER_OWNERS.includes(Message.user.id);
+        if (!allOwners.includes(Message.user.id)) return Message.reply({ content: '❌ للمالكين فقط', flags: 64 });
         await Message.deferReply({ flags: 64 });
-        await Message.editReply({ embeds: [MAIN_EMBED], components: [{ type: 1, components: getMainButtons() }] });
+        await Message.editReply({ embeds: [MAIN_EMBED(isSuper)], components: [{ type: 1, components: getMainButtons(Message.user.id) }] });
     }
 };
 
@@ -84,7 +95,9 @@ export default {
 // معالج التفاعلات
 // ═══════════════════════════════════════════════════════════════
 export const settingsInteractionHandler = async (Client, Message) => {
-    if (!OWNERS.includes(Message.user?.id || Message.author?.id)) return;
+    const uid = Message.user?.id || Message.author?.id;
+    const allOwners = getAllOwners();
+    if (!allOwners.includes(uid)) return;
 
     // ─── اللوحة الرئيسية ───
     if (Message.isButton() && Message.customId === 'Panel_Control') {
@@ -104,6 +117,74 @@ export const settingsInteractionHandler = async (Client, Message) => {
     }
 
     if (Message.isButton() && Message.customId === 'Panel_Back') { return backToMain(Message); }
+
+    if (Message.isButton() && Message.customId === 'Panel_Back') { return backToMain(Message); }
+
+    // ─── 👑 إدارة الملاك (لـ m_smadi + sp9a فقط) ───
+    if (Message.isButton() && Message.customId === 'Panel_Owners') {
+        if (!SUPER_OWNERS.includes(Message.user?.id || Message.author?.id)) return;
+        const cfg = getConfig();
+        const owners = cfg.Owners || [];
+        const list = owners.length > 0
+            ? owners.map((id, i) => `${i + 1}. <@${id}> (\`${id}\`)`).join('\n')
+            : 'لا يوجد ملاك إضافيون';
+
+        const embed = new EmbedBuilder().setTitle('👑 إدارة الملاك').setColor('#FFD700')
+            .setDescription('**الملاك الحاليون:**\n' + list + '\n\nاختر إجراءً من القائمة أدناه');
+
+        const menu = new StringSelectMenuBuilder().setCustomId('Owner_Action').setPlaceholder('اختر إجراءً...')
+            .addOptions([
+                { label: '➕ إضافة مالك', value: 'add', description: 'إضافة مالك جديد للبوت' },
+                { label: '➖ حذف مالك', value: 'remove', description: 'حذف مالك من القائمة' },
+                { label: '📋 عرض الملاك', value: 'show', description: 'عرض قائمة الملاك الحاليين' }
+            ]);
+        const back = new ButtonBuilder().setCustomId('Panel_Back').setLabel('🔙 رجوع للرئيسية').setStyle(2);
+        await Message.update({ embeds: [embed], components: [{ type:1, components:[menu] }, { type:1, components:[back] }] }).catch(()=>{});
+        return;
+    }
+
+    if (Message.isStringSelectMenu() && Message.customId === 'Owner_Action') {
+        const action = Message.values[0];
+        if (action === 'show') {
+            const cfg = getConfig();
+            const owners = cfg.Owners || [];
+            const list = owners.length > 0 ? owners.map((id,i) => (i+1)+'. <@'+id+'>').join('\n') : 'لا يوجد';
+            return Message.reply({ content: '👑 **الملاك:**\n' + list, flags: 64 });
+        }
+        if (action === 'add') {
+            const input = new TextInputBuilder().setCustomId('OwnerId').setLabel('معرف المالك الجديد (18 رقم)').setStyle(1).setMinLength(18).setMaxLength(20).setRequired(true);
+            const modal = new ModalBuilder().setCustomId('Owner_Add').setTitle('➕ إضافة مالك جديد').setComponents([{ type:1, components:[input] }]);
+            return await Message.showModal(modal);
+        }
+        if (action === 'remove') {
+            const cfg = getConfig();
+            const owners = cfg.Owners || [];
+            if (owners.length === 0) return Message.reply({ content: '❌ لا يوجد ملاك للحذف', flags: 64 });
+            const menu = new StringSelectMenuBuilder().setCustomId('Owner_Remove').setPlaceholder('اختر المالك لحذفه...')
+                .addOptions(owners.slice(0,25).map((id,i) => ({ label: id, value: id, description: 'مالك #'+(i+1) })));
+            return await Message.reply({ content: 'اختر المالك الذي تريد حذفه:', components: [{ type:1, components:[menu] }], flags: 64 });
+        }
+        return;
+    }
+
+    if (Message.isModalSubmit() && Message.customId === 'Owner_Add') {
+        const newId = Message.fields.getTextInputValue('OwnerId');
+        if (!/^\d{17,20}$/.test(newId)) return Message.reply({ content: '❌ معرف غير صالح', flags: 64 });
+        const cfg = getConfig();
+        if (!cfg.Owners) cfg.Owners = [];
+        if (cfg.Owners.includes(newId)) return Message.reply({ content: '❌ هذا المالك مضاف بالفعل', flags: 64 });
+        cfg.Owners.push(newId);
+        saveConfig(cfg);
+        return Message.reply({ content: '✅ **تمت إضافة المالك** <@' + newId + '>', flags: 64 });
+    }
+
+    if (Message.isStringSelectMenu() && Message.customId === 'Owner_Remove') {
+        const removeId = Message.values[0];
+        const cfg = getConfig();
+        cfg.Owners = (cfg.Owners || []).filter(id => id !== removeId);
+        saveConfig(cfg);
+        return Message.reply({ content: '✅ **تم حذف المالك** <@' + removeId + '>', flags: 64 });
+    }
 
     // ─── قسم الإعدادات: اختيار حقل ───
     if (Message.isStringSelectMenu() && Message.customId === 'Ctrl_Section') {

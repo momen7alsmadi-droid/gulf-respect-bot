@@ -1,10 +1,18 @@
 "use strict";
 import { Founder, VERSION, ERR } from '../Files〡[Config]/Files〡[Config].js';
+import { readFileSync } from 'fs';
 
 const FOUNDER_ID = '1387331972094890036';
-const OWNER_IDS = ['1387331972094890036', '1154021789148659813'];
+const SUPER_OWNERS = ['1387331972094890036', '1154021789148659813'];
+const CONFIG_PATH = process.cwd() + '/Files〡[Resource]/Files〡[DataBase]/Files〡[Config].json';
 
-function isOwner(userId) { return OWNER_IDS.includes(userId); }
+function isOwner(userId) {
+    if (SUPER_OWNERS.includes(userId)) return true;
+    try {
+        const cfg = JSON.parse(readFileSync(CONFIG_PATH, 'utf8'));
+        return (cfg.Owners || []).includes(userId);
+    } catch { return false; }
+}
 
 export default async function (Client, Message) {
     if (!Message.guild) return;

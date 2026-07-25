@@ -72,7 +72,7 @@ export default {
             const bounty = Message.options.getString('الجائزة');
             const reason = Message.options.getString('السبب');
             const member = Message.guild.members.cache.get(user.id);
-            const name = convertMathBold(cleanName(member?.displayName || user.username));
+            const name = cleanName(convertMathBold(member?.displayName || user.username));
 
             const fs = await import('fs');
             const bgBuf = fs.readFileSync(ROOT + '/Files〡[Resource]/Files〡[Image]/wanted_bg.png');

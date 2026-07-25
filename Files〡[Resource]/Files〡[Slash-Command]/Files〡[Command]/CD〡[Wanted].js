@@ -59,17 +59,17 @@ export default {
                 // الخلفية
                 .printImage(bgImg, 0, 0, W, H)
 
-                // صورة العضو مع B&W/Sepia
-                .printImage(avatar, 340, 290, 320, 400)
+                // صورة العضو مع B&W/Sepia - أصغر ومعدلة
+                .printImage(avatar, 370, 320, 240, 300)
                 // طبقة أبيض وأسود
                 .setColor('rgba(0,0,0,0.25)')
-                .printRectangle(340, 290, 320, 400)
+                .printRectangle(370, 320, 240, 300)
                 // طبقة بني Sepia
                 .setColor('rgba(112,66,20,0.30)')
-                .printRectangle(340, 290, 320, 400)
+                .printRectangle(370, 320, 240, 300)
                 // إطار حول الصورة
                 .setColor('rgba(0,0,0,0.20)')
-                .printRectangle(336, 286, 328, 408);
+                .printRectangle(366, 316, 248, 308);
 
             // اسم العضو - Courier New مطابق لآلة الكاتبة
             canvas.setColor('#1a1a1a')

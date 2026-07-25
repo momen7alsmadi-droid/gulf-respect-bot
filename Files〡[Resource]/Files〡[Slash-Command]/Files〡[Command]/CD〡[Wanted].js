@@ -44,8 +44,10 @@ export default {
             const member = Message.guild.members.cache.get(user.id);
             const name = cleanName(member?.displayName || user.username);
 
-            // تحميل الصور
-            const bg = await loadImage(process.cwd() + '/Files〡[Resource]/Files〡[Image]/wanted.png');
+            // تحميل الصور - الخلفية من المشروع
+            const fs = await import('fs');
+            const bgBuf = fs.readFileSync(process.cwd() + '/Files〡[Resource]/Files〡[Image]/wanted.png');
+            const bgImg = await loadImage(bgBuf);
             const avatar = await loadImage(user.displayAvatarURL({ extension: 'png', size: 512 }));
 
             // أبعاد الخلفية
@@ -55,7 +57,7 @@ export default {
 
             const canvas = new Canvas(W, H)
                 // الخلفية
-                .printImage(bg, 0, 0, W, H)
+                .printImage(bgImg, 0, 0, W, H)
 
                 // صورة العضو مع B&W/Sepia
                 .printImage(avatar, 340, 290, 320, 400)
@@ -96,7 +98,8 @@ export default {
             const buffer = canvas.toBuffer();
             await Message.editReply({ files: [new AttachmentBuilder(buffer, { name: 'wanted.png' })] });
         } catch (e) {
-            await Message.editReply({ content: '❌ خطأ: ' + e.message });
+            console.error('[/مطلوب] Error:', e.stack || e.message);
+            await Message.editReply({ content: '❌ خطأ: ' + (e.message?.substring(0, 300) || 'حدث خطأ غير معروف') });
         }
     }
 };

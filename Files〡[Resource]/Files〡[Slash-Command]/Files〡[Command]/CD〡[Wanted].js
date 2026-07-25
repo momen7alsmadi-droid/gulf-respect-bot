@@ -2,15 +2,6 @@
 import { ApplicationCommandOptionType, AttachmentBuilder } from 'discord.js';
 import { Canvas, loadImage } from 'canvas-constructor/cairo';
 
-// ─── تسجيل خط Noto Sans Math لرموز 𝑪𝑰𝑨〢 ───
-const ROOT = process.cwd();
-try {
-  const canvasMod = await import('canvas');
-  canvasMod.registerFont(ROOT + '/NotoSansMath.ttf', { family: 'Noto Sans Math' });
-  canvasMod.registerFont(ROOT + '/NotoSansArabic.ttf', { family: 'Noto Sans Arabic' });
-  canvasMod.registerFont(ROOT + '/NotoEmoji.ttf', { family: 'Noto Emoji' });
-} catch(e) { console.error('[/مطلوب] Font register:', e.message); }
-
 function cleanName(text) {
   if (!text) return '';
   return text
@@ -45,6 +36,15 @@ export default {
     run: async (Client, Message) => {
         await Message.deferReply();
         try {
+            // ─── تسجيل الخطوط داخل run لضمان التحميل ───
+            const canvasMod = await import('canvas');
+            const ROOT = process.cwd();
+            try {
+                canvasMod.registerFont(ROOT + '/NotoSansMath.ttf', { family: 'Noto Sans Math' });
+                canvasMod.registerFont(ROOT + '/NotoSansArabic.ttf', { family: 'Noto Sans Arabic' });
+                canvasMod.registerFont(ROOT + '/NotoEmoji.ttf', { family: 'Noto Emoji' });
+            } catch(fe) { console.error('Font register:', fe.message); }
+
             const user = Message.options.getUser('العضو');
             const bounty = Message.options.getString('الجائزة');
             const reason = Message.options.getString('السبب');
@@ -52,16 +52,16 @@ export default {
             const name = cleanName(member?.displayName || user.username);
 
             const fs = await import('fs');
-            const bgBuf = fs.readFileSync(process.cwd() + '/Files〡[Resource]/Files〡[Image]/wanted_bg.png');
+            const bgBuf = fs.readFileSync(ROOT + '/Files〡[Resource]/Files〡[Image]/wanted_bg.png');
             const bgImg = await loadImage(bgBuf);
             const avatar = await loadImage(user.displayAvatarURL({ extension: 'png', size: 512 }));
 
             const W = 923, H = 1152;
-            const FONT = 'Arial, Noto Sans Arabic, Tahoma, DejaVu Sans, sans-serif';
+            const FONT = 'Noto Sans Arabic, Noto Sans Math, Noto Emoji, DejaVu Sans, Arial, sans-serif';
 
             const canvas = new Canvas(W, H)
                 .printImage(bgImg, 0, 0, W, H)
-                // صورة العضو مع B&W/Sepia
+                // صورة العضو
                 .printImage(avatar, 347, 370, 240, 300)
                 .setColor('rgba(0,0,0,0.25)')
                 .printRectangle(347, 370, 240, 300)
@@ -70,9 +70,9 @@ export default {
                 .setColor('rgba(0,0,0,0.20)')
                 .printRectangle(343, 366, 248, 308);
 
-            // الاسم - خط يدعم الرموز الخاصة + Courier للشكل الكلاسيكي
+            // الاسم - كل الخطوط مسجلة
             canvas.setColor('#1a1a1a')
-                .setTextFont('bold 55px Noto Sans Math, Noto Sans Arabic, DejaVu Sans, Courier New, sans-serif')
+                .setTextFont('bold 55px ' + FONT)
                 .setTextAlign('center')
                 .printText(name, 467, 750);
 
@@ -82,7 +82,7 @@ export default {
                 .setTextAlign('center')
                 .printText('REWARD: $' + bounty, 467, 880);
 
-            // السبب مع التفاف النص
+            // السبب
             canvas.setColor('#1a1a1a')
                 .setTextFont('55px ' + FONT)
                 .setTextAlign('center');

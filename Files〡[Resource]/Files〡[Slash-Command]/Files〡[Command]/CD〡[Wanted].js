@@ -59,17 +59,17 @@ export default {
                 // الخلفية
                 .printImage(bgImg, 0, 0, W, H)
 
-                // صورة العضو - يمين قليلاً + أعلى
-                .printImage(avatar, 365, 370, 240, 300)
+                // صورة العضو - متوسطة أفقياً (المسافة لليمين = المسافة للشمال)
+                .printImage(avatar, 342, 370, 240, 300)
                 // طبقة أبيض وأسود
                 .setColor('rgba(0,0,0,0.25)')
-                .printRectangle(365, 370, 240, 300)
+                .printRectangle(342, 370, 240, 300)
                 // طبقة بني Sepia
                 .setColor('rgba(112,66,20,0.30)')
-                .printRectangle(365, 370, 240, 300)
+                .printRectangle(342, 370, 240, 300)
                 // إطار حول الصورة
                 .setColor('rgba(0,0,0,0.20)')
-                .printRectangle(361, 366, 248, 308);
+                .printRectangle(338, 366, 248, 308);
 
             // اسم العضو - في منتصف البوستر بالضبط
             canvas.setColor('#1a1a1a')

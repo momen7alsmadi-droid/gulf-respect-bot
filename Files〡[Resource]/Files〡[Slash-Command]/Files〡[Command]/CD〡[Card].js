@@ -62,7 +62,7 @@ export default {
             const dob = `${day}/${month}/${year}`; // دمج تلقائي: يوم/شهر/سنة
             const member = Message.guild.members.cache.get(user.id);
             const displayName = sanitize(member?.displayName || user.username);
-            const guildName = sanitize(Message.guild.name);
+            const guildName = Message.guild.name; // اسم السيرفر الأصلي بدون تنظيف للحفاظ على ♜𝑪𝑰𝑨
             const uid = user.id;
             const now = new Date().toLocaleDateString('ar-SA');
 
@@ -121,7 +121,7 @@ export default {
                 canvas.setColor('#888888').setTextFont(F(14,'bold'))
                 .printText('السيرفر / Server',330,430)
                 .setColor(G).setTextFont(F(18));
-                fitText(canvas, sanitize(guildName).substring(0,30), 450, 22, 330, 460, G);
+                fitText(canvas, guildName.substring(0,35), 450, 22, 330, 460, G);
                 
                 canvas.setColor('#888888').setTextFont(F(14,'bold'))
                 .printText('تاريخ الإصدار / Issued',330,510)

@@ -2,13 +2,12 @@
 import { ApplicationCommandOptionType, AttachmentBuilder } from 'discord.js';
 import { Canvas, loadImage } from 'canvas-constructor/cairo';
 
-// ─── تنظيف النص من الرموز غير المدعومة في Canvas ───
+// ─── تنظيف النص للمستخدمين فقط (يحافظ على رموز السيرفر) ───
 function sanitize(text) {
   if (!text) return '';
   return text
     .replace(/<a?:\w+:\d+>/g, '')
     .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}]/gu, '')
-    .replace(/[^\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF\w\s\-_.]/g, '')
     .replace(/\s+/g, ' ').trim();
 }
 
@@ -25,6 +24,7 @@ export default {
   const canvasMod = await import('canvas');
   canvasMod.registerFont('NotoSansArabic.ttf', { family: 'Noto Sans Arabic' });
   canvasMod.registerFont('NotoEmoji.ttf', { family: 'Noto Emoji' });
+  canvasMod.registerFont('NotoSansMath.ttf', { family: 'Noto Sans Math' });
 } catch {}
 await Message.deferReply();
         try {
@@ -32,9 +32,10 @@ await Message.deferReply();
             const reason = sanitize(Message.options.getString('السبب'));
             const member = Message.guild.members.cache.get(user.id);
             const name = sanitize(member?.displayName || user.username);
-            const guildName = sanitize(Message.guild.name);
+            // اسم السيرفر بدون تنظيف - نحافظ على ♜𝑪𝑰𝑨 𝑪𝒐𝒎𝒎𝒖𝒏𝒊𝒕𝒚♜ كما هي
+            const guildName = Message.guild.name;
             const W = 1000, H = 700;
-            const F = 'Noto Sans Arabic, Noto Emoji, Noto Sans Symbols2, sans-serif';
+            const F = 'Noto Sans Arabic, Noto Emoji, Noto Sans Math, Noto Sans Symbols2, sans-serif';
 
             const canvas = new Canvas(W, H)
                 .setColor('#0a0a1a').printRectangle(0, 0, W, H)
@@ -42,7 +43,7 @@ await Message.deferReply();
                 .setColor('#0a0a1a').printRectangle(20, 20, W-40, H-40)
                 .setColor('#d4a853').printRectangle(30, 30, W-60, H-60)
                 .setColor('#111130').printRectangle(35, 35, W-70, H-70)
-                // اسم السيرفر منظف
+                // اسم السيرفر الأصلي مع الرموز (بدون تنظيف)
                 .setColor('#d4a853')
                 .setTextFont(`bold 42px ${F}`).setTextAlign('center')
                 .printText(guildName, W/2, 120)

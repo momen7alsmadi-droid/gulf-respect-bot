@@ -1,32 +1,119 @@
 "use strict";
-import { ApplicationCommandOptionType } from "discord.js";
+import { EmbedBuilder } from 'discord.js';
+
+const commands = [
+    { section: '📁 أوامر سلاش (/)', items: [
+        ['/مطلوب @عضو الجائزة السبب', '🎨 بوستر WANTED كلاسيكي'],
+        ['/شارة @عضو', '🎨 شارة CIA مخابراتية'],
+        ['/بطاقة @عضو اليوم الشهر السنة', '🎨 بطاقة هوية احترافية'],
+        ['/شهادة @عضو السبب', '🎨 شهادة تقدير'],
+        ['/توب [ادارة/عساكر]', '🎨 توب النقاط كصورة'],
+        ['/بانر @عضو', '🎨 بانر'],
+        ['/ملف_سري @عضو معلومات', '🎨 وثيقة مخابرات سرية'],
+        ['/عاجل @عضو نص_الخبر', '🎨 شريط أخبار عاجل'],
+        ['/مجلة @عضو عنوان_رئيسي', '🎨 غلاف مجلة'],
+        ['/رولات @عضو [اضافة/ازالة] [قسم]', '👥 إعطاء/إزالة رولات بالجملة'],
+        ['/خط', '〰️ رفع الخط الفاصل'],
+        ['/مساعدة', '📋 عرض قائمة الأوامر هذه'],
+    ]},
+    { section: '📁 التفعيل والتذاكر', items: [
+        ['/تفعيل @عضو الاسم', '✅ تفعيل عضو جديد وتغيير اسمه'],
+        ['/تكت [النوع]', '🎫 إنشاء لوحة تذاكر (تفعيل/اونر/مساعدة/شكاوى/تقديم/محكمة/هيئة)'],
+    ]},
+    { section: '📁 الإدارة', items: [
+        ['/سيطب_ادارة', '🛡️ إنشاء لوحة الإدارة'],
+        ['/اضافة_نقاط @عضو عدد', '⭐ إضافة نقاط لإداري'],
+        ['/ازالة_نقاط @عضو عدد', '⭐ إزالة نقاط من إداري'],
+        ['/تصفير_نقاط @عضو', '⭐ تصفير نقاط إداري'],
+        ['/مالك [إجراء]', '👑 إدارة الملاك (إضافة/حذف/عرض)'],
+    ]},
+    { section: '📁 الإعلانات والتعاميم', items: [
+        ['/قائمة_الاعلانات', '📢 إنشاء لوحة الإعلانات (8 أنواع)'],
+        ['/قائمة_تعميمات', '📜 إنشاء لوحة التعاميم (3 أنواع)'],
+    ]},
+    { section: '📁 الهوية والتقديمات', items: [
+        ['/سيطب_الهوية [النوع]', '🪪 إنشاء لوحة الهوية (تقديم/عرض)'],
+        ['/حذف_هوية @عضو', '🪪 حذف الهوية الوطنية'],
+        ['/تقديمات', '📝 إنشاء لوحة التقديمات (6 أنواع)'],
+    ]},
+    { section: '📁 الشرطة والعساكر', items: [
+        ['/بانل_العساكر', '👮 إنشاء لوحة العساكر'],
+        ['/بانل_المخالفات', '🚔 إنشاء لوحة المخالفات المرورية'],
+        ['/بانل_ريبورت', '📋 إنشاء لوحة البلاغات'],
+        ['/السجل_المدني', '📇 إنشاء لوحة السجل المدني'],
+        ['/اضافة_نقاط_عسكري @عضو عدد', '⭐ إضافة نقاط لعسكري'],
+        ['/ازالة_نقاط_عسكري @عضو عدد', '⭐ إزالة نقاط من عسكري'],
+        ['/تصفير_عسكري @عضو', '⭐ تصفير نقاط عسكري'],
+        ['/نقاطي', '📊 عرض نقاطك كعسكري'],
+    ]},
+    { section: '📁 العقوبات والمخالفات', items: [
+        ['/انشاء_عقوبة المدة السبب', '⛓️ إنشاء عقوبة جديدة'],
+        ['/حذف_عقوبة', '🔓 حذف عقوبة من القائمة'],
+        ['/مخالف @عضو', '🚨 إعطاء مخالفة وسجن لعضو'],
+        ['/فك @عضو', '🔑 فك السجن عن عضو'],
+    ]},
+    { section: '📁 مجلس الشورى', items: [
+        ['/تسطيب_الشوري', '🏛️ إنشاء لوحة رفع قرار لمجلس الشورى'],
+        ['/بانل_شوري', '🏛️ عرض لوحة أعضاء مجلس الشورى'],
+        ['/تصويت', '🗳️ بدء/إنهاء التصويت على القرارات'],
+    ]},
+    { section: '📁 التوظيف', items: [
+        ['/توظيف @عضو', '💼 توظيف عضو في منصب حكومي'],
+        ['/تقاعد @عضو', '👴 تقاعد عضو وسحب رتبه'],
+    ]},
+    { section: '📁 أوامر عامة', items: [
+        ['/نداء @عضو السبب', '📢 إرسال نداء خاص للعضو'],
+        ['/النيابة', '⚖️ إنشاء لوحة استدعاء النيابة'],
+        ['/استدعاء_الهيئة', '🔍 إنشاء لوحة استدعاء هيئة مكافحة الفساد'],
+    ]},
+];
 
 export default {
     name: "مساعدة",
-    description: "عرض قائمة الأوامر",
+    description: "عرض قائمة جميع أوامر البوت",
     type: 1,
-    options: [
-
-    ],
+    options: [],
     run: async (Client, Message) => {
         await Message.deferReply({ flags: 64 });
         try {
-            const { default: origCmd } = await import("../../Files〡[Command-Handler]/Files〡[Admin]/CD〡[Help].js");
+            // تحويل لصف مسطح للصفحات
+            const flatCommands = [];
+            for (const sec of commands) {
+                flatCommands.push({ type: 'section', name: sec.section });
+                for (const [cmd, desc] of sec.items) {
+                    flatCommands.push({ type: 'cmd', name: cmd, value: desc });
+                }
+            }
 
-        let fakeContent = "Client.Prefix" + "مساعدة";
-            const fakeMsg = {
-                content: fakeContent,
-                mentions: { members: { first: () => Message.options.getMember("العضو") || null } },
-                reply: async (x) => { try { return await Message.editReply(x); } catch { return await Message.followUp(x); } },
-                channel: Message.channel,
-                author: Message.user,
-                member: Message.member,
-                guild: Message.guild,
-                delete: () => {},
-            };
-            return origCmd.run(Client, fakeMsg, "Client.Prefix");
-        } catch(e) {
-            await Message.editReply({ content: "❌ خطأ: " + e.message }).catch(() => {});
+            const perPage = 10;
+            const totalPages = Math.ceil(flatCommands.length / perPage);
+
+            for (let page = 0; page < totalPages; page++) {
+                const start = page * perPage;
+                const end = Math.min(start + perPage, flatCommands.length);
+                const chunk = flatCommands.slice(start, end);
+
+                const embed = new EmbedBuilder()
+                    .setAuthor({ name: '📋 CIA Community - قائمة الأوامر', iconURL: Message.guild?.iconURL() })
+                    .setColor('#FFD700')
+                    .setFooter({ text: `الصفحة ${page + 1}/${totalPages} • جميع الأوامر تعمل بـ Slash (/) • ${flatCommands.filter(c => c.type === 'cmd').length} أمر` });
+
+                for (const item of chunk) {
+                    if (item.type === 'section') {
+                        embed.addFields({ name: item.name, value: '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬', inline: false });
+                    } else {
+                        embed.addFields({ name: item.name, value: item.value, inline: false });
+                    }
+                }
+
+                if (page === 0) {
+                    await Message.editReply({ embeds: [embed] });
+                } else {
+                    await Message.followUp({ embeds: [embed], ephemeral: true });
+                }
+            }
+        } catch (e) {
+            await Message.editReply({ content: '❌ خطأ: ' + e.message }).catch(() => {});
         }
     }
 };

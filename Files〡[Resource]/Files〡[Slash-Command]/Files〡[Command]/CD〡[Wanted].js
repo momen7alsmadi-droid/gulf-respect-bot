@@ -25,8 +25,11 @@ function convertMathBold(text) {
 function cleanName(text) {
   if (!text) return '';
   return text
-    .replace(/<a?:\w+:\d+>/g, '')
+    .replace(/<a?:\w+:\d+>/g, '')  // Discord custom emoji
+    // إزالة الإيموجي
     .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}]/gu, '')
+    // إبقاء العربي + الإنجليزي + أرقام + رموز أساسية فقط، الباقي فراغ
+    .replace(/[^\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF\w\s\-_.!?@#$%&*(){}\[\]]/g, ' ')
     .replace(/\s+/g, ' ').trim();
 }
 

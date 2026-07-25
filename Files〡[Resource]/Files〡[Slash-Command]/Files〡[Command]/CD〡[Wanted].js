@@ -2,10 +2,17 @@
 import { ApplicationCommandOptionType, AttachmentBuilder } from 'discord.js';
 import { Canvas, loadImage } from 'canvas-constructor/cairo';
 
-/*
- * /مطلوب @العضو الجائزة السبب
- * بوستر WANTED كلاسيكي بخلفية ورقية قديمة
- */
+// ─── تحميل الخطوط مرة واحدة عند بدء تشغيل البوت ───
+const ROOT = process.cwd();
+try {
+  const canvasMod = await import('canvas');
+  canvasMod.registerFont(ROOT + '/NotoSansArabic.ttf', { family: 'Noto Sans Arabic' });
+  canvasMod.registerFont(ROOT + '/NotoEmoji.ttf', { family: 'Noto Emoji' });
+  canvasMod.registerFont(ROOT + '/NotoSansMath.ttf', { family: 'Noto Sans Math' });
+  console.log('✅ [Wanted] Fonts registered');
+} catch(e) { console.error('❌ [Wanted] Font error:', e.message); }
+
+const AF = (s, w) => `${w || ''} ${s}px Noto Sans Arabic, Noto Emoji, Noto Sans Math, Courier, Courier New, monospace`.trim();
 
 export default {
     name: "مطلوب",
@@ -19,11 +26,7 @@ export default {
     run: async (Client, Message) => {
         await Message.deferReply();
         try {
-            // ─── تحميل الخطوط لدعم العربية واليونيكود ───
-            const canvasMod = await import('canvas');
-            canvasMod.registerFont('NotoSansArabic.ttf', { family: 'Noto Sans Arabic' });
-            canvasMod.registerFont('NotoEmoji.ttf', { family: 'Noto Emoji' });
-            canvasMod.registerFont('NotoSansMath.ttf', { family: 'Noto Sans Math' });
+            // الخطوط محملة مسبقاً في بداية الملف
 
             const user = Message.options.getUser('العضو');
             const bounty = Message.options.getString('الجائزة');
@@ -35,14 +38,6 @@ export default {
             name = name.replace(/<a?:\w+:\d+>/g, '').replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}]/gu, '').replace(/\s+/g, ' ').trim();
 
             // ─── تحميل الصور ───
-            const bg = await loadImage('Files〡[Resource]/Files〡[Image]/wanted.png');
-            const avatar = await loadImage(user.displayAvatarURL({ extension: 'png', size: 512 }));
-
-            // أبعاد الكانفاس حسب الخلفية (افتراضي 1000x1250)
-            const W = 1000, H = 1250;
-
-            // الخط العربي الموحد
-            const AF = (s, w) => `${w || ''} ${s}px Noto Sans Arabic, Noto Emoji, Noto Sans Math, Courier, Courier New, monospace`.trim();
 
             const canvas = new Canvas(W, H)
                 // ─── طباعة الخلفية ───

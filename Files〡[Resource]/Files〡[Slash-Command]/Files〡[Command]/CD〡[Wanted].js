@@ -2,17 +2,29 @@
 import { ApplicationCommandOptionType, AttachmentBuilder } from 'discord.js';
 import { Canvas, loadImage } from 'canvas-constructor/cairo';
 
-// ─── تحميل الخطوط مرة واحدة عند بدء تشغيل البوت ───
-const ROOT = process.cwd();
-try {
-  const canvasMod = await import('canvas');
-  canvasMod.registerFont(ROOT + '/NotoSansArabic.ttf', { family: 'Noto Sans Arabic' });
-  canvasMod.registerFont(ROOT + '/NotoEmoji.ttf', { family: 'Noto Emoji' });
-  canvasMod.registerFont(ROOT + '/NotoSansMath.ttf', { family: 'Noto Sans Math' });
-  console.log('✅ [Wanted] Fonts registered');
-} catch(e) { console.error('❌ [Wanted] Font error:', e.message); }
+// تنظيف الاسم
+function cleanName(text) {
+  if (!text) return '';
+  return text
+    .replace(/<a?:\w+:\d+>/g, '')
+    .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}]/gu, '')
+    .replace(/\s+/g, ' ').trim();
+}
 
-const AF = (s, w) => `${w || ''} ${s}px Noto Sans Arabic, Noto Emoji, Noto Sans Math, Courier, Courier New, monospace`.trim();
+// التفاف النص العربي لعدة أسطر
+function wrapText(text, maxChars) {
+  const words = text.split(' ');
+  const lines = [];
+  let cur = '';
+  for (const w of words) {
+    if ((cur + w).length > maxChars && cur.length > 0) {
+      lines.push(cur.trim());
+      cur = w + ' ';
+    } else { cur += w + ' '; }
+  }
+  if (cur.trim()) lines.push(cur.trim());
+  return lines;
+}
 
 export default {
     name: "مطلوب",
@@ -20,61 +32,66 @@ export default {
     type: 1,
     options: [
         { name: "العضو", description: "اختر العضو المطلوب", type: ApplicationCommandOptionType.User, required: true },
-        { name: "الجائزة", description: "مبلغ الجائزة (مثال: 1000000)", type: ApplicationCommandOptionType.String, required: true },
+        { name: "الجائزة", description: "مبلغ الجائزة (مثال: 10000)", type: ApplicationCommandOptionType.String, required: true },
         { name: "السبب", description: "سبب المطلوبية", type: ApplicationCommandOptionType.String, required: true },
     ],
     run: async (Client, Message) => {
         await Message.deferReply();
         try {
-            // الخطوط محملة مسبقاً في بداية الملف
-
             const user = Message.options.getUser('العضو');
             const bounty = Message.options.getString('الجائزة');
             const reason = Message.options.getString('السبب');
             const member = Message.guild.members.cache.get(user.id);
+            const name = cleanName(member?.displayName || user.username);
 
-            // تنظيف الاسم من الإيموجي فقط
-            let name = member?.displayName || user.username;
-            name = name.replace(/<a?:\w+:\d+>/g, '').replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}]/gu, '').replace(/\s+/g, ' ').trim();
+            // تحميل الصور
+            const bg = await loadImage(process.cwd() + '/Files〡[Resource]/Files〡[Image]/wanted.png');
+            const avatar = await loadImage(user.displayAvatarURL({ extension: 'png', size: 512 }));
 
-            // ─── تحميل الصور ───
+            // أبعاد الخلفية
+            const W = 1000, H = 1250;
+            // خط عربي يدعم اليونيكود بدون registerFont
+            const FONT = 'Arial, Noto Sans Arabic, Noto Naskh Arabic, Tahoma, DejaVu Sans, sans-serif';
 
             const canvas = new Canvas(W, H)
-                // ─── طباعة الخلفية ───
+                // الخلفية
                 .printImage(bg, 0, 0, W, H)
 
-                // ─── رسم الصورة الشخصية بتأثير Sepia ───
-                // أولاً: نرسم الصورة
+                // صورة العضو مع B&W/Sepia
                 .printImage(avatar, 340, 290, 320, 400)
-                // ثانياً: نطبق طبقة Sepia (بني + أصفر شفاف)
-                .setColor('rgba(112, 66, 20, 0.35)')   // بني شفاف
+                // طبقة أبيض وأسود
+                .setColor('rgba(0,0,0,0.25)')
                 .printRectangle(340, 290, 320, 400)
-                .setColor('rgba(255, 215, 120, 0.10)')  // أصفر دافئ
+                // طبقة بني Sepia
+                .setColor('rgba(112,66,20,0.30)')
                 .printRectangle(340, 290, 320, 400)
                 // إطار حول الصورة
-                .setColor('rgba(0,0,0,0.30)')
-                .printRectangle(340, 290, 320, 400)
-                .setColor('rgba(0,0,0,0.30)')
+                .setColor('rgba(0,0,0,0.20)')
                 .printRectangle(336, 286, 328, 408);
 
-            // ─── اسم العضو - أسفل الورقة المعلقة، فوق الخط الأسود ───
-            // المركز عند X=500
-            canvas.setColor('#000000')
-                .setTextFont(AF(60, 'bold'))
+            // اسم العضو - Courier New مطابق لآلة الكاتبة
+            canvas.setColor('#1a1a1a')
+                .setTextFont('bold 55px Courier New, Courier, monospace')
                 .setTextAlign('center')
                 .printText(name, 500, 750);
 
-            // ─── مبلغ الجائزة - أسفل الخط الأسود ───
-            canvas.setColor('#8B0000')  // أحمر داكن
-                .setTextFont(AF(70, 'bold'))
+            // مبلغ الجائزة - نفس أحمر WANTED (#8B0000)
+            canvas.setColor('#8B0000')
+                .setTextFont(`bold 65px ${FONT}`)
                 .setTextAlign('center')
-                .printText('$' + bounty, 500, 880);
+                .printText('REWARD: $' + bounty, 500, 880);
 
-            // ─── سبب المطلوبية ───
-            canvas.setColor('#000000')
-                .setTextFont(AF(60, 'bold'))
-                .setTextAlign('center')
-                .printText(reason.length > 30 ? reason.substring(0, 30) + '..' : reason, 500, 990);
+            // سبب المطلوبية مع التفاف النص
+            canvas.setColor('#1a1a1a')
+                .setTextFont(`55px ${FONT}`)
+                .setTextAlign('center');
+
+            const lines = wrapText(reason, 25);
+            let yStart = 990;
+            for (let i = 0; i < Math.min(lines.length, 3); i++) {
+                canvas.printText(lines[i], 500, yStart);
+                yStart += 70;
+            }
 
             const buffer = canvas.toBuffer();
             await Message.editReply({ files: [new AttachmentBuilder(buffer, { name: 'wanted.png' })] });

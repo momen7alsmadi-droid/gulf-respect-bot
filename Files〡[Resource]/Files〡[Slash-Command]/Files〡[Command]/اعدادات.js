@@ -48,7 +48,8 @@ const MAIN_EMBED = (isSuper) => new EmbedBuilder()
     .addFields(
         { name: '⚙️ التحكم', value: 'تعديل جميع معرفات وصلاحيات البوت', inline: true },
         { name: '📝 الرسائل', value: 'تعديل جميع رسائل ونصوص البوت', inline: true },
-        ...(isSuper ? [{ name: '👑 الملاك', value: 'إدارة ملاك البوت (حصري)', inline: true }] : [])
+        ...(isSuper ? [{ name: '👑 الملاك', value: 'إدارة ملاك البوت (حصري)', inline: true }] : []),
+        { name: '⭐ النقاط', value: 'التحكم بجميع أنواع النقاط', inline: true }
     )
     .setFooter({ text: '♜ CIA Community • تغييرات فورية' });
 
@@ -61,6 +62,7 @@ function getMainButtons(userId) {
     if (SUPER_OWNERS.includes(userId)) {
         btns.push(new ButtonBuilder().setCustomId('Panel_Owners').setLabel('👑 الملاك').setStyle(4));
     }
+    btns.push(new ButtonBuilder().setCustomId('Panel_Points').setLabel('⭐ النقاط').setStyle(1));
     return btns;
 }
 
@@ -120,7 +122,121 @@ export const settingsInteractionHandler = async (Client, Message) => {
 
     if (Message.isButton() && Message.customId === 'Panel_Back') { return backToMain(Message); }
 
-    // ─── 👑 إدارة الملاك (لـ m_smadi + sp9a فقط) ───
+    // ─── ⭐ لوحة النقاط ───
+    if (Message.isButton() && Message.customId === 'Panel_Points') {
+        const embed = new EmbedBuilder().setTitle('⭐ لوحة التحكم بالنقاط').setColor('#FFD700')
+            .setDescription('اختر أحد الأزرار أدناه للتحكم بنقاط الأعضاء والإداريين والعساكر.');
+        const r1 = [
+            new ButtonBuilder().setCustomId('Pts_AddAdmin').setLabel('➕ نقاط إداري').setStyle(3),
+            new ButtonBuilder().setCustomId('Pts_RemoveAdmin').setLabel('➖ نقاط إداري').setStyle(4),
+            new ButtonBuilder().setCustomId('Pts_ClearAdmin').setLabel('🗑️ تصفير إداري').setStyle(4)
+        ];
+        const r2 = [
+            new ButtonBuilder().setCustomId('Pts_AddPolice').setLabel('➕ نقاط عسكري').setStyle(3),
+            new ButtonBuilder().setCustomId('Pts_RemovePolice').setLabel('➖ نقاط عسكري').setStyle(4),
+            new ButtonBuilder().setCustomId('Pts_ClearPolice').setLabel('🗑️ تصفير عسكري').setStyle(4)
+        ];
+        const r3 = [
+            new ButtonBuilder().setCustomId('Pts_Top').setLabel('🏆 توب النقاط').setStyle(2)
+        ];
+        const back = new ButtonBuilder().setCustomId('Panel_Back').setLabel('🔙 رجوع للرئيسية').setStyle(2);
+        await Message.update({ embeds: [embed], components: [
+            { type:1, components: r1 }, { type:1, components: r2 }, { type:1, components: r3 }, { type:1, components: [back] }
+        ] }).catch(()=>{});
+        return;
+    }
+
+    // معالجات أزرار النقاط
+    const ptsActions = ['Pts_AddAdmin','Pts_RemoveAdmin','Pts_ClearAdmin','Pts_AddPolice','Pts_RemovePolice','Pts_ClearPolice','Pts_Top'];
+    if (ptsActions.includes(Message.customId)) {
+        if (Message.customId === 'Pts_Top') {
+            const menu = new StringSelectMenuBuilder().setCustomId('Pts_TopSelect').setPlaceholder('اختر نوع التوب...')
+                .addOptions([{ label:'🏆 توب الإدارة', value:'admin' }, { label:'🏆 توب العساكر', value:'police' }]);
+            return await Message.reply({ content: 'اختر:', components: [{ type:1, components:[menu] }], flags: 64 });
+        }
+        const isAdmin = Message.customId.includes('Admin');
+        const isAdd = Message.customId.includes('Add');
+        const isClear = Message.customId.includes('Clear');
+        const label = isAdmin ? 'إداري' : 'عسكري';
+        const modalId = 'PtsModal_' + Message.customId;
+        const input1 = new TextInputBuilder().setCustomId('userId').setLabel('معرف العضو').setStyle(1).setMinLength(18).setMaxLength(20).setRequired(true);
+        if (isClear) {
+            return await Message.showModal(new ModalBuilder().setCustomId(modalId).setTitle('🗑️ تصفير نقاط ' + label).setComponents([{ type:1, components:[input1] }]));
+        }
+        const input2 = new TextInputBuilder().setCustomId('amount').setLabel('عدد النقاط').setStyle(1).setMinLength(1).setMaxLength(5).setValue('1').setRequired(true);
+        return await Message.showModal(new ModalBuilder().setCustomId(modalId).setTitle((isAdd?'➕':'➖') + ' نقاط ' + label).setComponents([{ type:1, components:[input1] }, { type:1, components:[input2] }]));
+    }
+
+    if (Message.isModalSubmit() && Message.customId?.startsWith('PtsModal_')) {
+        const action = Message.customId.replace('PtsModal_', '');
+        const userId = Message.fields.getTextInputValue('userId');
+        if (!/^\d{17,20}$/.test(userId)) return Message.reply({ content: '❌ معرف غير صالح', flags: 64 });
+        const isClear = action.includes('Clear');
+        const amount = isClear ? 0 : parseInt(Message.fields.getTextInputValue('amount')) || 0;
+        const isAdmin = action.includes('Admin');
+        const isAdd = action.includes('Add');
+        try {
+            if (isAdmin) {
+                const { default: DBAdmin } = await import('../../Files〡[DataBase]/DB〡[Admin-Point].js');
+                if (isClear) {
+                    await DBAdmin.findOneAndUpdate({ _id: userId }, { Point: 0, Added: 0, StartGame: 0, JoinGame: 0, AdminAssistant: 0 }, { upsert: true }).catch(()=>{});
+                } else {
+                    await DBAdmin.findOneAndUpdate({ _id: userId }, { $inc: { Added: isAdd ? amount : -amount } }, { upsert: true }).catch(()=>{});
+                }
+            } else {
+                const { JsonDatabase } = await import('wio.db');
+                const PDB = new JsonDatabase({ databasePath: 'Files〡[Resource]/Files〡[DataBase]/Files〡[Police].json' });
+                const key = 'Police-AddPoint〡' + userId;
+                if (isClear) { PDB.set(key, 0); PDB.set('Police-Point〡' + userId, 0); }
+                else { PDB.set(key, Math.max(0, (PDB.get(key)||0) + (isAdd ? amount : -amount))); }
+            }
+            return Message.reply({ content: '✅ **تم ' + (isClear ? 'تصفير' : isAdd ? 'إضافة '+amount : 'إزالة '+amount) + '** <@' + userId + '>', flags: 64 });
+        } catch(e) { return Message.reply({ content: '❌ ' + e.message, flags: 64 }); }
+    }
+
+    if (Message.isStringSelectMenu() && Message.customId === 'Pts_TopSelect') {
+        try {
+            const type = Message.values[0];
+            const embed = new EmbedBuilder().setTitle('🏆 توب 10 ' + (type==='admin'?'الإدارة':'العساكر')).setColor('#FFD700');
+            let entries = [];
+            if (type === 'admin') {
+                const { default: DBAdmin } = await import('../../Files〡[DataBase]/DB〡[Admin-Point].js');
+                const all = await DBAdmin.find({}).catch(() => []);
+                const { JsonDatabase } = await import('wio.db');
+                const Points = new JsonDatabase({ databasePath: 'Files〡[Resource]/Files〡[DataBase]/DB〡[Points].json' });
+                const Voice = new JsonDatabase({ databasePath: 'Files〡[Resource]/Files〡[DataBase]/Files〡[Voice].json' });
+                for (const a of all) {
+                    const tf = Points.get('Point-Tf3el-'+Message.guild.id+'-'+a._id)||0;
+                    const vc = Voice.get('Admin〡'+a._id)||0;
+                    const ev = Points.get('Evaluation〡'+a._id)||0;
+                    entries.push({ id: a._id, points: (a.Point||0)+(a.Added||0)+(a.StartGame||0)+(a.JoinGame||0)+(a.AdminAssistant||0)+tf+vc+ev });
+                }
+            } else {
+                const { JsonDatabase } = await import('wio.db');
+                const PDB = new JsonDatabase({ databasePath: 'Files〡[Resource]/Files〡[DataBase]/Files〡[Police].json' });
+                const keys = PDB.all?.() || [];
+                const seen = new Set();
+                for (const k of keys) {
+                    if (k.ID?.startsWith('Police-Point〡')) {
+                        const uid = k.ID.replace('Police-Point〡', '');
+                        if (!seen.has(uid)) {
+                            seen.add(uid);
+                            entries.push({ id: uid, points: (PDB.get('Police-Point〡'+uid)||0)+(PDB.get('Police-AddPoint〡'+uid)||0)+(PDB.get('Police-Violations〡'+uid)||0)+(PDB.get('Police-Report〡'+uid)||0) });
+                        }
+                    }
+                }
+            }
+            entries.sort((a,b) => b.points - a.points);
+            entries.slice(0,10).forEach((e,i) => {
+                const m = Message.guild.members.cache.get(e.id);
+                embed.addFields({ name: (i<3?['🥇','🥈','🥉'][i]:'#'+(i+1)) + ' ' + (m?.displayName||e.id), value: e.points + ' نقطة', inline: false });
+            });
+            if (entries.length === 0) embed.setDescription('لا توجد بيانات');
+            return Message.reply({ embeds: [embed], flags: 64 });
+        } catch(e) { return Message.reply({ content: '❌ ' + e.message, flags: 64 }); }
+    }
+
+    // ─── قسم الإعدادات: اختيار حقل ───
     if (Message.isButton() && Message.customId === 'Panel_Owners') {
         if (!SUPER_OWNERS.includes(Message.user?.id || Message.author?.id)) return;
         const cfg = getConfig();

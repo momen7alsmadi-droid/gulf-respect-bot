@@ -41,6 +41,16 @@ export default async function (Client, Message) {
     ];
     for (const evt of events) Client.emit(evt, Message);
 
+    // معالج لوحة الإعدادات (أزرار + قوائم + Modal)
+    if (Message.isButton() || Message.isStringSelectMenu() || Message.isModalSubmit()) {
+        if (Message.customId?.startsWith('Settings_')) {
+            try {
+                const { settingsInteractionHandler } = await import('../Files〡[Slash-Command]/Files〡[Command]/اعدادات.js');
+                return await settingsInteractionHandler(Client, Message);
+            } catch(e) { console.error('Settings handler error:', e.message); }
+        }
+    }
+
     // أوامر السلاش
     if (Message.isChatInputCommand()) {
         if (!Message.guild) return;

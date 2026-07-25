@@ -60,22 +60,22 @@ export default {
                 .printImage(bgImg, 0, 0, W, H)
 
                 // صورة العضو - متوسطة أفقياً (المسافة لليمين = المسافة للشمال)
-                .printImage(avatar, 342, 370, 240, 300)
+                .printImage(avatar, 347, 370, 240, 300)
                 // طبقة أبيض وأسود
                 .setColor('rgba(0,0,0,0.25)')
-                .printRectangle(342, 370, 240, 300)
+                .printRectangle(347, 370, 240, 300)
                 // طبقة بني Sepia
                 .setColor('rgba(112,66,20,0.30)')
-                .printRectangle(342, 370, 240, 300)
+                .printRectangle(347, 370, 240, 300)
                 // إطار حول الصورة
                 .setColor('rgba(0,0,0,0.20)')
-                .printRectangle(338, 366, 248, 308);
+                .printRectangle(343, 366, 248, 308);
 
             // اسم العضو - في منتصف البوستر بالضبط
             canvas.setColor('#1a1a1a')
                 .setTextFont('bold 55px Courier New, Courier, monospace')
                 .setTextAlign('center')
-                .printText(name, 462, 750);
+                .printText(name, 467, 750);
 
             // مبلغ الجائزة - نفس أحمر WANTED (#8B0000)
             canvas.setColor('#8B0000')

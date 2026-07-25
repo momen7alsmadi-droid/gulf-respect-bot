@@ -18,7 +18,7 @@ function convertMathBold(text) {
     for (const [r,base] of ranges) {
       if (code >= r && code < r + 26) return String.fromCharCode(base + code - r);
     }
-    return ''; // أي رمز آخر نحذفه
+    return ' '; // أي رمز غير مدعوم → فراغ
   });
 }
 
